@@ -26,8 +26,8 @@ int main(int argc, const char** argv)
 	VideoCapture cap("movie.MP4");
 	if (!cap.isOpened()) return -1;
 	
-	namedWindow("Treshold", 1);
-	createTrackbar("Level", "Treshold", &threshval, 255);
+	namedWindow("Threshold", 1);
+	createTrackbar("Level", "Threshold", &threshval, 255);
 
 	for (;;)
 	{
@@ -41,7 +41,7 @@ int main(int argc, const char** argv)
 		toGray();
 		toBinary();
 
-		imshow("Treshold", binaryFrame);
+		imshow("Threshold", binaryFrame);
 
 		char key = cvWaitKey(10);
 		if (key == 27) break;
