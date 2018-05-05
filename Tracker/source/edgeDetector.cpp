@@ -65,10 +65,9 @@ void EdgeDetector::draw7points(Point2f a, Point2f b) {
     for (int i = 1; i < 8; i++) {
         double indicator = (double) i / 7.0;
         point = a + indicator * c;
+        circle(_original, point, 2, _RED, 1, 8, 0);
         Transformations::getSubimage(point, _original);
-        //circle(_original, point, 1, _BLUE, 1, 8, 0);
     }
-    line(_original, a, point, _RED, 1, 8, 0);
 }
 
 EdgeDetector *EdgeDetector::setFrame(Mat original) {

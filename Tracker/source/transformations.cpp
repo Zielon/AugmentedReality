@@ -57,10 +57,10 @@ inline int Transformations::SUBMASK[5][3] = {
 
 inline vector<Subpoint> Transformations::getSubimage(const cv::Point2f &edge, const cv::Mat &pSrc) {
     auto points = vector<Subpoint>();
-    for (auto &y : {-3, -2, -1, 0, 1, 2, 3}) {
+    for (auto &y : {-1, 0, 1}) {
         auto nextOnEdge = edge + (getNormalized(edge) * y);
-        for (auto &x: {-1, 0, 1}) {
-            auto orthonormal = getNormalized(getPerpendicular(nextOnEdge));
+        for (auto &x: {-3, -2, -1, 0, 1, 2, 3}) {
+            auto orthonormal = getNormalized(getPerpendicular(edge));
             auto nextOnOrthogonal = nextOnEdge + (orthonormal * x);
 
             int pixelOrtho = subpixSampleSafe(pSrc, nextOnOrthogonal);
@@ -74,8 +74,6 @@ inline vector<Subpoint> Transformations::getSubimage(const cv::Point2f &edge, co
         rect.push_back(points[i].point);
 
     polylines(pSrc, rect, true, Scalar(0, 255, 0), 1, 8, 0);
-
-    imshow("Threshold", pSrc);
 
     return points;
 }

@@ -36,13 +36,13 @@ void Camera::start() {
         Mat transformed = _detector
                 ->setThreshold(_threshold)
                 ->setFrame(_frame)
-                        //->drawEdges()
+                ->drawEdges()
                 ->drawCircles()
                 ->getTransformed();
 
-        //imshow("Threshold", transformed);
+        imshow("Threshold", transformed);
 
-        //std::this_thread::sleep_for(0.001s);
+        std::this_thread::sleep_for(0.001s);
     }
 }
 
