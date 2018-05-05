@@ -1,6 +1,7 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv/cv.hpp>
 #include "../headers/edgeDetector.h"
+#include "../source/transformations.cpp"
 
 using namespace cv;
 using namespace std;
@@ -13,8 +14,8 @@ EdgeDetector *EdgeDetector::drawCircles() {
 
         draw7points(contour[p - 1], contour[0]);
 
-        for (int j = 0; j < contour.size(); j++) {
-            circle(_original, contour[j], 1, _BLUE, 2, 8, 0);
+        for (const auto &j : contour) {
+            circle(_original, j, 1, _BLUE, 2, 8, 0);
         }
     }
 
@@ -50,7 +51,7 @@ void EdgeDetector::filterEdges() {
         approxPolyDP(contour, approx, 3, true);
         if (approx.size() == 4) {
             Rect rect = boundingRect(Mat(approx));
-            if (rect.size().area() > 600)
+            if (rect.size().area() > 300)
                 filtered->push_back(approx);
         }
     }
@@ -58,23 +59,26 @@ void EdgeDetector::filterEdges() {
     _contours = filtered;
 }
 
-void EdgeDetector::draw7points(Point a, Point b) {
-    Point c = b - a;
+void EdgeDetector::draw7points(Point2f a, Point2f b) {
+    Point2f c = b - a;
+    Point2f point;
     for (int i = 1; i < 8; i++) {
-        double indicator = (double) i / 7;
-        Point point = indicator * c;
-        circle(_original, a + point, 1, _GREEN, 1, 8, 0);
+        double indicator = (double) i / 7.0;
+        point = a + indicator * c;
+        Transformations::getSubimage(point, _original);
+        //circle(_original, point, 1, _BLUE, 1, 8, 0);
     }
+    line(_original, a, point, _RED, 1, 8, 0);
 }
 
-EdgeDetector *EdgeDetector::setFrame(cv::Mat original) {
+EdgeDetector *EdgeDetector::setFrame(Mat original) {
     _original = original;
     _binary = original;
     filterEdges();
     return this;
 }
 
-cv::Mat EdgeDetector::getTransformed() {
+Mat EdgeDetector::getTransformed() {
     return _original;
 }
 

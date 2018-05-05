@@ -16,7 +16,17 @@ void Camera::start() {
     namedWindow("Threshold", 1);
     createTrackbar("Level", "Threshold", &_threshold, 255);
 
+    bool stop = false;
+
     for (;;) {
+
+        auto key = static_cast<char>(cvWaitKey(10));
+        if (key == 27) break;
+        if (key == 32) stop = !stop;
+
+        if (stop)
+            continue;
+
         if (!cap.read(_frame)) {
             // Start from the beginning
             cap.set(CV_CAP_PROP_POS_FRAMES, 0);
@@ -26,16 +36,13 @@ void Camera::start() {
         Mat transformed = _detector
                 ->setThreshold(_threshold)
                 ->setFrame(_frame)
-                ->drawEdges()
+                        //->drawEdges()
                 ->drawCircles()
                 ->getTransformed();
 
-        imshow("Threshold", transformed);
+        //imshow("Threshold", transformed);
 
-        std::this_thread::sleep_for(0.010s);
-
-        auto key = static_cast<char>(cvWaitKey(10));
-        if (key == 27) break;
+        //std::this_thread::sleep_for(0.001s);
     }
 }
 
