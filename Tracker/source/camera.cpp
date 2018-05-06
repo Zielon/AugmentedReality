@@ -2,6 +2,7 @@
 #include <opencv/cv.hpp>
 #include <opencv/highgui.h>
 #include <thread>
+#include <chrono>
 #include "../headers/camera.h"
 #include "../headers/detector.h"
 
@@ -42,11 +43,18 @@ void Camera::start() {
 
         imshow("Threshold", transformed);
 
-        std::this_thread::sleep_for(0.001s);
+        if(slowTime > 0) {
+            chrono::milliseconds duration(slowTime);
+            std::this_thread::sleep_for(duration);
+        }
     }
 }
 
 Camera::Camera(std::string path, Detector *detector) {
     _path = path;
     _detector = detector;
+}
+
+void Camera::setSlowMotion(int millis) {
+    this->slowTime = millis;
 }

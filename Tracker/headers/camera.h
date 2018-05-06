@@ -10,9 +10,12 @@ private:
     cv::Mat _frame;
     std::string _path;
     Detector *_detector;
+    int slowTime;
 
 public:
     Camera(std::string path, Detector *detector);
+
+    void setSlowMotion(int millis);
 
     void start();
 };
