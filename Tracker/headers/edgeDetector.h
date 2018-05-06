@@ -18,7 +18,7 @@ private:
 
     void filterEdges();
 
-    void draw7points(cv::Point2f a, cv::Point2f b);
+    void draw7points(cv::Point2f a, cv::Point2f b, int& contourID);
 
     void transformToBinary();
 

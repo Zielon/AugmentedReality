@@ -7,7 +7,7 @@ find_package(OpenCV REQUIRED )
 
 set(SOURCE_FILES main.cpp headers/edgeDetector.h source/edgeDetector.cpp headers/camera.h source/camera.cpp headers/detector.h source/transformations.cpp data/subpoint.cpp)
 
-configure_file(resources/movie.MP4 resources/movie.MP4 COPYONLY)
+configure_file(resources/movie.MP4 resources/lena.jpg COPYONLY)
 
 add_executable(Tracker ${SOURCE_FILES})
 

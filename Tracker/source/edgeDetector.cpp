@@ -7,12 +7,13 @@ using namespace cv;
 using namespace std;
 
 EdgeDetector *EdgeDetector::drawCircles() {
+    int contourID = 0;
     for (auto contour : *_contours) {
         int p = 1;
         for (; p < contour.size(); p++)
-            draw7points(contour[p], contour[p - 1]);
+            draw7points(contour[p], contour[p - 1], contourID);
 
-        draw7points(contour[p - 1], contour[0]);
+        draw7points(contour[p - 1], contour[0], contourID);
 
         for (const auto &j : contour) {
             circle(_original, j, 1, _BLUE, 2, 8, 0);
@@ -59,14 +60,17 @@ void EdgeDetector::filterEdges() {
     _contours = filtered;
 }
 
-void EdgeDetector::draw7points(Point2f a, Point2f b) {
+void EdgeDetector::draw7points(Point2f a, Point2f b, int& contourID) {
     Point2f c = b - a;
     Point2f point;
     for (int i = 1; i < 8; i++) {
         double indicator = (double) i / 7.0;
         point = a + indicator * c;
         circle(_original, point, 2, _RED, 1, 8, 0);
-        Transformations::getSubimage(point, _original);
+        vector<Subpoint> points = Transformations::getSubimage(point, _original, contourID);
+        if(contourID == 5)
+            imshow("Strip", Transformations::convertToMat(points));
+        contourID++;
     }
 }
 
