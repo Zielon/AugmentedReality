@@ -2,7 +2,7 @@
 #include "headers/camera.h"
 
 int main(int argc, const char **argv) {
-    std::string videoPath = "resources/movie.MP4";
+    std::string videoPath = "resources/movie";
 
     Camera *camera = new Camera(videoPath, new EdgeDetector());
 
