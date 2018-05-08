@@ -4,14 +4,12 @@ using namespace cv;
 
 struct Subpoint{
 public:
-    Subpoint(Point2f point2f, int pixel, Point coords);
+    Subpoint(Point2f point2f, int pixel);
     Point2f point;
-    Point coords;
     int pixel;
 };
 
-inline Subpoint::Subpoint(Point2f point2f, int pixel, Point coords) {
+inline Subpoint::Subpoint(Point2f point2f, int pixel) {
     this->pixel = pixel;
     this->point = point2f;
-    this->coords = coords;
 }

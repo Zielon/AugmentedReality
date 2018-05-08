@@ -67,7 +67,7 @@ void EdgeDetector::draw7points(Point2f a, Point2f b, int& contourID) {
         double indicator = (double) i / 7.0;
         point = a + indicator * c;
         circle(_original, point, 2, _RED, 1, 8, 0);
-        vector<Subpoint> points = Transformations::getSubimage(point, _original, contourID);
+        vector<vector<Subpoint>> points = Transformations::getSubimage(point, _binary, _original, contourID);
         if(contourID == 5)
             imshow("Strip", Transformations::convertToMat(points));
         contourID++;
