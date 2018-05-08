@@ -7,9 +7,9 @@ using namespace cv;
 using namespace std;
 
 // The width length
-const int WIDTH = -10;
+const int WIDTH = -1;
 // The height length
-const int HEIGHT = -15;
+const int HEIGHT = -3;
 
 class Transformations {
 
@@ -21,6 +21,8 @@ public:
 
     static Mat convertToMat(vector<vector<Subpoint>> points);
 
+    static vector<Point> getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image);
+
 private:
     static Point2f getPerpendicular(const cv::Point2f &p);
 
@@ -28,7 +30,7 @@ private:
 
     static int subpixelSampleSafe(const cv::Mat &pSrc, const cv::Point2f &p);
 
-    static double sobelFilter(double maskX[][3], double maskY[][3], Mat &image);
+    static void sobelFilter(double maskX[][3], double maskY[][3], vector<vector<Subpoint>> points);
 };
 
 inline double Transformations::SOBEL_MASK_X[3][3] = {
@@ -95,15 +97,13 @@ inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &
         }
     }
 
-/*
     if (contourID != 5)
         rectangle(original, rectA, rectB, Scalar(0, 255, 0), 1, 8, 0);
     else
         rectangle(original, rectA, rectB, Scalar(255, 0, 0), 2, 8, 0);
-*/
 
-    if (contourID == 5)
-        rectangle(original, rectA, rectB, Scalar(0, 255, 0), 2, 8, 0);
+    // #### SOBEL FILTERING ####
+    sobelFilter(SOBEL_MASK_X, SOBEL_MASK_Y, points);
 
     return points;
 }
@@ -119,32 +119,53 @@ inline Mat Transformations::convertToMat(vector<vector<Subpoint>> points) {
             strip.at<uchar>(y, x) = (uchar) points[x][y].pixel;
 
     Mat dst;
-    //sobelFilter(SOBEL_MASK_X, SOBEL_MASK_Y, strip);
     resize(strip, dst, Size(width * 10, height * 10));
     return dst;
 }
 
-inline double Transformations::sobelFilter(double maskX[][3], double maskY[][3], Mat &image) {
+inline void Transformations::sobelFilter(double maskX[][3], double maskY[][3], vector<vector<Subpoint>> points) {
 
-    for(int y = 1; y < image.rows - 1; y++){
-        for(int x = 1; x < image.cols - 1; x++){
+    for(int x = 1; x < points.size() - 1; x++){
+        for(int y = 1; y < points[0].size() - 1; y++){
 
-            double weightX = 0.0, weightY = 0.0;
+            int weightX = 0, weightY = 0;
 
             for (int a = 0; a < 3; a++) {
                 for (int b = 0; b < 3; b++) {
                     int xn = x + b - 1;
                     int yn = y + a - 1;
-                    weightX += image.at<uchar>(yn, xn) * maskX[a][b];
-                    weightY += image.at<uchar>(yn, xn) * maskY[a][b];
+                    weightX += points[xn][yn].pixel * maskX[a][b];
+                    weightY += points[xn][yn].pixel * maskY[a][b];
                 }
             }
 
-            double sum = abs(weightX) + abs(weightY);
+            int sum = abs(weightX) + abs(weightY);
             sum = sum > 255 ? 255 : sum;
             sum = sum < 0 ? 0 : sum;
-            image.at<uchar>(y, x) = static_cast<const uchar>(sum);
+            points[x][y].pixel = sum;
         }
     }
+}
+
+inline vector<Point> Transformations::getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image) {
+    vector<Subpoint> pixels;
+    for(auto point: points) {
+        auto max = max_element(point.begin(), point.end(),
+                               [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).base();
+        pixels.push_back(*max);
+    }
+
+    auto highestPoint = max_element(pixels.begin(), pixels.end(), [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).operator*();
+
+    auto v = highestPoint.point;
+    auto normalized = v / norm(v);
+
+    vector<Point> result;
+
+    result.push_back(v);
+    result.push_back(v + normalized);
+    result.push_back(v - normalized);
+
+    return result;
 }
 

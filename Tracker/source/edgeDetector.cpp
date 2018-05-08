@@ -10,6 +10,7 @@ EdgeDetector *EdgeDetector::drawCircles() {
     int contourID = 0;
     for (auto contour : *_contours) {
         int p = 1;
+
         for (; p < contour.size(); p++)
             draw7points(contour[p], contour[p - 1], contourID);
 
@@ -63,13 +64,22 @@ void EdgeDetector::filterEdges() {
 void EdgeDetector::draw7points(Point2f a, Point2f b, int& contourID) {
     Point2f c = b - a;
     Point2f point;
+    vector<vector<vector<Subpoint>>> vectors;
     for (int i = 1; i < 8; i++) {
         double indicator = (double) i / 7.0;
         point = a + indicator * c;
         circle(_original, point, 2, _RED, 1, 8, 0);
-        vector<vector<Subpoint>> points = Transformations::getSubimage(point, _binary, _original, contourID);
+
+        // #### EXERCISE 3 ####
+        auto points = Transformations::getSubimage(point, _binary, _original, contourID);
+        auto result = Transformations::convertToMat(points);
+
+        fitLine(Transformations::getHighestIntensity(points, _binary));
+
+        vectors.push_back(points);
+
         if(contourID == 5)
-            imshow("Strip", Transformations::convertToMat(points));
+            imshow("Strip", result);
         contourID++;
     }
 }
@@ -88,4 +98,10 @@ Mat EdgeDetector::getTransformed() {
 EdgeDetector *EdgeDetector::setThreshold(int threshold) {
     _threshold = threshold;
     return this;
+}
+
+void EdgeDetector::fitLine(vector<Point> points) {
+    vector<Vec4f> line;
+  //  cv::fitLine(points, line, CV_DIST_L2, 0, 0.5, 0.01);
+    line.size();
 }
