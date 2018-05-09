@@ -8,6 +8,7 @@ class EdgeDetector : public Detector {
 
 private:
     cv::Mat _original;
+    cv::Mat _grey;
     cv::Mat _binary;
     int _threshold;
     std::vector<std::vector<cv::Point>> *_contours;
@@ -20,7 +21,7 @@ private:
 
     void draw7points(cv::Point2f a, cv::Point2f b, int& contourID);
 
-    void fitLine(std::vector<cv::Point> points);
+    void fitLine(std::vector<cv::Point2f> points);
 
     void transformToBinary();
 

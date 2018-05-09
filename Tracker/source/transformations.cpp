@@ -17,11 +17,11 @@ public:
     static double SOBEL_MASK_X[3][3];
     static double SOBEL_MASK_Y[3][3];
 
-    static vector<vector<Subpoint>> getSubimage(const cv::Point2f &edge, cv::Mat &binary, cv::Mat &original, int contourID);
+    static vector<vector<Subpoint>> getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints);
 
     static Mat convertToMat(vector<vector<Subpoint>> points);
 
-    static vector<Point> getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image);
+    static Point2f getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image);
 
 private:
     static Point2f getPerpendicular(const cv::Point2f &p);
@@ -71,7 +71,7 @@ inline int Transformations::subpixelSampleSafe(const cv::Mat &pSrc, const cv::Po
     return a + ((dy * (b - a)) >> 8);
 }
 
-inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &edge, cv::Mat &binary, cv::Mat &original, int contourID) {
+inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints) {
 
     auto points = vector<vector<Subpoint>>();
     Point2f rectA, rectB;
@@ -88,7 +88,7 @@ inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &
             auto nextOnOrthogonal = nextOnEdge + (orthonormal * (double) x);
 
             // Find pixels with the sub-pixel accuracy
-            int pixelOrtho = subpixelSampleSafe(binary, nextOnOrthogonal);
+            int pixelOrtho = subpixelSampleSafe(image, nextOnOrthogonal);
             points[coord_y].emplace_back(nextOnOrthogonal, pixelOrtho);
 
             // Assign two opposite points to draw a rectangle
@@ -97,13 +97,14 @@ inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &
         }
     }
 
-    if (contourID != 5)
-        rectangle(original, rectA, rectB, Scalar(0, 255, 0), 1, 8, 0);
-    else
-        rectangle(original, rectA, rectB, Scalar(255, 0, 0), 2, 8, 0);
-
     // #### SOBEL FILTERING ####
     sobelFilter(SOBEL_MASK_X, SOBEL_MASK_Y, points);
+
+    auto center = Transformations::getHighestIntensity(points, image);
+
+    circle(original, center, 2, Scalar(0, 255, 0), 1, 8, 0);
+
+    linePoints.push_back(center);
 
     return points;
 }
@@ -119,7 +120,7 @@ inline Mat Transformations::convertToMat(vector<vector<Subpoint>> points) {
             strip.at<uchar>(y, x) = (uchar) points[x][y].pixel;
 
     Mat dst;
-    resize(strip, dst, Size(width * 10, height * 10));
+    resize(strip, dst, Size(width * 20, height * 20));
     return dst;
 }
 
@@ -147,7 +148,7 @@ inline void Transformations::sobelFilter(double maskX[][3], double maskY[][3], v
     }
 }
 
-inline vector<Point> Transformations::getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image) {
+inline Point2f Transformations::getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image) {
     vector<Subpoint> pixels;
     for(auto point: points) {
         auto max = max_element(point.begin(), point.end(),
@@ -155,17 +156,21 @@ inline vector<Point> Transformations::getHighestIntensity(vector<vector<Subpoint
         pixels.push_back(*max);
     }
 
-    auto highestPoint = max_element(pixels.begin(), pixels.end(), [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).operator*();
+    auto highestPoint = max_element(pixels.begin(), pixels.end(),
+            [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).operator*();
 
     auto v = highestPoint.point;
     auto normalized = v / norm(v);
 
-    vector<Point> result;
+    auto y0 = v.y;
+    auto y1 = (v + normalized).y;
+    auto y2 = (v - normalized).y;
 
-    result.push_back(v);
-    result.push_back(v + normalized);
-    result.push_back(v - normalized);
+    double pos = (y2 - y0) / (4 * y1 - 2 * y0 - 2 * y2);
 
-    return result;
+    v.y = static_cast<float>(v.y + pos);
+    v.x = static_cast<float>(v.x + pos);
+
+    return v;
 }
 

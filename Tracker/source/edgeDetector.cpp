@@ -30,8 +30,8 @@ EdgeDetector::EdgeDetector() {
 }
 
 void EdgeDetector::transformToBinary() {
-    cvtColor(_original, _binary, CV_BGR2GRAY);
-    threshold(_binary, _binary, _threshold, 255, THRESH_BINARY);
+    cvtColor(_original, _grey, CV_BGR2GRAY);
+    threshold(_grey, _binary, _threshold, 255, THRESH_BINARY);
     //	adaptiveThreshold(grayFrame, binaryFrame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 12);
     //	adaptiveThreshold(grayFrame, binaryFrame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 11, 12);
     //  adaptiveThreshold(grayFrame, binaryFrame, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 11, 12);
@@ -64,24 +64,21 @@ void EdgeDetector::filterEdges() {
 void EdgeDetector::draw7points(Point2f a, Point2f b, int& contourID) {
     Point2f c = b - a;
     Point2f point;
-    vector<vector<vector<Subpoint>>> vectors;
+    vector<Point2f> linePoints;
     for (int i = 1; i < 8; i++) {
         double indicator = (double) i / 7.0;
         point = a + indicator * c;
-        circle(_original, point, 2, _RED, 1, 8, 0);
 
         // #### EXERCISE 3 ####
-        auto points = Transformations::getSubimage(point, _binary, _original, contourID);
+        auto points = Transformations::getSubimage(point, _grey, _original, linePoints);
         auto result = Transformations::convertToMat(points);
-
-        fitLine(Transformations::getHighestIntensity(points, _binary));
-
-        vectors.push_back(points);
 
         if(contourID == 5)
             imshow("Strip", result);
         contourID++;
     }
+
+    fitLine(linePoints);
 }
 
 EdgeDetector *EdgeDetector::setFrame(Mat original) {
@@ -100,8 +97,10 @@ EdgeDetector *EdgeDetector::setThreshold(int threshold) {
     return this;
 }
 
-void EdgeDetector::fitLine(vector<Point> points) {
-    vector<Vec4f> line;
-  //  cv::fitLine(points, line, CV_DIST_L2, 0, 0.5, 0.01);
-    line.size();
+void EdgeDetector::fitLine(vector<Point2f> points) {
+    Vec4f line;
+    cv::fitLine(points, line, CV_DIST_L2, 0, 0.5, 0.01);
+    auto d = Point2f(line[0], line[1]) * 30;
+    auto s = Point2f(line[2], line[3]);
+    cv::line(_original, s - d, s + d, _BLUE, 1, 8, 0);
 }
