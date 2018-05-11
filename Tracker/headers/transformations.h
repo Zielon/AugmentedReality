@@ -1,7 +1,9 @@
 #include <opencv2/core/types.hpp>
 #include <opencv2/core/mat.hpp>
 #include <opencv/cv.hpp>
-#include "../data/subpoint.cpp"
+#include <set>
+#include "../data/subpoint.h"
+#include "../data/line.h"
 
 using namespace cv;
 using namespace std;
@@ -17,11 +19,16 @@ public:
     static double SOBEL_MASK_X[3][3];
     static double SOBEL_MASK_Y[3][3];
 
-    static vector<vector<Subpoint>> getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints);
+    static vector<vector<Subpoint>>
+    getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints);
 
     static Mat convertToMat(vector<vector<Subpoint>> points);
 
-    static Point2f getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image);
+    static Point2f getHighestIntensity(vector<vector<Subpoint>> points, const Mat &image);
+
+    static bool getIntersection(Line a, Line b, Point2f &r, const Mat& image);
+
+    static vector<Point2f> getIntersection(vector<Line> lines, const Mat& image);
 
 private:
     static Point2f getPerpendicular(const cv::Point2f &p);
@@ -71,7 +78,8 @@ inline int Transformations::subpixelSampleSafe(const cv::Mat &pSrc, const cv::Po
     return a + ((dy * (b - a)) >> 8);
 }
 
-inline vector<vector<Subpoint>> Transformations::getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints) {
+inline vector<vector<Subpoint>>
+Transformations::getSubimage(const cv::Point2f &edge, cv::Mat &image, cv::Mat &original, vector<Point2f> &linePoints) {
 
     auto points = vector<vector<Subpoint>>();
     Point2f rectA, rectB;
@@ -115,8 +123,8 @@ inline Mat Transformations::convertToMat(vector<vector<Subpoint>> points) {
     int height = abs(HEIGHT) * 2 + 1;
     Mat strip = Mat(Size(width, height), CV_8UC1);
 
-    for(int x = 0; x < width; x++)
-        for(int y = 0; y < height; y++)
+    for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
             strip.at<uchar>(y, x) = (uchar) points[x][y].pixel;
 
     Mat dst;
@@ -126,8 +134,8 @@ inline Mat Transformations::convertToMat(vector<vector<Subpoint>> points) {
 
 inline void Transformations::sobelFilter(double maskX[][3], double maskY[][3], vector<vector<Subpoint>> points) {
 
-    for(int x = 1; x < points.size() - 1; x++){
-        for(int y = 1; y < points[0].size() - 1; y++){
+    for (int x = 1; x < points.size() - 1; x++) {
+        for (int y = 1; y < points[0].size() - 1; y++) {
 
             int weightX = 0, weightY = 0;
 
@@ -148,16 +156,18 @@ inline void Transformations::sobelFilter(double maskX[][3], double maskY[][3], v
     }
 }
 
-inline Point2f Transformations::getHighestIntensity(vector<vector<Subpoint>> points, const Mat& image) {
+inline Point2f Transformations::getHighestIntensity(vector<vector<Subpoint>> points, const Mat &image) {
     vector<Subpoint> pixels;
-    for(auto point: points) {
+    for (auto point: points) {
         auto max = max_element(point.begin(), point.end(),
                                [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).base();
         pixels.push_back(*max);
     }
 
     auto highestPoint = max_element(pixels.begin(), pixels.end(),
-            [](const Subpoint &p1, const Subpoint &p2) { return p1.pixel < p2.pixel; }).operator*();
+                                    [](const Subpoint &p1, const Subpoint &p2) {
+                                        return p1.pixel < p2.pixel;
+                                    }).operator*();
 
     auto v = highestPoint.point;
     auto normalized = v / norm(v);
@@ -172,5 +182,50 @@ inline Point2f Transformations::getHighestIntensity(vector<vector<Subpoint>> poi
     v.x = static_cast<float>(v.x + pos);
 
     return v;
+}
+
+bool Transformations::getIntersection(Line a, Line b, Point2f &r, const Mat& image) {
+
+    Point2f o1 = a.a;
+    Point2f p1 = a.b;
+
+    Point2f o2 = b.a;
+    Point2f p2 = b.b;
+
+    Point2f x = o2 - o1;
+    Point2f d1 = p1 - o1;
+    Point2f d2 = p2 - o2;
+
+    float cross = d1.x * d2.y - d1.y * d2.x;
+    if (abs(cross) < /*EPS*/1e-8)
+        return false;
+
+    double t1 = (x.x * d2.y - x.y * d2.x) / cross;
+    r = o1 + d1 * t1;
+
+    return !(r.x < 0 || r.y < 0 || r.x > image.size().width || r.y > image.size().height);
+}
+
+vector<Point2f> Transformations::getIntersection(vector<Line> lines, const Mat& image) {
+
+    struct comparator {
+        bool operator()(const Point2f &a, const Point2f &b) {
+            return (a.x != b.x && a.y != b.y);
+        }
+    };
+
+    vector<Point2f> output;
+    set<Point2f, comparator> intersections;
+
+    for (auto i : {0, 2}) {
+        for (auto j : {1, 3}) {
+            Point2f intersection;
+            if (getIntersection(lines[i], lines[j], intersection, image))
+                intersections.insert(intersection);
+        }
+    }
+
+    copy(intersections.begin(), intersections.end(), std::back_inserter(output));
+    return output;
 }
 

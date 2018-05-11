@@ -2,9 +2,7 @@
 #include <opencv/cv.hpp>
 #include <opencv/highgui.h>
 #include <thread>
-#include <chrono>
 #include "../headers/camera.h"
-#include "../headers/detector.h"
 
 using namespace cv;
 using namespace std;
@@ -43,7 +41,7 @@ void Camera::start() {
 
         imshow("Threshold", transformed);
 
-        if(slowTime > 0) {
+        if (slowTime > 0) {
             chrono::milliseconds duration(slowTime);
             std::this_thread::sleep_for(duration);
         }

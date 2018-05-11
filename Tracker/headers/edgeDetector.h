@@ -3,6 +3,7 @@
 
 #include <opencv2/core/mat.hpp>
 #include "detector.h"
+#include "../data/line.h"
 
 class EdgeDetector : public Detector {
 
@@ -19,9 +20,9 @@ private:
 
     void filterEdges();
 
-    void draw7points(cv::Point2f a, cv::Point2f b, int& contourID);
+    Line draw7points(cv::Point2f a, cv::Point2f b, int &contourID);
 
-    void fitLine(std::vector<cv::Point2f> points);
+    Line fitLine(std::vector<cv::Point2f> points);
 
     void transformToBinary();
 
@@ -33,6 +34,8 @@ public:
     EdgeDetector *drawEdges();
 
     EdgeDetector *drawCircles();
+
+    EdgeDetector *drawMarker(std::vector<cv::Point2f> inter);
 
     EdgeDetector *setThreshold(int threshold);
 
