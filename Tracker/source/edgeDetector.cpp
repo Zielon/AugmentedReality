@@ -114,7 +114,7 @@ Line EdgeDetector::fitLine(vector<Point2f> points) {
 
 EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
 
-    vector<Point2f> points_src;
+    vector<Point2f> target;
     vector<Point2f> intersections;
 
     // #### KEEP THE SAME ORDER ####
@@ -129,10 +129,10 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     auto left_up = inter[0].y < inter[1].y ? inter[0] : inter[1];
     auto left_down = inter[0].y < inter[1].y ? inter[1] : inter[0];
 
-    points_src.emplace_back(Point2f(-0.5f, -0.5f)); // left_up
-    points_src.emplace_back(Point2f(-0.5f, 5.5)); // left_down
-    points_src.emplace_back(5.5, 5.5); // right_down
-    points_src.emplace_back(Point2f(5.5, -0.5f)); // right_up*/
+    target.emplace_back(Point2f(-0.5f, -0.5f)); // left_up
+    target.emplace_back(Point2f(-0.5f, 5.5));   // left_down
+    target.emplace_back(5.5, 5.5);              // right_down
+    target.emplace_back(Point2f(5.5, -0.5f));   // right_up*/
 
     intersections.emplace_back(left_up);
     intersections.emplace_back(left_down);
@@ -143,39 +143,40 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     auto rec = boundingRect(inter);
     auto input = Mat(_grey, rec);
     resize(input, input, Size(6 * 50, 6 * 50));
+    imshow("Marker source", input);
 
     Size size(6, 6);
 
-    Mat transformation = getPerspectiveTransform(intersections, points_src);
+    Mat transformation = getPerspectiveTransform(intersections, target);
     Mat marker(size, _grey.type());
 
     warpPerspective(_grey, marker, transformation, size);
 
     threshold(marker, marker, _threshold, 255, THRESH_BINARY);
 
+    // ### COUNT THE ID VALUE ###
     int id = 0;
 
-    vector<vector<int>> structure;
-
-    for(int i = 0; i < marker.rows; i++) {
-        structure.emplace_back();
-        for (int j = 0; j < marker.cols; j++){
-            int value = marker.at<uchar>(j, i);
-            structure[i].push_back(value);
+    for (int i = 1; i < marker.rows - 1; i++) {
+        for (int j = 1; j < marker.cols - 1; j++) {
+            int value = marker.at<uchar>(i, j);
+            if (value == 255) {
+                id += pow(2, 4 - j);
+            }
         }
     }
 
-    for(int i = 1; i < marker.rows - 1; i++) {
-        for (int j = marker.cols - 1, power = 0; j > 1; j--, power++){
-            int value = marker.at<uchar>(i, power);
-            if(value == 255)
-                id += pow(2, power);
-        }
-    }
+    // ### FINAL RESULT ###
 
-    imshow("Marker source", input);
+    Mat identifier(Size(70, 50), marker.type());
+    identifier.setTo(_WHITE);
 
-    resize(marker, marker, Size(6 * 50, 6 * 50), INTER_AREA);
+    char str[100];
+    sprintf(str, "%d", id);
+    putText(identifier, str, Point2f(5, 30), FONT_HERSHEY_PLAIN, 2, _GREEN);
+    imshow("Id", identifier);
+
+    resize(marker, marker, Size(6 * 50, 6 * 50), 0, 0, INTER_NEAREST);
     imshow("Marker", marker);
 
     return this;

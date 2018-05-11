@@ -26,9 +26,9 @@ public:
 
     static Point2f getHighestIntensity(vector<vector<Subpoint>> points, const Mat &image);
 
-    static bool getIntersection(Line a, Line b, Point2f &r, const Mat& image);
+    static bool getIntersection(Line a, Line b, Point2f &r, const Mat &image);
 
-    static vector<Point2f> getIntersection(vector<Line> lines, const Mat& image);
+    static vector<Point2f> getIntersection(vector<Line> lines, const Mat &image);
 
 private:
     static Point2f getPerpendicular(const cv::Point2f &p);
@@ -128,7 +128,7 @@ inline Mat Transformations::convertToMat(vector<vector<Subpoint>> points) {
             strip.at<uchar>(y, x) = (uchar) points[x][y].pixel;
 
     Mat dst;
-    resize(strip, dst, Size(width * 20, height * 20));
+    resize(strip, dst, Size(width * 20, height * 20), 0, 0, INTER_NEAREST);
     return dst;
 }
 
@@ -184,7 +184,7 @@ inline Point2f Transformations::getHighestIntensity(vector<vector<Subpoint>> poi
     return v;
 }
 
-bool Transformations::getIntersection(Line a, Line b, Point2f &r, const Mat& image) {
+bool Transformations::getIntersection(Line a, Line b, Point2f &r, const Mat &image) {
 
     Point2f o1 = a.a;
     Point2f p1 = a.b;
@@ -206,7 +206,7 @@ bool Transformations::getIntersection(Line a, Line b, Point2f &r, const Mat& ima
     return !(r.x < 0 || r.y < 0 || r.x > image.size().width || r.y > image.size().height);
 }
 
-vector<Point2f> Transformations::getIntersection(vector<Line> lines, const Mat& image) {
+vector<Point2f> Transformations::getIntersection(vector<Line> lines, const Mat &image) {
 
     struct comparator {
         bool operator()(const Point2f &a, const Point2f &b) {

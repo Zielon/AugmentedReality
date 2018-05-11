@@ -17,6 +17,7 @@ private:
     const cv::Scalar _RED = cv::Scalar(0, 0, 255);
     const cv::Scalar _GREEN = cv::Scalar(0, 255, 0);
     const cv::Scalar _BLUE = cv::Scalar(255, 0, 0);
+    const cv::Scalar _WHITE = cv::Scalar(255, 255, 255);
 
     void filterEdges();
 
