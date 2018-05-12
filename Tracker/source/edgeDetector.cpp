@@ -114,6 +114,9 @@ Line EdgeDetector::fitLine(vector<Point2f> points) {
 
 EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
 
+    if (any_of(inter.begin(), inter.end(), [this](Point2f i) { return i.x < 0 || i.y < 0; }))
+        return this;
+
     vector<Point2f> target;
     vector<Point2f> intersections;
 
@@ -132,7 +135,7 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     target.emplace_back(Point2f(-0.5f, -0.5f)); // left_up
     target.emplace_back(Point2f(-0.5f, 5.5));   // left_down
     target.emplace_back(5.5, 5.5);              // right_down
-    target.emplace_back(Point2f(5.5, -0.5f));   // right_up*/
+    target.emplace_back(Point2f(5.5, -0.5f));   // right_up
 
     intersections.emplace_back(left_up);
     intersections.emplace_back(left_down);
@@ -140,7 +143,12 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     intersections.emplace_back(right_up);
 
     // #### SOURCE ####
+
     auto rec = boundingRect(inter);
+
+    if (rec.height < 0 || rec.width < 0)
+        return this;
+
     auto input = Mat(_grey, rec);
     resize(input, input, Size(6 * 50, 6 * 50));
     imshow("Marker source", input);
@@ -155,6 +163,7 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     threshold(marker, marker, _threshold, 255, THRESH_BINARY);
 
     // ### COUNT THE ID VALUE ###
+
     int id = 0;
 
     for (int i = 1; i < marker.rows - 1; i++) {
