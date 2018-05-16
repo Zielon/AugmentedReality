@@ -35,7 +35,7 @@ void Camera::start() {
         Mat transformed = _detector
                 ->setThreshold(_threshold)
                 ->setFrame(_frame)
-                ->drawEdges()
+                //->drawEdges()
                 ->drawCircles()
                 ->getTransformed();
 

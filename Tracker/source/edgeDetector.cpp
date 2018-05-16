@@ -149,16 +149,20 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     if (rec.height < 0 || rec.width < 0)
         return this;
 
-    auto input = Mat(_grey, rec);
+    auto input = Mat(_original, rec);
     resize(input, input, Size(6 * 50, 6 * 50));
     imshow("Marker source", input);
 
-    Size size(6, 6);
+    // ### TRANSFORMATIONS ###
 
-    Mat transformation = getPerspectiveTransform(intersections, target);
+    Size size(6, 6);
     Mat marker(size, _grey.type());
 
-    warpPerspective(_grey, marker, transformation, size);
+    // Get a homography transformation matrix
+    Mat homography = getPerspectiveTransform(intersections, target);
+
+    // Apply the matrix and transform the view
+    warpPerspective(_grey, marker, homography, size);
 
     threshold(marker, marker, _threshold, 255, THRESH_BINARY);
 
@@ -166,14 +170,9 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
 
     int id = 0;
 
-    for (int i = 1; i < marker.rows - 1; i++) {
-        for (int j = 1; j < marker.cols - 1; j++) {
-            int value = marker.at<uchar>(i, j);
-            if (value == 255) {
-                id += pow(2, 4 - j);
-            }
-        }
-    }
+    for (int i = 1; i < marker.rows - 1; i++)
+        for (int j = 1; j < marker.cols - 1; j++)
+            id += marker.at<uchar>(i, j) == 255 ? pow(2, 4 - j) : 0;
 
     // ### FINAL RESULT ###
 
