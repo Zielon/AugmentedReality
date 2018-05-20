@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 
-set(SOURCE_FILES main.cpp headers/edgeDetector.h source/edgeDetector.cpp headers/camera.h source/camera.cpp headers/detector.h headers/transformations.h data/subpoint.h data/line.h)
+set(SOURCE_FILES main.cpp headers/edgeDetector.h source/edgeDetector.cpp headers/camera.h source/camera.cpp headers/detector.h headers/transformations.h data/subpoint.h data/line.h headers/poseEstimation.h source/poseEstimation.cpp)
 
 configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)

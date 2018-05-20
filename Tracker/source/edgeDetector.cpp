@@ -1,7 +1,9 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv/cv.hpp>
+#include <iostream>
 #include "../headers/edgeDetector.h"
 #include "../headers/transformations.h"
+#include "../headers/poseEstimation.h"
 
 using namespace cv;
 using namespace std;
@@ -133,20 +135,20 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
     auto left_down = inter[0].y < inter[1].y ? inter[1] : inter[0];
 
     target.emplace_back(Point2f(-0.5f, -0.5f)); // left_up
-    target.emplace_back(Point2f(-0.5f, 5.5));   // left_down
-    target.emplace_back(5.5, 5.5);              // right_down
     target.emplace_back(Point2f(5.5, -0.5f));   // right_up
+    target.emplace_back(5.5, 5.5);              // right_down
+    target.emplace_back(Point2f(-0.5f, 5.5));   // left_down
 
     intersections.emplace_back(left_up);
-    intersections.emplace_back(left_down);
-    intersections.emplace_back(right_down);
     intersections.emplace_back(right_up);
+    intersections.emplace_back(right_down);
+    intersections.emplace_back(left_down);
 
     // #### SOURCE ####
 
     auto rec = boundingRect(inter);
 
-    if (rec.height < 0 || rec.width < 0)
+    if (rec.height < 0 || rec.height > _original.cols || rec.width < 0 || rec.width > _original.rows)
         return this;
 
     auto input = Mat(_original, rec);
@@ -186,6 +188,16 @@ EdgeDetector *EdgeDetector::drawMarker(vector<Point2f> inter) {
 
     resize(marker, marker, Size(6 * 50, 6 * 50), 0, 0, INTER_NEAREST);
     imshow("Marker", marker);
+
+    // ### EXERCISE 5 ###
+
+    float result[16];
+
+    estimateSquarePose(result, &intersections[0], 0.045);
+
+    for (auto x = std::end(result); x != std::begin(result);) std::cout << *--x << ' ';
+
+    std::cout << endl;
 
     return this;
 }

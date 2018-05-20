@@ -6,7 +6,7 @@ int main(int argc, const char **argv) {
 
     Camera *camera = new Camera(videoPath, new EdgeDetector());
 
-    camera->setSlowMotion(10);
+    camera->setSlowMotion(1);
     camera->start();
 
     return 0;
