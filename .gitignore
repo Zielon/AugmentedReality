@@ -1,6 +1,7 @@
 # Ignore CLion
 .idea/**/*
 Tracker/.idea/**/*
+Project/.idea/**/*
 
 # CMake
 cmake-build-debug/

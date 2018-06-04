@@ -1,0 +1,8 @@
+#ifndef PROJECT_NEUTRAL_NETWORK_H
+#define PROJECT_NEUTRAL_NETWORK_H
+
+class NeutralNetwork {
+
+};
+
+#endif //PROJECT_NEUTRAL_NETWORK_H
