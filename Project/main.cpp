@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
         glfwTerminate();
         return -1;
     }
-    
+
     // Set callback functions for GLFW
     glfwSetFramebufferSizeCallback(window, reshape);
 
