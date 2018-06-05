@@ -13,7 +13,7 @@ configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)
 configure_file(resources/stuff resources/stuff COPYONLY)
 
-add_executable(Project main.cpp neutral_net/source/neutral_network.cpp neutral_net/headers/neutral_network.h tracker/source/tracker.cpp tracker/headers/tracker.h)
+add_executable(Project main.cpp neutral_net/source/neutral_network.cpp neutral_net/headers/neutral_network.h tracker/source/tracker.cpp tracker/headers/tracker.h drawing/draw_primitives.h)
 
 target_link_libraries (Project Eigen3::Eigen)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})
