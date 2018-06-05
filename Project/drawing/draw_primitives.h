@@ -1,16 +1,15 @@
 #ifndef PROJECT_DRAW_PRIMITIVES_H
 #define PROJECT_DRAW_PRIMITIVES_H
 
-#include <GL/gl.h>
+#include <GLFW/glfw3.h>
+
 
 #include <math.h>
-
 
 /* PI */
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
 #endif
-
 
 void drawSphere(double r, int lats, int longs) {
     int i, j;
@@ -36,6 +35,39 @@ void drawSphere(double r, int lats, int longs) {
         }
         glEnd();
     }
+}
+
+
+void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks)
+{
+
+    // draw the upper part of the cone
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0, 0, height);
+    for (int angle = 0; angle < 360; angle++) {
+        glVertex3f(sin((double)angle) * base, cos((double)angle) * base, 0.f);
+    }
+    glEnd();
+
+    // draw the base of the cone
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0, 0, 0);
+    for (int angle = 0; angle < 360; angle++) {
+        // normal is just pointing down
+        glNormal3f(0, -1, 0);
+        glVertex3f(sin((double)angle) * base, cos((double)angle) * base, 0.f);
+    }
+    glEnd();
+    /*IF GLU IS INCLUDED
+    GLUquadricObj* quadric = gluNewQuadric();
+    gluQuadricDrawStyle(quadric, GLU_FILL);
+
+    gluCylinder(quadric, base, (GLdouble)0.0, height, slices, stacks);
+    const GLdouble innerradius = 0.0;
+    gluDisk(quadric, innerradius, base, slices, stacks);
+
+    gluDeleteQuadric(quadric);
+    */
 }
 
 #endif //PROJECT_DRAW_PRIMITIVES_H
