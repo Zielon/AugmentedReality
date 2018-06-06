@@ -2,21 +2,21 @@
 
 #include <GLFW/glfw3.h>
 #include "drawing/draw_primitives.h"
+#include "drawing/draw_snowman.h"
 
 /* program & OpenGL initialization */
-void init(int argc, char *argv[])
-{
+void init(int argc, char *argv[]) {
     // enable and set colors
-    glEnable( GL_COLOR_MATERIAL );
-    glClearColor( 0.0, 0.0, 0.0, 1.0 );
+    glEnable(GL_COLOR_MATERIAL);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
     // enable and set depth parameters
-    glEnable( GL_DEPTH_TEST );
+    glEnable(GL_DEPTH_TEST);
 
-    glClearDepth( 1.0 );
+    glClearDepth(1.0);
 }
 
-void display(GLFWwindow* window) {
+void display(GLFWwindow *window) {
 
     float ratio;
     int width, height;
@@ -27,7 +27,9 @@ void display(GLFWwindow* window) {
     glViewport(0, 0, width, height);
 
     // clear buffers
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glEnable(GL_COLOR_MATERIAL);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -35,7 +37,7 @@ void display(GLFWwindow* window) {
 //	gluPerspective( 30, ((double)width/(double)height), 0.01, 100 );
     int fov = 30;
     float near = 0.01f, far = 100.f;
-    float top = tan((double)(fov*M_PI/ 360.0f)) * near;
+    float top = tan((double) (fov * M_PI / 360.0f)) * near;
     float bottom = -top;
     float left = ratio * bottom;
     float right = ratio * top;
@@ -45,56 +47,46 @@ void display(GLFWwindow* window) {
     glLoadIdentity();
 
     // move the object backwards
-    glTranslatef( 0.0f, 0.0f, -10.0f );
+    glTranslatef(0.0f, 0.0f, -10.0f);
 
     // move the object in a fancy way
     const float t = (float) glfwGetTime() * 2.0f;
     const float n = 0.5f;
-    //glTranslatef( 1.5f*sin(n*t), 1.5f*cos(n*t), 0.0f );
+    glTranslatef(1.5f * sin(n * t), 0.f, 1.5f * cos(n * t));
 
     // rotate the object
-    glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+    //glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
 
+    drawSnowman();
 
-    // draw a triangle and a red sphere
-    glBegin(GL_TRIANGLES);
-    glColor3f(1.f, 0.f, 0.f);
-    glVertex3f(-0.6f, -0.4f, 0.f);
-    glColor3f(0.f, 1.f, 0.f);
-    glVertex3f(0.6f, -0.4f, 0.f);
-    glColor3f(0.f, 0.f, 1.f);
-    glVertex3f(0.f, 0.6f, 0.f);
-    glEnd();
-
-    glColor4f( 1.0, 0.0, 0.0, 1.0 );
-    drawSphere(0.5,10,10);
-
-
+    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 }
 
-void reshape( GLFWwindow* window, int width, int height ) {
+void reshape(GLFWwindow *window, int width, int height) {
 
     // set a whole-window viewport
-    glViewport( 0, 0, (GLsizei)width, (GLsizei)height );
+    glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
     // create a perspective projection matrix
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     //gluPerspective( 30, ((GLfloat)width/(GLfloat)height), 0.01, 100 );
-    float ratio = (GLfloat)width / (GLfloat)height;
+    float ratio = (GLfloat) width / (GLfloat) height;
     int fov = 30;
     float near = 0.01f, far = 100.f;
-    float top = tan((double)(fov*M_PI / 360.0f)) * near;
+    float top = tan((double) (fov * M_PI / 360.0f)) * near;
     float bottom = -top;
     float left = ratio * bottom;
     float right = ratio * top;
     glFrustum(left, right, bottom, top, near, far);
-
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-    GLFWwindow* window;
+    GLFWwindow *window;
 
     /* Initialize the library */
     if (!glfwInit())
@@ -103,8 +95,7 @@ int main(int argc, char* argv[]) {
     // initialize the window system
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Exercise 6 - Open GL", NULL, NULL);
-    if (!window)
-    {
+    if (!window) {
         glfwTerminate();
         return -1;
     }
@@ -113,14 +104,13 @@ int main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(window, reshape);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval( 1 );
+    glfwSwapInterval(1);
 
     // initialize the GL library
     init(argc, argv);
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         /* Render here */
         display(window);
 

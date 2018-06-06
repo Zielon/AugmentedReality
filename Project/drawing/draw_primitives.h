@@ -2,9 +2,7 @@
 #define PROJECT_DRAW_PRIMITIVES_H
 
 #include <GLFW/glfw3.h>
-
-
-#include <math.h>
+#include <cmath>
 
 /* PI */
 #ifndef M_PI
