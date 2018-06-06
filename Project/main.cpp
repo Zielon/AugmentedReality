@@ -55,7 +55,7 @@ void display(GLFWwindow *window) {
     glTranslatef(1.5f * sin(n * t), 0.f, 1.5f * cos(n * t));
 
     // rotate the object
-    //glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+    glRotatef((float) glfwGetTime() * 50.f, 1.f, 0.f, 1.f);
 
     drawSnowman();
 

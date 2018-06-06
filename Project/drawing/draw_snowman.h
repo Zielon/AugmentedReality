@@ -31,7 +31,7 @@ void drawSnowman() {
 
     glPopMatrix();
 
-    glTranslatef(0.0f, 0.0f, 0.4f);
+    glTranslatef(0.0f, 0.0f, 0.1f);
     drawCone(0.05, 0.5, 10, 10);
 }
 
