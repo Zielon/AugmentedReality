@@ -1,8 +1,10 @@
 #include "../headers/neutral_network.h"
+#include "../../data_models/consts.h"
 
 #include <random>
 #include <iostream>
 #include <iterator>
+
 
 using namespace std;
 
@@ -12,11 +14,12 @@ NeutralNetwork::NeutralNetwork(vector<int> layers) {
     initNetwork(layers);
 }
 
-void NeutralNetwork::forwardPass(Digit *digit) {
+MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
 
     MatrixXd activation = *digit->pixels;
+    auto size = weights.size();
 
-    for (int i = 0; i < weights.size() - 1; i++) {
+    for (int i = 0; i < size - 1; i++) {
         MatrixXd *weight = weights[i];
         MatrixXd *bias = biases[i];
         MatrixXd z = (activation.transpose() * (*weight)).transpose() + *bias;
@@ -24,13 +27,20 @@ void NeutralNetwork::forwardPass(Digit *digit) {
         //cout << activation.rows() << " -> " << weight->cols() << endl;
 
         activation = reLu(z);
-        cash[RELU + to_string(i)] = activation;
-        cash[ZS + to_string(i)] = z;
+        cash[Consts::RELU + to_string(i)] = activation;
+        cash[Consts::ZS + to_string(i)] = z;
     }
+
+    return (activation.transpose() * (*weights[size - 1])).transpose() + *biases[size - 1];
 }
 
-void NeutralNetwork::backwardPass() {
-
+void NeutralNetwork::backwardPass(MatrixXd scores, Digit *digit) {
+    auto softmaxPrime = softmaxLoss(scores, *digit->label);
+    auto size = weights.size();
+    for (int i = size - 2; i >= 0; i--) {
+        MatrixXd weight = cash[Consts::RELU + to_string(i)];
+        cash[Consts::WEIGHT + to_string(i)] = weight * softmaxPrime.transpose();
+    }
 }
 
 void NeutralNetwork::initNetwork(vector<int> layers) {
@@ -66,24 +76,31 @@ MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
 }
 
 MatrixXd NeutralNetwork::softmaxLoss(MatrixXd x, MatrixXd y) {
-    x = softmax(x);
+    MatrixXd normalized = softmax(x);
 
-    return Eigen::MatrixXd();
+    double loss = (normalized.array() * y.array()).log().sum();
+
+    return MatrixXd(normalized - y);
 }
 
 MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
 
     auto z_exp = MatrixXd(matrix.unaryExpr([](double x) { return exp(x); }));
-    auto sum = z_exp.rowwise().sum();
+    double sum = z_exp.sum();
 
     for (int i = 0; i < z_exp.rows(); i++) {
-        double s = sum(i, 0);
-        for (int j = 0; j < z_exp.cols(); j++) {
-            double e = z_exp(i, j);
-            double a = e / s;
-            z_exp(i, j) = a;
-        }
+        double e = z_exp(i, 0);
+        double a = e / sum;
+        z_exp(i, 0) = a;
     }
 
     return z_exp;
+}
+
+vector<MatrixXd *> NeutralNetwork::getWeights() {
+    return weights;
+}
+
+vector<MatrixXd *> NeutralNetwork::getBiases() {
+    return biases;
 }

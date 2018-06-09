@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <map>
+#include <tuple>
 #include <Eigen/Dense>
 
 using namespace std;
@@ -14,17 +15,18 @@ class NeutralNetwork {
 public:
     NeutralNetwork(vector<int> layers);
 
-    void forwardPass(Digit *digit);
+    MatrixXd forwardPass(Digit *digit);
 
-    void backwardPass();
+    void backwardPass(MatrixXd scores, Digit *digit);
+
+    vector<MatrixXd *> getWeights();
+
+    vector<MatrixXd *> getBiases();
 
 private:
     vector<MatrixXd *> weights;
     vector<MatrixXd *> biases;
     map<string, MatrixXd> cash;
-
-    const string RELU = "RELU";
-    const string ZS = "ZS";
 
     MatrixXd reLu(MatrixXd matrix);
 

@@ -6,8 +6,13 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 }
 
 void Solver::train() {
-    for (auto miniBatch : getMiniBatch(1000))
-        network.forwardPass(miniBatch);
+    for (auto digit : getMiniBatch(1000)) {
+        auto pass = network.forwardPass(digit);
+        network.backwardPass(pass, digit);
+    }
+
+    auto weights = network.getWeights();
+    auto biases = network.getBiases();
 }
 
 int Solver::predict(Digit digit) {
