@@ -6,18 +6,20 @@
 
 #include "../../data_models/digit.cpp"
 
+using namespace std;
+
 class DataLoader {
 public:
-    std::vector<Digit> load(std::string images, std::string labels, unsigned long size);
+    vector<Digit *> load(string images, string labels, unsigned long size);
 
 private:
     int reverseInt(int i);
 
-    std::vector<std::vector<int>> loadRawImages(std::string path, unsigned long images);
+    vector<vector<int>> loadRawImages(string path, unsigned long images);
 
-    std::vector<int> loadRawLabels(std::string path, unsigned long labels);
+    vector<int> loadRawLabels(string path, unsigned long labels);
 
-    std::vector<Digit> mapToDigit(std::vector<std::vector<int>> images, std::vector<int> labels);
+    vector<Digit *> mapToDigit(vector<vector<int>> images, vector<int> labels);
 };
 
 #endif //PROJECT_DATA_LOADER_H

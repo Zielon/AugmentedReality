@@ -13,7 +13,7 @@ configure_file(resources/stuff resources/stuff COPYONLY)
 configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
 configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
 
-add_executable(Project main.cpp neutral_net/source/neutral_network.cpp neutral_net/headers/neutral_network.h tracker/source/tracker.cpp tracker/headers/tracker.h drawing/draw_primitives.h drawing/draw_snowman.h neutral_net/headers/data_loader.h neutral_net/source/data_loader.cpp data_models/digit.cpp)
+add_executable(Project main.cpp neutral_net/source/neutral_network.cpp neutral_net/headers/neutral_network.h tracker/source/tracker.cpp tracker/headers/tracker.h drawing/draw_primitives.h drawing/draw_snowman.h neutral_net/headers/data_loader.h neutral_net/source/data_loader.cpp data_models/digit.cpp neutral_net/headers/solver.h neutral_net/source/solver.cpp)
 
 target_link_libraries (Project Eigen3::Eigen)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})

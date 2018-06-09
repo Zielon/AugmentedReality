@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <opencv2/core/hal/interface.h>
 #include "../headers/data_loader.h"
 
 using namespace std;
@@ -14,13 +13,13 @@ int DataLoader::reverseInt(int i) {
     return ((int) ch1 << 24) + ((int) ch2 << 16) + ((int) ch3 << 8) + ch4;
 }
 
-std::vector<Digit> DataLoader::load(std::string images, std::string labels, unsigned long size) {
+vector<Digit *> DataLoader::load(string images, string labels, unsigned long size) {
     vector<vector<int>> rawImages = loadRawImages(images, size);
     vector<int> rawLabels = loadRawLabels(labels, size);
     return mapToDigit(rawImages, rawLabels);
 }
 
-std::vector<std::vector<int>> DataLoader::loadRawImages(std::string path, unsigned long images) {
+vector<vector<int>> DataLoader::loadRawImages(string path, unsigned long images) {
     vector<vector<int>> array(images, vector<int>(784));
 
     ifstream file(path, ios::binary);
@@ -55,15 +54,15 @@ std::vector<std::vector<int>> DataLoader::loadRawImages(std::string path, unsign
     }
 }
 
-std::vector<Digit> DataLoader::mapToDigit(std::vector<std::vector<int>> images, std::vector<int> labels) {
-    vector<Digit> output;
+vector<Digit *> DataLoader::mapToDigit(vector<vector<int>> images, vector<int> labels) {
+    vector<Digit *> output;
     for (int i = 0; i < images.size(); i++) {
-        output.emplace_back(images[i], labels[i]);
+        output.emplace_back(new Digit(images[i], labels[i]));
     }
     return output;
 }
 
-std::vector<int> DataLoader::loadRawLabels(std::string path, unsigned long labels) {
+vector<int> DataLoader::loadRawLabels(string path, unsigned long labels) {
     ifstream file(path, ios::binary);
     if (file.is_open()) {
         int magic_number = 0;
