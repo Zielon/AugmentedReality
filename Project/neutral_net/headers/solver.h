@@ -17,6 +17,8 @@ private:
 
     vector<Digit *> getMiniBatch(int size);
 
+    void gradientUpdate(map<string, MatrixXd> cash);
+
     NeutralNetwork &network;
 };
 

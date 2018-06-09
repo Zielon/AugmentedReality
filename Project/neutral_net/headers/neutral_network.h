@@ -23,6 +23,8 @@ public:
 
     vector<MatrixXd *> getBiases();
 
+    map<string, MatrixXd> getCash();
+
 private:
     vector<MatrixXd *> weights;
     vector<MatrixXd *> biases;

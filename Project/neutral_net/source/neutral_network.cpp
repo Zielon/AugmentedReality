@@ -5,7 +5,6 @@
 #include <iostream>
 #include <iterator>
 
-
 using namespace std;
 
 NeutralNetwork::NeutralNetwork(vector<int> layers) {
@@ -24,7 +23,7 @@ MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
         MatrixXd *bias = biases[i];
         MatrixXd z = (activation.transpose() * (*weight)).transpose() + *bias;
 
-        //cout << activation.rows() << " -> " << weight->cols() << endl;
+        // cout << activation.rows() << " -> " << weight->cols() << endl;
 
         activation = reLu(z);
         cash[Consts::RELU + to_string(i)] = activation;
@@ -35,9 +34,9 @@ MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
 }
 
 void NeutralNetwork::backwardPass(MatrixXd scores, Digit *digit) {
-    auto softmaxPrime = softmaxLoss(scores, *digit->label);
+    auto softmaxPrime = softmaxLoss(std::move(scores), *digit->label);
     auto size = weights.size();
-    for (int i = size - 2; i >= 0; i--) {
+    for (long i = size - 2; i >= 0; i--) {
         MatrixXd weight = cash[Consts::RELU + to_string(i)];
         cash[Consts::WEIGHT + to_string(i)] = weight * softmaxPrime.transpose();
     }
@@ -52,23 +51,13 @@ void NeutralNetwork::initNetwork(vector<int> layers) {
         int inputNeurons = layers[i];
         int outputNeurons = layers[i + 1];
 
-        auto *weight = new MatrixXd(inputNeurons, outputNeurons);
-        auto *bias = new MatrixXd(outputNeurons, 1);
-
-        for (int r = 0; r < inputNeurons; r++) {
-            for (int c = 0; c < outputNeurons; c++) {
-                weight->operator()(r, c) = distribution(generator);
-                bias->operator()(c, 0) = 0;
-            }
-        }
+        auto *bias = new MatrixXd(MatrixXd::Zero(outputNeurons, 1));
+        auto *weight = new MatrixXd(MatrixXd::Zero(inputNeurons, outputNeurons).unaryExpr(
+                [&distribution, &generator](double x) { return distribution(generator); }));
 
         weights[i] = weight;
         biases[i] = bias;
-
-        //cout << "Matrix m:\n" << *biases[i] << std::endl;
     }
-
-    cout << "Network ready" << std::endl;
 }
 
 MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
@@ -78,7 +67,7 @@ MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
 MatrixXd NeutralNetwork::softmaxLoss(MatrixXd x, MatrixXd y) {
     MatrixXd normalized = softmax(x);
 
-    double loss = (normalized.array() * y.array()).log().sum();
+    //double loss = (normalized.array() * y.array()).log().sum();
 
     return MatrixXd(normalized - y);
 }
@@ -88,13 +77,7 @@ MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
     auto z_exp = MatrixXd(matrix.unaryExpr([](double x) { return exp(x); }));
     double sum = z_exp.sum();
 
-    for (int i = 0; i < z_exp.rows(); i++) {
-        double e = z_exp(i, 0);
-        double a = e / sum;
-        z_exp(i, 0) = a;
-    }
-
-    return z_exp;
+    return z_exp.unaryExpr([&sum](auto x) { return x / sum; });
 }
 
 vector<MatrixXd *> NeutralNetwork::getWeights() {
@@ -103,4 +86,8 @@ vector<MatrixXd *> NeutralNetwork::getWeights() {
 
 vector<MatrixXd *> NeutralNetwork::getBiases() {
     return biases;
+}
+
+map<string, MatrixXd> NeutralNetwork::getCash() {
+    return cash;
 }

@@ -13,16 +13,11 @@ struct Digit {
     MatrixXd *label;
 
     Digit(std::vector<int> pixels, int label) {
-        this->label = new MatrixXd(10, 1);
-        for (int i = 0; i < 10; i++) (*this->label)(i, 0) = 0;
+        this->label = new MatrixXd(MatrixXd::Zero(10, 1));
+        this->pixels = new MatrixXd(Map<Matrix<int, 784, 1>>(pixels.data()).cast<double>());
 
         (*this->label)(label, 0) = 1;
-
-        this->pixels = new MatrixXd(784, 1);
-        for (int i = 0; i < 784; i++) (*this->pixels)(i, 0) = pixels[i];
     };
-
-    Digit() {};
 };
 
 #endif //PROJECT_DIGIT_H
