@@ -19,6 +19,16 @@ public:
 
     void backwardPass(MatrixXd scores, Digit *digit);
 
+    MatrixXd reLu(MatrixXd matrix);
+
+    MatrixXd reLuPrime(MatrixXd matrix);
+
+    MatrixXd softmax(MatrixXd matrix);
+
+    MatrixXd softmaxPrime(MatrixXd x, MatrixXd y);
+
+    void updateGradient();
+
     vector<MatrixXd *> getWeights();
 
     vector<MatrixXd *> getBiases();
@@ -30,11 +40,7 @@ private:
     vector<MatrixXd *> biases;
     map<string, MatrixXd> cash;
 
-    MatrixXd reLu(MatrixXd matrix);
-
-    MatrixXd softmax(MatrixXd matrix);
-
-    MatrixXd softmaxLoss(MatrixXd x, MatrixXd y);
+    string join(string name, int i);
 
     void initNetwork(vector<int> layers);
 };

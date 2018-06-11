@@ -1,5 +1,6 @@
 #include <random>
 #include <utility>
+#include <iostream>
 #include "../headers/solver.h"
 
 Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(network) {
@@ -8,18 +9,31 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 1;
-    int batchSize = 1;
+    int numberEpoch = 1000;
+    int batchSize = 180;
 
     for (int i = 0; i < numberEpoch; i++) {
         for (auto digit : getMiniBatch(batchSize)) {
-            network.backwardPass(network.forwardPass(digit), digit);
-            gradientUpdate(network.getCash());
+            auto pass = network.forwardPass(digit);
+            network.backwardPass(pass, digit);
+            network.updateGradient();
         }
     }
+
+    predict(getMiniBatch(1000)[5]);
+    predict(getMiniBatch(1000)[123]);
+    predict(getMiniBatch(1000)[666]);
+    predict(getMiniBatch(1000)[444]);
+    predict(getMiniBatch(1000)[888]);
 }
 
-int Solver::predict(Digit digit) {
+int Solver::predict(Digit *digit) {
+    auto z = network.forwardPass(digit);
+    auto score = network.softmax(z);
+    auto value = score(digit->truth, 0);
+
+    cout << "SCORE for [ " << digit->truth << " ] is -> " << value << endl;
+
     return 0;
 }
 

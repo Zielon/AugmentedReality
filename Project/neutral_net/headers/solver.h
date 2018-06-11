@@ -10,7 +10,7 @@ public:
 
     void train();
 
-    int predict(Digit digit);
+    int predict(Digit *digit);
 
 private:
     vector<Digit *> data;
