@@ -32,14 +32,13 @@ MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
         cash[join(Consts::ZS, i)] = z;
     }
 
-    // Return the last summation without adding the activation function
-    return cash[join(Consts::ZS, size - 1)];
+    return softmax(cash[join(Consts::ZS, size - 1)]);
 }
 
 void NeutralNetwork::backwardPass(MatrixXd scores, Digit *digit) {
-    // the cost derivate
-    MatrixXd delta = softmaxPrime(std::move(scores), *digit->label);
-    auto layersNum = (int)weights.size() - 1;
+    MatrixXd delta = softmaxPrime(scores, *digit->label);
+
+    auto layersNum = (int) weights.size() - 1;
 
     MatrixXd activation = cash[join(Consts::ZS, layersNum - 2)];
 
@@ -81,15 +80,14 @@ MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
 }
 
 MatrixXd NeutralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
-    MatrixXd normalized = softmax(std::move(x));
-    auto z = normalized.array() * y.array();
+    auto z = x.array() * y.array();
     z.log();
     double loss = -z.sum();
 
-    // cout << loss << endl;
+    cout << loss << endl;
 
     // The Softmax derivate
-    return MatrixXd(normalized - y);
+    return MatrixXd(x - y);
 }
 
 MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
@@ -106,7 +104,7 @@ MatrixXd NeutralNetwork::reLuPrime(MatrixXd matrix) {
 
 void NeutralNetwork::updateGradient() {
 
-    auto layers = (int)weights.size() - 1;
+    auto layers = (int) weights.size() - 1;
 
     for (int i = 0; i < layers; i++) {
         auto d_bias = cash[join(Consts::GRADIENT_BIAS, i)];

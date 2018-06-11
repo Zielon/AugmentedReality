@@ -10,7 +10,7 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 void Solver::train() {
 
     int numberEpoch = 1000;
-    int batchSize = 180;
+    int batchSize = 100;
 
     for (int i = 0; i < numberEpoch; i++) {
         for (auto digit : getMiniBatch(batchSize)) {
@@ -28,8 +28,7 @@ void Solver::train() {
 }
 
 int Solver::predict(Digit *digit) {
-    auto z = network.forwardPass(digit);
-    auto score = network.softmax(z);
+    auto score = network.forwardPass(digit);
     auto value = score(digit->truth, 0);
 
     cout << "SCORE for [ " << digit->truth << " ] is -> " << value << endl;

@@ -8,10 +8,12 @@
 using namespace std;
 using namespace Eigen;
 
-class Sandwicher{
+class Sandwicher {
 public:
     Sandwicher(NeutralNetwork &network);
+
     tuple<double, double, double> backwardSandwich(int layer, MatrixXd delta);
+
 private:
     NeutralNetwork network;
 };
