@@ -17,7 +17,7 @@ MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
     auto size = (int) weights.size();
 
     MatrixXd activation = *digit->pixels;
-    cash[join(Consts::RELU, -1)] = activation;
+    cash[join(Consts::ACTIVATION, -1)] = activation;
 
     for (int i = 0; i < size; i++) {
         MatrixXd weight = *weights[i];
@@ -26,34 +26,37 @@ MatrixXd NeutralNetwork::forwardPass(Digit *digit) {
 
         // cout << activation.rows() << " -> " << weight.cols() << endl;
 
-        activation = reLu(z);
+        activation = sigmoid(z);
 
-        cash[join(Consts::RELU, i)] = activation;
+        cash[join(Consts::ACTIVATION, i)] = activation;
         cash[join(Consts::ZS, i)] = z;
     }
 
-    return softmax(cash[join(Consts::ZS, size - 1)]);
+    return cash[join(Consts::ACTIVATION, size - 1)];
 }
 
-void NeutralNetwork::backwardPass(MatrixXd scores, Digit *digit) {
-    MatrixXd delta = softmaxPrime(scores, *digit->label);
+void NeutralNetwork::backwardPass(Digit *digit) {
 
     auto layersNum = (int) weights.size() - 1;
 
-    MatrixXd activation = cash[join(Consts::ZS, layersNum - 2)];
+    auto activation = cash[join(Consts::ACTIVATION, layersNum)];
+    auto z = cash[join(Consts::ZS, layersNum)];
 
-    cash[join(Consts::GRADIENT_WEIGHT, layersNum)] = activation * delta.transpose();
+    MatrixXd delta = softmaxPrime(activation, *digit->label).cwiseProduct(sigmoidPrime(z));
+
     cash[join(Consts::GRADIENT_BIAS, layersNum)] = delta;
+    cash[join(Consts::GRADIENT_WEIGHT, layersNum)] = cash[join(Consts::ZS, layersNum - 1)] * delta.transpose();
 
     for (int i = layersNum - 1; i >= 0; i--) {
         MatrixXd weight = *weights[i + 1];
 
-        auto prime = reLuPrime(cash[join(Consts::ZS, i)]);
+        auto prime = sigmoidPrime(cash[join(Consts::ZS, i)]);
 
         delta = (weight * delta).cwiseProduct(prime);
 
         cash[join(Consts::GRADIENT_BIAS, i)] = delta;
-        cash[join(Consts::GRADIENT_WEIGHT, i)] = delta * cash[join(Consts::RELU, i - 1)].transpose();
+
+        cash[join(Consts::GRADIENT_WEIGHT, i)] = delta * cash[join(Consts::ACTIVATION, i - 1)].transpose();
     }
 }
 
@@ -75,19 +78,24 @@ void NeutralNetwork::initNetwork(vector<int> layers) {
     }
 }
 
+MatrixXd NeutralNetwork::sigmoid(MatrixXd z) {
+    return z.unaryExpr([](double x) {
+        return 1.0 / (1.0 + exp(-x));
+    });
+}
+
+MatrixXd NeutralNetwork::sigmoidPrime(MatrixXd z) {
+    return sigmoid(z).cwiseProduct(sigmoid(z).unaryExpr([](double x) {
+        return 1.0 - x;
+    }));
+}
+
 MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
     return (matrix.array() < 0).select(0, matrix);
 }
 
-MatrixXd NeutralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
-    auto z = x.array() * y.array();
-    z.log();
-    double loss = -z.sum();
-
-    cout << loss << endl;
-
-    // The Softmax derivate
-    return MatrixXd(x - y);
+MatrixXd NeutralNetwork::reLuPrime(MatrixXd matrix) {
+    return matrix.unaryExpr([](double x) { return x >= 0.0 ? 1.0 : 0.0; });
 }
 
 MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
@@ -98,11 +106,17 @@ MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
     return z_exp.unaryExpr([&sum](auto x) { return x / sum; });
 }
 
-MatrixXd NeutralNetwork::reLuPrime(MatrixXd matrix) {
-    return (matrix.array() <= 0).select(0, matrix);
+MatrixXd NeutralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
+    MatrixXd z = x.cwiseProduct(y);
+
+    double loss = -z.sum();
+
+    //cout << loss << endl;
+
+    return x - y;
 }
 
-void NeutralNetwork::updateGradient() {
+void NeutralNetwork::updateGradient(int miniBatchSize) {
 
     auto layers = (int) weights.size() - 1;
 
@@ -113,8 +127,11 @@ void NeutralNetwork::updateGradient() {
         MatrixXd weight = *weights[i];
         MatrixXd bias = *biases[i];
 
-        weights[i] = new MatrixXd(weight - 1e-3 * d_weight);
-        biases[i] = new MatrixXd(bias - 1e-3 * d_bias);
+        weight = weight - (0.5 / miniBatchSize * d_weight);
+        bias = bias - (0.5 / miniBatchSize * d_bias);
+
+//        weights[i] = &weight;
+//        biases[i] = &bias;
     }
 }
 

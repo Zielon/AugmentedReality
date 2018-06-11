@@ -9,29 +9,29 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 1000;
-    int batchSize = 100;
+    int numberEpoch = 100;
+    int batchSize = 50;
 
     for (int i = 0; i < numberEpoch; i++) {
         for (auto digit : getMiniBatch(batchSize)) {
-            auto pass = network.forwardPass(digit);
-            network.backwardPass(pass, digit);
-            network.updateGradient();
+            network.forwardPass(digit);
+            network.backwardPass(digit);
+            network.updateGradient(batchSize);
         }
     }
 
-    predict(getMiniBatch(1000)[5]);
-    predict(getMiniBatch(1000)[123]);
-    predict(getMiniBatch(1000)[666]);
-    predict(getMiniBatch(1000)[444]);
-    predict(getMiniBatch(1000)[888]);
+    for(int i = 0; i < 25; i++)
+        predict(getMiniBatch(100)[i]);
 }
 
 int Solver::predict(Digit *digit) {
     auto score = network.forwardPass(digit);
-    auto value = score(digit->truth, 0);
+    double value = score(digit->truth, 0);
 
-    cout << "SCORE for [ " << digit->truth << " ] is -> " << value << endl;
+    string correct = score.maxCoeff() == value ? "TRUE " : "FALSE";
+
+    cout << "SCORE for [ " << digit->truth << " ] is -> " << value
+         << " | correct: " <<  correct <<  " | " << score.maxCoeff() << endl;
 
     return 0;
 }
