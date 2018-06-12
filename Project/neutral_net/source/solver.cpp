@@ -9,7 +9,7 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 3;
+    int numberEpoch = 5;
     int batchSize = 50;
 
     map<string, MatrixXd> miniBatchCash;
@@ -29,27 +29,12 @@ void Solver::train() {
     }
 
     int correct = 0;
-    int number = 10000;
+    int number = 1000;
     for (int i = 0; i < number; i++) {
-        correct += predict(data[i]);
+        correct += network.predict(data[i]) == data[i]->truth;
     }
 
     cout << "CORRECT = " << correct  << " / " << number << endl;
-}
-
-int Solver::predict(Digit *digit) {
-    auto score = network.forwardPass(digit);
-
-    int maxIndex = -1;
-    double maxElement = 0;
-    for(int i = 0; i < 10; i++){
-        if(score(i, 0) > maxElement){
-            maxElement = score(i, 0);
-            maxIndex = i;
-        }
-    }
-
-    return maxIndex == digit->truth;
 }
 
 vector<Digit *> Solver::getMiniBatch(int size) {
@@ -60,9 +45,10 @@ vector<Digit *> Solver::getMiniBatch(int size) {
 
     vector<Digit *> output;
 
-    for (int n = 0; n < size; ++n)
-        output.push_back(data[distribution(gen)]);
-
+    for (int n = 0; n < size; ++n) {
+        int rand = distribution(gen);
+        output.push_back(data[rand]);
+    }
     return output;
 }
 

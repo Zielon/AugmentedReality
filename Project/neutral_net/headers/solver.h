@@ -17,8 +17,6 @@ public:
 
     void train();
 
-    int predict(Digit *digit);
-
 private:
     vector<Digit *> data;
 

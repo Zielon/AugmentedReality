@@ -33,6 +33,8 @@ public:
 
     void updateGradient(int miniBatchSize, map<string, MatrixXd> cash);
 
+    int predict(Digit *digit);
+
     vector<MatrixXd *> getWeights();
 
     vector<MatrixXd *> getBiases();
