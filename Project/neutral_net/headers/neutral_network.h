@@ -19,9 +19,9 @@ public:
 
     void backwardPass(Digit *digit);
 
-    MatrixXd sigmoid(MatrixXd matrix);
+    MatrixXd sigmoid(MatrixXd &matrix);
 
-    MatrixXd sigmoidPrime(MatrixXd matrix);
+    MatrixXd sigmoidPrime(MatrixXd &matrix);
 
     MatrixXd reLu(MatrixXd matrix);
 
@@ -31,7 +31,7 @@ public:
 
     MatrixXd softmaxPrime(MatrixXd x, MatrixXd y);
 
-    void updateGradient(int miniBatchSize);
+    void updateGradient(int miniBatchSize, map<string, MatrixXd> cash);
 
     vector<MatrixXd *> getWeights();
 

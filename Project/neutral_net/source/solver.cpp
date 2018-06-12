@@ -1,7 +1,7 @@
+#include "../headers/solver.h"
 #include <random>
 #include <utility>
 #include <iostream>
-#include "../headers/solver.h"
 
 Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(network) {
     this->data = std::move(digits);
@@ -9,38 +9,54 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 200;
+    int numberEpoch = 3;
     int batchSize = 50;
+
+    map<string, MatrixXd> miniBatchCash;
 
     for (int i = 0; i < numberEpoch; i++) {
         for (auto digit : getMiniBatch(batchSize)) {
             network.forwardPass(digit);
             network.backwardPass(digit);
-            network.updateGradient(batchSize);
+
+            auto cash = network.getCash();
+            mergeDeltas(miniBatchCash, cash);
         }
+
+        network.updateGradient(batchSize, miniBatchCash);
+
+        cout << "EPOCH " << i + 1 << endl;
     }
 
-    for(int i = 0; i < 25; i++)
-        predict(getMiniBatch(100)[i]);
+    int correct = 0;
+    int number = 10000;
+    for (int i = 0; i < number; i++) {
+        correct += predict(data[i]);
+    }
+
+    cout << "CORRECT = " << correct  << " / " << number << endl;
 }
 
 int Solver::predict(Digit *digit) {
     auto score = network.forwardPass(digit);
-    double value = score(digit->truth, 0);
 
-    string correct = score.maxCoeff() == value ? "TRUE " : "FALSE";
+    int maxIndex = -1;
+    double maxElement = 0;
+    for(int i = 0; i < 10; i++){
+        if(score(i, 0) > maxElement){
+            maxElement = score(i, 0);
+            maxIndex = i;
+        }
+    }
 
-    cout << "SCORE for [ " << digit->truth << " ] is -> " << value
-         << " | correct: " <<  correct <<  " | " << score.maxCoeff() << endl;
-
-    return 0;
+    return maxIndex == digit->truth;
 }
 
 vector<Digit *> Solver::getMiniBatch(int size) {
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distribution(0, static_cast<int>(this->data.size() - 1));
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distribution(0, static_cast<int>(this->data.size() - 1));
 
     vector<Digit *> output;
 
@@ -50,6 +66,15 @@ vector<Digit *> Solver::getMiniBatch(int size) {
     return output;
 }
 
-void Solver::gradientUpdate(map<string, MatrixXd> cash) {
+void Solver::mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, MatrixXd> &cash) {
 
+    for (auto &it : cash) {
+        MatrixXd matrix = it.second;
+        auto finder = miniBatchCash.find(it.first);
+        if(finder == miniBatchCash.end()) {
+            miniBatchCash[it.first] = matrix;
+        }else{
+            miniBatchCash[it.first] += matrix;
+        };
+    }
 }

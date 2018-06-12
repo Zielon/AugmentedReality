@@ -3,6 +3,13 @@
 
 #include "../../data_models/digit.cpp"
 #include "neutral_network.h"
+#include <Eigen/Dense>
+#include <iterator>
+#include <map>
+#include <string>
+
+using namespace std;
+using namespace Eigen;
 
 class Solver {
 public:
@@ -17,7 +24,7 @@ private:
 
     vector<Digit *> getMiniBatch(int size);
 
-    void gradientUpdate(map<string, MatrixXd> cash);
+    void mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, MatrixXd> &cash);
 
     NeutralNetwork &network;
 };
