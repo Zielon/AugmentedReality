@@ -9,7 +9,7 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 100;
+    int numberEpoch = 200;
     int batchSize = 50;
 
     for (int i = 0; i < numberEpoch; i++) {
@@ -39,13 +39,13 @@ int Solver::predict(Digit *digit) {
 vector<Digit *> Solver::getMiniBatch(int size) {
 
     std::random_device rd;
-    std::mt19937 eng(rd());
-    std::uniform_int_distribution<> distr(0, static_cast<int>(this->data.size() - 1));
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distribution(0, static_cast<int>(this->data.size() - 1));
 
     vector<Digit *> output;
 
     for (int n = 0; n < size; ++n)
-        output.push_back(data[n]);
+        output.push_back(data[distribution(gen)]);
 
     return output;
 }
