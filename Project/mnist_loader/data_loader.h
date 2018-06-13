@@ -4,20 +4,20 @@
 #include <vector>
 #include <string>
 
-#include "../../data_models/digit.cpp"
+#include "../data_models/digit.cpp"
 
 using namespace std;
 
 class DataLoader {
 public:
-    vector<Digit *> load(string images, string labels, unsigned long size);
+    vector<Digit *> load(string images, string labels, int size);
 
 private:
     int reverseInt(int i);
 
-    vector<vector<int>> loadRawImages(string path, unsigned long images);
+    vector<vector<int>> loadRawImages(string path, int images);
 
-    vector<int> loadRawLabels(string path, unsigned long labels);
+    vector<int> loadRawLabels(string path, int labels);
 
     vector<Digit *> mapToDigit(vector<vector<int>> images, vector<int> labels);
 };

@@ -15,7 +15,7 @@ class NeutralNetwork {
 public:
     NeutralNetwork(vector<int> layers);
 
-    MatrixXd forwardPass(Digit *digit);
+    void forwardPass(Digit *digit);
 
     void backwardPass(Digit *digit);
 
@@ -31,19 +31,19 @@ public:
 
     MatrixXd softmaxPrime(MatrixXd x, MatrixXd y);
 
-    void updateGradient(int miniBatchSize, map<string, MatrixXd> cash);
+    void updateGradient(int miniBatchSize, map<string, MatrixXd> &cash);
 
     int predict(Digit *digit);
 
-    vector<MatrixXd *> getWeights();
+    vector<MatrixXd> getWeights();
 
-    vector<MatrixXd *> getBiases();
+    vector<MatrixXd> getBiases();
 
     map<string, MatrixXd> getCash();
 
 private:
-    vector<MatrixXd *> weights;
-    vector<MatrixXd *> biases;
+    vector<MatrixXd> weights;
+    vector<MatrixXd> biases;
     map<string, MatrixXd> cash;
 
     string join(string name, int i);

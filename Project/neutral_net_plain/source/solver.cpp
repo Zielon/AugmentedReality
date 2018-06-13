@@ -9,13 +9,14 @@ Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(networ
 
 void Solver::train() {
 
-    int numberEpoch = 5;
-    int batchSize = 50;
+    int numberEpoch = 10;
+    int batchSize = 100;
 
     map<string, MatrixXd> miniBatchCash;
 
     for (int i = 0; i < numberEpoch; i++) {
         for (auto digit : getMiniBatch(batchSize)) {
+
             network.forwardPass(digit);
             network.backwardPass(digit);
 
@@ -29,9 +30,9 @@ void Solver::train() {
     }
 
     int correct = 0;
-    int number = 1000;
+    int number = 10000;
     for (int i = 0; i < number; i++) {
-        correct += network.predict(data[i]) == data[i]->truth;
+        correct += network.predict(data[i]) == data[50000 + i]->truth;
     }
 
     cout << "CORRECT = " << correct  << " / " << number << endl;
@@ -41,7 +42,7 @@ vector<Digit *> Solver::getMiniBatch(int size) {
 
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<> distribution(0, static_cast<int>(this->data.size() - 1));
+    uniform_int_distribution<> distribution(0, static_cast<int>(this->data.size() - 10001));
 
     vector<Digit *> output;
 
@@ -58,9 +59,9 @@ void Solver::mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, Matri
         MatrixXd matrix = it.second;
         auto finder = miniBatchCash.find(it.first);
         if(finder == miniBatchCash.end()) {
-            miniBatchCash[it.first] = matrix;
+            miniBatchCash[it.first] = MatrixXd(matrix);
         }else{
-            miniBatchCash[it.first] += matrix;
+            miniBatchCash[it.first] = miniBatchCash[it.first] + matrix;
         };
     }
 }

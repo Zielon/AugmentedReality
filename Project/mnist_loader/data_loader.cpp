@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "../headers/data_loader.h"
+#include "data_loader.h"
 
 using namespace std;
 
@@ -13,13 +13,13 @@ int DataLoader::reverseInt(int i) {
     return ((int) ch1 << 24) + ((int) ch2 << 16) + ((int) ch3 << 8) + ch4;
 }
 
-vector<Digit *> DataLoader::load(string images, string labels, unsigned long size) {
+vector<Digit *> DataLoader::load(string images, string labels, int size) {
     vector<vector<int>> rawImages = loadRawImages(images, size);
     vector<int> rawLabels = loadRawLabels(labels, size);
     return mapToDigit(rawImages, rawLabels);
 }
 
-vector<vector<int>> DataLoader::loadRawImages(string path, unsigned long images) {
+vector<vector<int>> DataLoader::loadRawImages(string path, int images) {
     vector<vector<int>> array(images, vector<int>(784));
 
     ifstream file(path, ios::binary);
@@ -62,18 +62,22 @@ vector<Digit *> DataLoader::mapToDigit(vector<vector<int>> images, vector<int> l
     return output;
 }
 
-vector<int> DataLoader::loadRawLabels(string path, unsigned long labels) {
+vector<int> DataLoader::loadRawLabels(string path, int labels) {
     ifstream file(path, ios::binary);
     if (file.is_open()) {
         int magic_number = 0;
         file.read((char *) &magic_number, sizeof(magic_number));
         magic_number = reverseInt(magic_number);
 
-        file.read((char *) &labels, sizeof(labels)), labels = reverseInt(labels);
+        file.read((char *) &labels, sizeof(labels));
+        labels = reverseInt(labels);
 
         vector<int> output(labels);
-        for (int i = 0; i < labels; i++) file.read((char *) &output[i], 1);
-
+        for (int i = 0; i < labels; i++){
+            unsigned char temp = 0;
+            file.read((char *) &temp, sizeof(temp));
+            output[i] = (int)temp;
+        }
         return output;
 
     } else {
