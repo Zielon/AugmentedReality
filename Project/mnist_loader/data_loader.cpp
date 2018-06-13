@@ -73,10 +73,10 @@ vector<int> DataLoader::loadRawLabels(string path, int labels) {
         labels = reverseInt(labels);
 
         vector<int> output(labels);
-        for (int i = 0; i < labels; i++){
+        for (int i = 0; i < labels; i++) {
             unsigned char temp = 0;
             file.read((char *) &temp, sizeof(temp));
-            output[i] = (int)temp;
+            output[i] = (int) temp;
         }
         return output;
 

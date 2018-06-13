@@ -1,14 +1,13 @@
 #include "../headers/solver.h"
 #include <random>
-#include <utility>
 #include <iostream>
 
-Solver::Solver(vector<Digit *> &digits, NeutralNetwork &network) : network(network), data(digits) {
+Solver::Solver(vector<Digit *> &digits, NeuralNetwork &network) : network(network), data(digits) {
 }
 
 void Solver::train() {
 
-    int numberEpoch = 100;
+    int numberEpoch = 500;
     int batchSize = 100;
 
     map<string, MatrixXd> miniBatchCash;
@@ -29,9 +28,8 @@ void Solver::train() {
 
     int correct = 0;
     int number = 60000;
-    for (int i = 50000; i < number; i++) {
+    for (int i = 50000; i < number; i++)
         correct += network.predict(data[i]) == data[i]->truth;
-    }
 
     cout << "CORRECT = " << correct << " / 10000" << endl;
 }
@@ -59,7 +57,7 @@ void Solver::mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, Matri
         if (finder == miniBatchCash.end()) {
             miniBatchCash[it.first] = MatrixXd(matrix);
         } else {
-            miniBatchCash[it.first] = miniBatchCash[it.first] + matrix;
+            miniBatchCash[it.first] += matrix;
         };
     }
 }

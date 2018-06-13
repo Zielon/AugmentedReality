@@ -11,13 +11,26 @@
 using namespace std;
 using namespace Eigen;
 
-class NeutralNetwork {
+class NeuralNetwork {
 public:
-    NeutralNetwork(vector<int> layers);
+    NeuralNetwork(vector<int> layers);
 
     void forwardPass(Digit *digit);
 
     void backwardPass(Digit *digit);
+
+    void updateGradient(double miniBatchSize);
+
+    int predict(Digit *digit);
+
+    map<string, MatrixXd> &getCash();
+
+private:
+    vector<MatrixXd> weights;
+    vector<MatrixXd> biases;
+    map<string, MatrixXd> cash;
+
+    string join(string name, int i);
 
     MatrixXd sigmoid(MatrixXd matrix);
 
@@ -30,23 +43,6 @@ public:
     MatrixXd softmax(MatrixXd matrix);
 
     MatrixXd softmaxPrime(MatrixXd x, MatrixXd y);
-
-    void updateGradient(double miniBatchSize);
-
-    int predict(Digit *digit);
-
-    vector<MatrixXd> getWeights();
-
-    vector<MatrixXd> getBiases();
-
-    map<string, MatrixXd> & getCash();
-
-private:
-    vector<MatrixXd> weights;
-    vector<MatrixXd> biases;
-    map<string, MatrixXd> cash;
-
-    string join(string name, int i);
 
     void initNetwork(vector<int> layers);
 };

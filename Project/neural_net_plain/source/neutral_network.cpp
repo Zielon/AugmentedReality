@@ -7,13 +7,13 @@
 
 using namespace std;
 
-NeutralNetwork::NeutralNetwork(vector<int> layers) {
+NeuralNetwork::NeuralNetwork(vector<int> layers) {
     weights = vector<MatrixXd>(layers.size() - 1);
     biases = vector<MatrixXd>(layers.size() - 1);
     initNetwork(layers);
 }
 
-void NeutralNetwork::forwardPass(Digit *digit) {
+void NeuralNetwork::forwardPass(Digit *digit) {
     auto size = (int) weights.size();
 
     MatrixXd activation = *digit->pixels;
@@ -33,7 +33,7 @@ void NeutralNetwork::forwardPass(Digit *digit) {
     }
 }
 
-void NeutralNetwork::backwardPass(Digit *digit) {
+void NeuralNetwork::backwardPass(Digit *digit) {
 
     auto lastLayer = (int) weights.size() - 1;
 
@@ -59,7 +59,7 @@ void NeutralNetwork::backwardPass(Digit *digit) {
     }
 }
 
-void NeutralNetwork::updateGradient(double miniBatchSize) {
+void NeuralNetwork::updateGradient(double miniBatchSize) {
 
     auto layers = (int) weights.size();
 
@@ -76,7 +76,7 @@ void NeutralNetwork::updateGradient(double miniBatchSize) {
     cash.clear();
 }
 
-void NeutralNetwork::initNetwork(vector<int> layers) {
+void NeuralNetwork::initNetwork(vector<int> layers) {
 
     std::default_random_engine generator;
     std::normal_distribution<double> weights_distribution(0, 1);
@@ -103,23 +103,23 @@ void NeutralNetwork::initNetwork(vector<int> layers) {
     }
 }
 
-MatrixXd NeutralNetwork::sigmoid(MatrixXd z) {
+MatrixXd NeuralNetwork::sigmoid(MatrixXd z) {
     return z.unaryExpr([](double x) { return 1.0 / (1.0 + std::exp(-x)); });
 }
 
-MatrixXd NeutralNetwork::sigmoidPrime(MatrixXd z) {
+MatrixXd NeuralNetwork::sigmoidPrime(MatrixXd z) {
     return sigmoid(z).cwiseProduct(sigmoid(z).unaryExpr([](double x) { return 1.0 - x; }));
 }
 
-MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
+MatrixXd NeuralNetwork::reLu(MatrixXd matrix) {
     return (matrix.array() < 0).select(0, matrix);
 }
 
-MatrixXd NeutralNetwork::reLuPrime(MatrixXd matrix) {
+MatrixXd NeuralNetwork::reLuPrime(MatrixXd matrix) {
     return matrix.unaryExpr([](double x) { return x >= 0.0 ? 1.0 : 0.0; });
 }
 
-MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
+MatrixXd NeuralNetwork::softmax(MatrixXd matrix) {
 
     auto z_exp = MatrixXd(matrix.unaryExpr([](double x) { return exp(x); }));
     double sum = z_exp.sum();
@@ -127,27 +127,19 @@ MatrixXd NeutralNetwork::softmax(MatrixXd matrix) {
     return z_exp.unaryExpr([&sum](auto x) { return x / sum; });
 }
 
-MatrixXd NeutralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
+MatrixXd NeuralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
     return x - y;
 }
 
-vector<MatrixXd> NeutralNetwork::getWeights() {
-    return weights;
-}
-
-vector<MatrixXd> NeutralNetwork::getBiases() {
-    return biases;
-}
-
-map<string, MatrixXd> &NeutralNetwork::getCash() {
+map<string, MatrixXd> &NeuralNetwork::getCash() {
     return cash;
 }
 
-string NeutralNetwork::join(string name, int i) {
+string NeuralNetwork::join(string name, int i) {
     return name + to_string(i);
 }
 
-int NeutralNetwork::predict(Digit *digit) {
+int NeuralNetwork::predict(Digit *digit) {
     auto size = (int) weights.size();
 
     MatrixXd activation = *digit->pixels;

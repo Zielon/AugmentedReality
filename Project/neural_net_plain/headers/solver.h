@@ -13,7 +13,7 @@ using namespace Eigen;
 
 class Solver {
 public:
-    Solver(vector<Digit *> &digits, NeutralNetwork &network);
+    Solver(vector<Digit *> &digits, NeuralNetwork &network);
 
     void train();
 
@@ -24,7 +24,7 @@ private:
 
     void mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, MatrixXd> &cash);
 
-    NeutralNetwork &network;
+    NeuralNetwork &network;
 };
 
 #endif //PROJECT_SOLVER_H

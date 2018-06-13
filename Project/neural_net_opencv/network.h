@@ -1,7 +1,7 @@
 #ifndef PROJECT_NETWORK_H
 #define PROJECT_NETWORK_H
 
-class Network{
+class Network {
 
 };
 

@@ -15,8 +15,8 @@ configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONL
 
 add_executable(Project
         main.cpp
-        neutral_net_plain/source/neutral_network.cpp
-        neutral_net_plain/headers/neutral_network.h
+        neural_net_plain/source/neutral_network.cpp
+        neural_net_plain/headers/neutral_network.h
         tracker/source/tracker.cpp
         tracker/headers/tracker.h
         drawing/draw_primitives.h
@@ -24,11 +24,11 @@ add_executable(Project
         mnist_loader/data_loader.h
         mnist_loader/data_loader.cpp
         data_models/digit.cpp
-        neutral_net_plain/headers/solver.h
-        neutral_net_plain/source/solver.cpp
+        neural_net_plain/headers/solver.h
+        neural_net_plain/source/solver.cpp
         data_models/consts.h
-        neutral_net_plain/headers/sandwicher.h
-        neutral_net_plain/source/sandwicher.cpp neutral_net_opencv/network.cpp neutral_net_opencv/network.h)
+        neural_net_plain/headers/sandwicher.h
+        neural_net_plain/source/sandwicher.cpp neural_net_opencv/network.cpp neural_net_opencv/network.h)
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})

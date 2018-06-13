@@ -10,12 +10,12 @@ using namespace Eigen;
 
 class Sandwicher {
 public:
-    Sandwicher(NeutralNetwork &network);
+    Sandwicher(NeuralNetwork &network);
 
     tuple<double, double, double> backwardSandwich(int layer, MatrixXd delta);
 
 private:
-    NeutralNetwork network;
+    NeuralNetwork network;
 };
 
 #endif //PROJECT_SANDWITCH_H
