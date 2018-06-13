@@ -3,13 +3,12 @@
 #include <utility>
 #include <iostream>
 
-Solver::Solver(vector<Digit *> digits, NeutralNetwork &network) : network(network) {
-    this->data = std::move(digits);
+Solver::Solver(vector<Digit *> &digits, NeutralNetwork &network) : network(network), data(digits) {
 }
 
 void Solver::train() {
 
-    int numberEpoch = 10;
+    int numberEpoch = 100;
     int batchSize = 100;
 
     map<string, MatrixXd> miniBatchCash;
@@ -19,23 +18,22 @@ void Solver::train() {
 
             network.forwardPass(digit);
             network.backwardPass(digit);
+            network.updateGradient(batchSize);
 
             auto cash = network.getCash();
             mergeDeltas(miniBatchCash, cash);
         }
 
-        network.updateGradient(batchSize, miniBatchCash);
-
-        cout << "EPOCH " << i + 1 << endl;
+        //cout << "EPOCH " << i + 1 << endl;
     }
 
     int correct = 0;
-    int number = 10000;
-    for (int i = 0; i < number; i++) {
-        correct += network.predict(data[i]) == data[50000 + i]->truth;
+    int number = 60000;
+    for (int i = 50000; i < number; i++) {
+        correct += network.predict(data[i]) == data[i]->truth;
     }
 
-    cout << "CORRECT = " << correct  << " / " << number << endl;
+    cout << "CORRECT = " << correct << " / 10000" << endl;
 }
 
 vector<Digit *> Solver::getMiniBatch(int size) {
@@ -58,9 +56,9 @@ void Solver::mergeDeltas(map<string, MatrixXd> &miniBatchCash, map<string, Matri
     for (auto &it : cash) {
         MatrixXd matrix = it.second;
         auto finder = miniBatchCash.find(it.first);
-        if(finder == miniBatchCash.end()) {
+        if (finder == miniBatchCash.end()) {
             miniBatchCash[it.first] = MatrixXd(matrix);
-        }else{
+        } else {
             miniBatchCash[it.first] = miniBatchCash[it.first] + matrix;
         };
     }

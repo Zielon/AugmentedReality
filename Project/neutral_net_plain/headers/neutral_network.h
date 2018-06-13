@@ -19,9 +19,9 @@ public:
 
     void backwardPass(Digit *digit);
 
-    MatrixXd sigmoid(MatrixXd &matrix);
+    MatrixXd sigmoid(MatrixXd matrix);
 
-    MatrixXd sigmoidPrime(MatrixXd &matrix);
+    MatrixXd sigmoidPrime(MatrixXd matrix);
 
     MatrixXd reLu(MatrixXd matrix);
 
@@ -31,7 +31,7 @@ public:
 
     MatrixXd softmaxPrime(MatrixXd x, MatrixXd y);
 
-    void updateGradient(int miniBatchSize, map<string, MatrixXd> &cash);
+    void updateGradient(double miniBatchSize);
 
     int predict(Digit *digit);
 
@@ -39,7 +39,7 @@ public:
 
     vector<MatrixXd> getBiases();
 
-    map<string, MatrixXd> getCash();
+    map<string, MatrixXd> & getCash();
 
 private:
     vector<MatrixXd> weights;

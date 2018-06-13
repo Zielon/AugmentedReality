@@ -13,7 +13,7 @@ using namespace Eigen;
 
 class Solver {
 public:
-    Solver(vector<Digit *> digits, NeutralNetwork &network);
+    Solver(vector<Digit *> &digits, NeutralNetwork &network);
 
     void train();
 

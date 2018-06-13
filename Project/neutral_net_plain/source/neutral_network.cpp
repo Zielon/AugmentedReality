@@ -28,33 +28,52 @@ void NeutralNetwork::forwardPass(Digit *digit) {
 
         activation = sigmoid(z);
 
-        cash[join(Consts::ACTIVATION, i)] = activation;
         cash[join(Consts::Z, i)] = z;
+        cash[join(Consts::ACTIVATION, i)] = activation;
     }
 }
 
 void NeutralNetwork::backwardPass(Digit *digit) {
 
-    auto layersIndex = (int) weights.size() - 1;
+    auto lastLayer = (int) weights.size() - 1;
 
-    auto activation = cash[join(Consts::ACTIVATION, layersIndex)];
-    auto z = cash[join(Consts::Z, layersIndex)];
+    auto activation = cash[join(Consts::ACTIVATION, lastLayer)];
+    auto z = cash[join(Consts::Z, lastLayer)];
+    auto y = *digit->label;
 
-    MatrixXd delta = softmaxPrime(activation, *digit->label).cwiseProduct(sigmoidPrime(z));
+    MatrixXd delta = softmaxPrime(activation, y).cwiseProduct(sigmoidPrime(z));
 
-    cash[join(Consts::GRADIENT_BIAS, layersIndex)] = delta;
-    cash[join(Consts::GRADIENT_WEIGHT, layersIndex)] = delta * cash[join(Consts::ACTIVATION, layersIndex - 1)].transpose();
+    cash[join(Consts::GRADIENT_BIAS, lastLayer)] = delta;
+    cash[join(Consts::GRADIENT_WEIGHT, lastLayer)] = delta * cash[join(Consts::ACTIVATION, lastLayer - 1)].transpose();
 
-    for (int i = layersIndex - 1; i >= 0; i--) {
+    for (int i = lastLayer - 1; i >= 0; i--) {
         MatrixXd weight = weights[i + 1];
-        z = cash[join(Consts::Z, i)];
+
         activation = cash[join(Consts::ACTIVATION, i - 1)];
+        z = cash[join(Consts::Z, i)];
 
         delta = (weight * delta).cwiseProduct(sigmoidPrime(z));
 
         cash[join(Consts::GRADIENT_BIAS, i)] = delta;
         cash[join(Consts::GRADIENT_WEIGHT, i)] = delta * activation.transpose();
     }
+}
+
+void NeutralNetwork::updateGradient(double miniBatchSize) {
+
+    auto layers = (int) weights.size();
+
+    for (int i = 0; i < layers; i++) {
+        auto d_bias = 0.5 * cash[join(Consts::GRADIENT_BIAS, i)];
+        auto d_weight = 0.5 * cash[join(Consts::GRADIENT_WEIGHT, i)].transpose();
+
+        //cout << weights[i].rows() << " -> " << weights[i].cols() << endl;
+
+        biases[i] -= d_bias;
+        weights[i] -= d_weight;
+    }
+
+    cash.clear();
 }
 
 void NeutralNetwork::initNetwork(vector<int> layers) {
@@ -67,24 +86,29 @@ void NeutralNetwork::initNetwork(vector<int> layers) {
         int inputNeurons = layers[i];
         int outputNeurons = layers[i + 1];
 
-        auto bias = MatrixXd::Zero(outputNeurons, 1).cast<double>().unaryExpr(
-                [&bias_distribution, &generator](double x) { return bias_distribution(generator); });
+        auto bias = MatrixXd::Zero(outputNeurons, 1)
+                .cast<double>()
+                .unaryExpr([&bias_distribution, &generator](double x) {
+                    return bias_distribution(generator);
+                });
 
-        auto weight = MatrixXd::Zero(inputNeurons, outputNeurons).cast<double>().unaryExpr(
-                [&weights_distribution, &generator](double x) { return weights_distribution(generator); });
+        auto weight = MatrixXd::Zero(inputNeurons, outputNeurons)
+                .cast<double>()
+                .unaryExpr([&weights_distribution, &generator](double x) {
+                    return weights_distribution(generator);
+                });
 
         weights[i] = weight;
         biases[i] = bias;
     }
 }
 
-MatrixXd NeutralNetwork::sigmoid(MatrixXd &z) {
+MatrixXd NeutralNetwork::sigmoid(MatrixXd z) {
     return z.unaryExpr([](double x) { return 1.0 / (1.0 + std::exp(-x)); });
 }
 
-MatrixXd NeutralNetwork::sigmoidPrime(MatrixXd &z) {
-    auto sig = sigmoid(z);
-    return sig.cwiseProduct(sig.unaryExpr([](double x) { return 1.0 - x; }));
+MatrixXd NeutralNetwork::sigmoidPrime(MatrixXd z) {
+    return sigmoid(z).cwiseProduct(sigmoid(z).unaryExpr([](double x) { return 1.0 - x; }));
 }
 
 MatrixXd NeutralNetwork::reLu(MatrixXd matrix) {
@@ -107,24 +131,6 @@ MatrixXd NeutralNetwork::softmaxPrime(MatrixXd x, MatrixXd y) {
     return x - y;
 }
 
-void NeutralNetwork::updateGradient(int miniBatchSize, map<string, MatrixXd> &miniBatchCash) {
-
-    auto layers = (int) weights.size();
-
-    for (int i = 0; i < layers; i++) {
-        auto d_bias = 0.5 / miniBatchSize * miniBatchCash[join(Consts::GRADIENT_BIAS, i)];
-        auto d_weight = 0.5 / miniBatchSize * miniBatchCash[join(Consts::GRADIENT_WEIGHT, i)].transpose();
-
-        MatrixXd weight = weights[i];
-        MatrixXd bias = biases[i];
-
-        //cout << weight.rows() << " -> " << weight.cols() << endl;
-
-        biases[i] = bias - d_bias;
-        weights[i] = weight - d_weight;
-    }
-}
-
 vector<MatrixXd> NeutralNetwork::getWeights() {
     return weights;
 }
@@ -133,7 +139,7 @@ vector<MatrixXd> NeutralNetwork::getBiases() {
     return biases;
 }
 
-map<string, MatrixXd> NeutralNetwork::getCash() {
+map<string, MatrixXd> &NeutralNetwork::getCash() {
     return cash;
 }
 
@@ -147,16 +153,14 @@ int NeutralNetwork::predict(Digit *digit) {
     MatrixXd activation = *digit->pixels;
 
     for (int i = 0; i < size; i++) {
-        MatrixXd weight = weights[i];
-        MatrixXd bias = biases[i];
-        MatrixXd z = weight.transpose() * activation + bias;
+        MatrixXd z = weights[i].transpose() * activation + biases[i];
         activation = sigmoid(z);
     }
 
     int maxIndex = -1;
-    double maxElement = 0;
-    for(int i = 0; i < 10; i++){
-        if(activation(i, 0) >= maxElement){
+    double maxElement = -1;
+    for (int i = 0; i < 10; i++) {
+        if (activation(i, 0) >= maxElement) {
             maxElement = activation(i, 0);
             maxIndex = i;
         }
