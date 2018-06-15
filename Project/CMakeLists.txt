@@ -37,7 +37,7 @@ add_executable(Project
         bounce/source/ball_dynamics.cpp
         bounce/headers/ball_dynamics.h
         bounce/headers/application.h
-        bounce/source/application.cpp)
+        bounce/source/application.cpp bounce/headers/drawing.h bounce/source/drawing.cpp)
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)

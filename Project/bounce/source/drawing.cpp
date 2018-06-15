@@ -1,7 +1,4 @@
-#ifndef PROJECT_DRAW_PRIMITIVES_H
-#define PROJECT_DRAW_PRIMITIVES_H
-
-#include <GLFW/glfw3.h>
+#include "../headers/drawing.h"
 #include <cmath>
 
 /* PI */
@@ -9,7 +6,7 @@
 #define M_PI 3.1415926535897932384626433832795
 #endif
 
-void drawSphere(double r, int lats, int longs) {
+void Drawer::drawSphere(double r, int lats, int longs) {
     int i, j;
     for (i = 0; i <= lats; i++) {
         double lat0 = M_PI * (-0.5 + (double) (i - 1) / lats);
@@ -35,9 +32,7 @@ void drawSphere(double r, int lats, int longs) {
     }
 }
 
-
-void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks) {
-
+void Drawer::drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks) {
     // draw the upper part of the cone
     glBegin(GL_TRIANGLE_FAN);
     glVertex3f(0, 0, height);
@@ -67,4 +62,31 @@ void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks) {
     */
 }
 
-#endif //PROJECT_DRAW_PRIMITIVES_H
+void Drawer::drawSnowman() {
+    glColor3f(1.0f, 1.0f, 1.0f);
+    drawSphere(0.5, 40, 40);
+
+    glTranslatef(0.0f, 0.60f, 0.0f);
+    drawSphere(0.40, 40, 40);
+
+    glTranslatef(0.0f, 0.50f, 0.0f);
+    drawSphere(0.30, 40, 40);
+
+    glPushMatrix();
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+
+    glTranslatef(0.2f, 0.1f, 0.15f);
+    drawSphere(0.05, 40, 40);
+
+    glPopMatrix();
+    glPushMatrix();
+
+    glTranslatef(-0.2f, 0.1f, 0.15f);
+    drawSphere(0.05, 40, 40);
+
+    glPopMatrix();
+
+    glTranslatef(0.0f, 0.0f, 0.1f);
+    drawCone(0.05, 0.5, 10, 10);
+}
