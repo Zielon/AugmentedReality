@@ -4,4 +4,4 @@ tuple<double, double, double> Sandwicher::backwardSandwich(int layer, MatrixXd d
     return {0, 0, 0};
 }
 
-Sandwicher::Sandwicher(NeuralNetwork &network) : network(network) { }
+Sandwicher::Sandwicher(NeuralNetwork &network) : network(network) {}

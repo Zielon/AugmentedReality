@@ -34,8 +34,10 @@ add_executable(Project
         neural_net_plain/source/sandwicher.cpp
         neural_net_opencv/network.cpp
         neural_net_opencv/network.h
-        bounce/ball.cpp
-        bounce/ball.h)
+        bounce/source/ball_dynamics.cpp
+        bounce/headers/ball_dynamics.h
+        bounce/headers/application.h
+        bounce/source/application.cpp)
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
