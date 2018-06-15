@@ -6,12 +6,15 @@ find_package(Eigen3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(Bullet REQUIRED)
 
 configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)
 configure_file(resources/stuff resources/stuff COPYONLY)
 configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
 configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
+
+include_directories(${BULLET_INCLUDE_DIR})
 
 add_executable(Project
         main.cpp
@@ -28,9 +31,14 @@ add_executable(Project
         neural_net_plain/source/solver.cpp
         data_models/consts.h
         neural_net_plain/headers/sandwicher.h
-        neural_net_plain/source/sandwicher.cpp neural_net_opencv/network.cpp neural_net_opencv/network.h)
+        neural_net_plain/source/sandwicher.cpp
+        neural_net_opencv/network.cpp
+        neural_net_opencv/network.h
+        bounce/ball.cpp
+        bounce/ball.h)
 
 target_link_libraries(Project Eigen3::Eigen)
+target_link_libraries(Project glfw)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})
 target_link_libraries(Project ${OPENGL_glu_LIBRARY})
-target_link_libraries(Project glfw)
+target_link_libraries(Project ${BULLET_LIBRARIES})
