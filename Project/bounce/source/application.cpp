@@ -20,7 +20,7 @@ void Application::specialUp(int key, int x, int y) {
 
 }
 
-void Application::reshape(GLFWwindow *window, int width, int height){
+void Application::reshape(GLFWwindow *window, int width, int height) {
     // set a whole-window viewport
     glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
@@ -77,7 +77,7 @@ void Application::display() {
 
     int fov = 30;
     float near = 0.01f, far = 100.f;
-    float top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
+    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
     float bottom = -top;
     float left = ratio * bottom;
     float right = ratio * top;
@@ -92,7 +92,7 @@ void Application::display() {
     // move the object in a fancy way
     const float t = (float) glfwGetTime() * 2.0f;
     const float n = 0.5f;
-    glTranslatef(1.5f * sin(n * t), 0.f, 1.5f * cos(n * t));
+    glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
 
     // rotate the object
     glRotatef((float) glfwGetTime() * 50.f, 1.f, 0.f, 1.f);
@@ -123,7 +123,7 @@ void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(640, 480, "Bounce", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();

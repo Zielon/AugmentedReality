@@ -1,4 +1,9 @@
 #include "../headers/ball_dynamics.h"
 
-void Ball::start() {
+void Ball::draw() {
+
+}
+
+void Ball::simulate() {
+
 }

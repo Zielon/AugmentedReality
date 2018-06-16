@@ -3,7 +3,8 @@
 
 class Ball {
 public:
-    void start();
+    void draw();
+    void simulate();
 };
 
 #endif //PROJECT_BALL_H
