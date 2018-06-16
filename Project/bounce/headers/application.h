@@ -1,6 +1,8 @@
 #ifndef PROJECT_APPLICATION_H
 #define PROJECT_APPLICATION_H
 
+#include <GLFW/glfw3.h>
+
 class Application {
 public:
     virtual void initialize();
@@ -15,8 +17,6 @@ public:
 
     virtual void specialUp(int key, int x, int y);
 
-    virtual void reshape(int w, int h);
-
     virtual void idle();
 
     virtual void mouse(int button, int state, int x, int y);
@@ -26,6 +26,11 @@ public:
     virtual void motion(int x, int y);
 
     virtual void display();
+
+    static void reshape(GLFWwindow *window, int width, int height);
+
+private:
+    GLFWwindow *window;
 };
 
 #endif //PROJECT_APPLICATION_H
