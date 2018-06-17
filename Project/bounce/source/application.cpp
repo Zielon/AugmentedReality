@@ -1,8 +1,10 @@
+#include <cmath>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include <cmath>
+#include <GL/glut.h>
+
 #include "../headers/application.h"
-#include "../headers/drawing.h"
+#include "../headers/ball_dynamics.h"
 
 using namespace std;
 
@@ -75,16 +77,10 @@ void Application::display() {
 
     glViewport(0, 0, width, height);
 
-    // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glEnable(GL_COLOR_MATERIAL);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-
-//  glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-//  gluPerspective( 30, ((double)width/(double)height), 0.01, 100 );
 
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -106,15 +102,8 @@ void Application::display() {
     const float n = 0.5f;
     //glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
 
-    // rotate the object
-    glRotatef(30, 1.0, 0.0, 0.0);
-
+    glRotatef(20, 1.0, 0.0, 0.0);
     glTranslatef(cameraX, cameraY, cameraZ);
-
-    Drawer drawer;
-
-    drawer.drawSnowman();
-    drawer.drawGrid();
 }
 
 void Application::initialize() {
@@ -162,8 +151,19 @@ void Application::start() {
 
     initialize();
 
+    glMatrixMode(GL_PROJECTION);
+    gluPerspective(50.0, 1.0, 20.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    gluLookAt(0.0, 5.0, 90.0, 0.0, 8.0, 0.0, 0.0, 1.0, 0.0);
+
+    Ball ball;
+
     while (!glfwWindowShouldClose(window)) {
-        display();
+        //display();
+
+        ball.draw();
+        ball.simulate();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

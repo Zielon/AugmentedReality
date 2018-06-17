@@ -14,7 +14,8 @@ configure_file(resources/stuff resources/stuff COPYONLY)
 configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
 configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
 
-include_directories(${BULLET_INCLUDE_DIR})
+link_directories(${BULLET_LIBRARY_DIRS})
+include_directories(${BULLET_INCLUDE_DIRS})
 
 add_executable(Project
         main.cpp
@@ -22,8 +23,6 @@ add_executable(Project
         neural_net_plain/headers/neutral_network.h
         tracker/source/tracker.cpp
         tracker/headers/tracker.h
-        drawing/draw_primitives.h
-        drawing/draw_snowman.h
         mnist_loader/data_loader.h
         mnist_loader/data_loader.cpp
         data_models/digit.cpp
@@ -37,10 +36,13 @@ add_executable(Project
         bounce/source/ball_dynamics.cpp
         bounce/headers/ball_dynamics.h
         bounce/headers/application.h
-        bounce/source/application.cpp bounce/headers/drawing.h bounce/source/drawing.cpp)
+        bounce/source/application.cpp
+        bounce/headers/drawing.h
+        bounce/source/drawing.cpp)
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
+target_link_libraries(Project glut)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})
 target_link_libraries(Project ${OPENGL_glu_LIBRARY})
 target_link_libraries(Project ${BULLET_LIBRARIES})

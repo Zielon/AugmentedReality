@@ -93,23 +93,27 @@ void Drawer::drawSnowman() {
 
 void Drawer::drawGrid() {
     glPushMatrix();
+
+    float SIZE = 7.f;
+
     glColor3f(1.0f, 0.0f, 0.0f);
-    glTranslatef(-2.5f, -1.5f, -2.5f);
+    glTranslatef(-SIZE/2, -1.5f, -SIZE/2);
+
     glBegin(GL_QUADS);
     glVertex3f(0, -0.001f, 0);
-    glVertex3f(0, -0.001f, 5);
-    glVertex3f(5, -0.001f, 5);
-    glVertex3f(5, -0.001f, 0);
+    glVertex3f(0, -0.001f, SIZE);
+    glVertex3f(SIZE, -0.001f, SIZE);
+    glVertex3f(SIZE, -0.001f, 0);
     glEnd();
 
     glBegin(GL_LINES);
-    for (int i = 0; i <= 5; i++) {
+    for (int i = 0; i <= SIZE; i++) {
         if (i == 0) { glColor3f(.6, .3, .3); } else { glColor3f(.25, .25, .25); };
         glVertex3f(i, 0, 0);
-        glVertex3f(i, 0, 5);
+        glVertex3f(i, 0, SIZE);
         if (i == 0) { glColor3f(.3, .3, .6); } else { glColor3f(.25, .25, .25); };
         glVertex3f(0, 0, i);
-        glVertex3f(5, 0, i);
+        glVertex3f(SIZE, 0, i);
     };
     glEnd();
     glPopMatrix();
