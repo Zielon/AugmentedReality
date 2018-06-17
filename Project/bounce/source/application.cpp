@@ -4,8 +4,19 @@
 #include "../headers/application.h"
 #include "../headers/drawing.h"
 
-void Application::keyboard(unsigned char key, int x, int y) {
+using namespace std;
 
+float cameraX = 0.0;
+float cameraY = 0.0;
+float cameraZ = 0.0;
+
+void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
 }
 
 void Application::keyboardUp(unsigned char key, int x, int y) {
@@ -42,7 +53,7 @@ void Application::idle() {
 
 }
 
-void Application::mouse(int button, int state, int x, int y) {
+void Application::mouse(GLFWwindow *window, double xpos, double ypos) {
 
 }
 
@@ -81,73 +92,79 @@ void Application::display() {
     float bottom = -top;
     float left = ratio * bottom;
     float right = ratio * top;
+
     glFrustum(left, right, bottom, top, near, far);
     // move to origin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     // move the object backwards
-    glTranslatef(0.0f, 0.0f, -10.0f);
+    glTranslatef(0.0f, 0.0f, -20.0f);
 
     // move the object in a fancy way
     const float t = (float) glfwGetTime() * 2.0f;
     const float n = 0.5f;
-    glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
+    //glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
 
     // rotate the object
-    glRotatef((float) glfwGetTime() * 50.f, 1.f, 0.f, 1.f);
+    glRotatef(30, 1.0, 0.0, 0.0);
+
+    glTranslatef(cameraX, cameraY, cameraZ);
 
     Drawer drawer;
 
     drawer.drawSnowman();
-
-    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    drawer.drawGrid();
 }
 
 void Application::initialize() {
-
-    // enable and set colors
-    glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0, 0.0, 0.0, 1.0);
+    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 
-    // enable and set depth parameters
+    glfwWindowHint(GLFW_SAMPLES, 5);
+
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
-    glClearDepth(1.0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+    glClearDepth(2.0);
 }
 
 void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(640, 480, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(1000, 800, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
         return;
     }
 
-    // Set callback functions for GLFW
+    // The register glfw callbacks
     glfwSetFramebufferSizeCallback(window, Application::reshape);
+    glfwSetKeyCallback(window, Application::keyboard);
+    glfwSetCursorPosCallback(window, Application::mouse);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    // initialize the GL library
     initialize();
 
-    /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
-        /* Render here */
         display();
-
-        /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
-        /* Poll for and process events */
         glfwPollEvents();
     }
 

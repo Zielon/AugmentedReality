@@ -90,3 +90,27 @@ void Drawer::drawSnowman() {
     glTranslatef(0.0f, 0.0f, 0.1f);
     drawCone(0.05, 0.5, 10, 10);
 }
+
+void Drawer::drawGrid() {
+    glPushMatrix();
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glTranslatef(-2.5f, -1.5f, -2.5f);
+    glBegin(GL_QUADS);
+    glVertex3f(0, -0.001f, 0);
+    glVertex3f(0, -0.001f, 5);
+    glVertex3f(5, -0.001f, 5);
+    glVertex3f(5, -0.001f, 0);
+    glEnd();
+
+    glBegin(GL_LINES);
+    for (int i = 0; i <= 5; i++) {
+        if (i == 0) { glColor3f(.6, .3, .3); } else { glColor3f(.25, .25, .25); };
+        glVertex3f(i, 0, 0);
+        glVertex3f(i, 0, 5);
+        if (i == 0) { glColor3f(.3, .3, .6); } else { glColor3f(.25, .25, .25); };
+        glVertex3f(0, 0, i);
+        glVertex3f(5, 0, i);
+    };
+    glEnd();
+    glPopMatrix();
+}

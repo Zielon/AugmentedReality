@@ -10,6 +10,8 @@ public:
     void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks);
 
     void drawSnowman();
+
+    void drawGrid();
 };
 
 #endif //PROJECT_DRAWING_H

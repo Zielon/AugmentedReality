@@ -9,17 +9,11 @@ public:
 
     virtual void start();
 
-    virtual void keyboard(unsigned char key, int x, int y);
-
-    virtual void keyboardUp(unsigned char key, int x, int y);
-
     virtual void special(int key, int x, int y);
 
     virtual void specialUp(int key, int x, int y);
 
     virtual void idle();
-
-    virtual void mouse(int button, int state, int x, int y);
 
     virtual void passiveMotion(int x, int y);
 
@@ -27,10 +21,18 @@ public:
 
     virtual void display();
 
-    static void reshape(GLFWwindow *window, int width, int height);
 
 private:
     GLFWwindow *window;
+    double camera;
+
+    static void reshape(GLFWwindow *window, int width, int height);
+
+    static void mouse(GLFWwindow* window, double xpos, double ypos);
+
+    static void keyboard(GLFWwindow* window, int key, int code, int action, int mods);
+
+    static void keyboardUp(unsigned char key, int x, int y);
 };
 
 #endif //PROJECT_APPLICATION_H
