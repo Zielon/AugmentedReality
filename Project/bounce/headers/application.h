@@ -28,9 +28,9 @@ private:
 
     static void reshape(GLFWwindow *window, int width, int height);
 
-    static void mouse(GLFWwindow* window, double xpos, double ypos);
+    static void mouse(GLFWwindow *window, double xpos, double ypos);
 
-    static void keyboard(GLFWwindow* window, int key, int code, int action, int mods);
+    static void keyboard(GLFWwindow *window, int key, int code, int action, int mods);
 
     static void keyboardUp(unsigned char key, int x, int y);
 };

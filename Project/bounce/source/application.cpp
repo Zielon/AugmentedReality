@@ -4,7 +4,8 @@
 #include <GL/glut.h>
 
 #include "../headers/application.h"
-#include "../headers/ball_dynamics.h"
+#include "../headers/ball.h"
+#include "../headers/scene.h"
 
 using namespace std;
 
@@ -156,13 +157,14 @@ void Application::start() {
     glMatrixMode(GL_MODELVIEW);
     gluLookAt(0.0, 5.0, 90.0, 0.0, 8.0, 0.0, 0.0, 1.0, 0.0);
 
-    Ball ball;
+    Scene scene;
+
+    // Set default objects [ 1 ball and 1 grid ]
+    scene.defaultSetting();
 
     while (!glfwWindowShouldClose(window)) {
-        //display();
 
-        ball.draw();
-        ball.simulate();
+        scene.simulate();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

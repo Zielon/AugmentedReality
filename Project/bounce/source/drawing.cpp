@@ -97,7 +97,7 @@ void Drawer::drawGrid() {
     float SIZE = 7.f;
 
     glColor3f(1.0f, 0.0f, 0.0f);
-    glTranslatef(-SIZE/2, -1.5f, -SIZE/2);
+    glTranslatef(-SIZE / 2, -1.5f, -SIZE / 2);
 
     glBegin(GL_QUADS);
     glVertex3f(0, -0.001f, 0);
