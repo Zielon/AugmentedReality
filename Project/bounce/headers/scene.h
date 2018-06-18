@@ -13,7 +13,9 @@ public:
 
     void addObject(SceneObject *element);
 
-    void simulate();
+    void simulateObjects();
+
+    void drawObjects();
 
     void defaultSetting();
 

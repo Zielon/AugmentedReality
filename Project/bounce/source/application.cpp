@@ -128,7 +128,7 @@ void Application::initialize() {
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-    glClearDepth(2.0);
+    glClearDepth(1.0);
 }
 
 void Application::start() {
@@ -164,7 +164,8 @@ void Application::start() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        scene.simulate();
+        scene.drawObjects();
+        scene.simulateObjects();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

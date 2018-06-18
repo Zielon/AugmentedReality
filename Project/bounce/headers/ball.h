@@ -14,14 +14,13 @@ public:
 
     void setPosition(double x, double y) override;
 
-    static SceneObject *getDefault();
-
-    void setTransform(btTransform transform);
+    static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
 
 private:
     btTransform transform;
     btScalar matrix[16];
     btMotionState *motionState;
+    int ballSize;
 };
 
 #endif //PROJECT_BALL_H

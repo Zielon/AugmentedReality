@@ -2,6 +2,7 @@
 #include <BulletCollision/BroadphaseCollision/btAxisSweep3.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 #include "../headers/scene_object.h"
 #include "../headers/scene.h"
 #include "../headers/ball.h"
@@ -9,19 +10,16 @@
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
-        dynamicsWorld->addRigidBody(element);
+        dynamicsWorld->addRigidBody((btRigidBody*) element);
         objects.push_back(element);
     }
 }
 
-void Scene::simulate() {
+void Scene::simulateObjects() {
     float dtime = time;
     time = (float) glfwGetTime();
     dtime = time - dtime;
-
     dynamicsWorld->stepSimulation(dtime, 10);
-
-    for (auto object : objects) object->draw();
 }
 
 Scene::Scene() {
@@ -31,10 +29,15 @@ Scene::Scene() {
     dynamicsWorld = new btDiscreteDynamicsWorld(new btCollisionDispatcher(collisionCfg), axisSweep,
                                                 new btSequentialImpulseConstraintSolver, collisionCfg);
 
-    dynamicsWorld->setGravity(btVector3(0, -9, 0));
+    dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
 void Scene::defaultSetting() {
-    addObject(Ball::getDefault());
-    addObject(Grid::getDefault());
+    addObject(Ball::getDefault(btVector3(-10, 30, 15), btVector3(5, 5, 5), 10, true));
+    addObject(Ball::getDefault(btVector3(0, -20, 0), btVector3(20, 20, 20), 40, false));
+}
+
+void Scene::drawObjects() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    for (auto object : objects) object->draw();
 }
