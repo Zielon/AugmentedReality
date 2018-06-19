@@ -2,6 +2,7 @@
 #define PROJECT_APPLICATION_H
 
 #include <GLFW/glfw3.h>
+#include "scene.h"
 
 class Application {
 public:
@@ -24,7 +25,7 @@ public:
 
 private:
     GLFWwindow *window;
-    double camera;
+    static Scene *scene;
 
     static void reshape(GLFWwindow *window, int width, int height);
 

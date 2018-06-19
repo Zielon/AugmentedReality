@@ -33,11 +33,15 @@ Scene::Scene() {
 }
 
 void Scene::defaultSetting() {
-    addObject(Ball::getDefault(btVector3(0, 0, 0), btVector3(0.5, 0.5, 0.5), 10, true));
-    addObject(Grid::getDefault(btVector3(0, 0, 0), btVector3(0.5, 0.5, 0.5), 10, false));
+    addObject(Ball::getDefault(btVector3(0, 1.5, -0.5), btVector3(0.5, 0.5, 0.5), 10, true));
+    addObject(Grid::getDefault(btVector3(0, -2.5, 0), btVector3(1, 1, 1)));
 }
 
 void Scene::drawObjects() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     for (auto object : objects) object->draw();
+}
+
+std::vector<SceneObject *> Scene::getObjects() {
+    return objects;
 }

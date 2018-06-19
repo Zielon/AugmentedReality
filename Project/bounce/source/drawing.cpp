@@ -96,22 +96,22 @@ void Drawer::drawGrid() {
 
     float SIZE = 7.f;
 
-    glColor3f(1.0f, 0.0f, 0.0f);
     glTranslatef(-SIZE / 2, -1.5f, -SIZE / 2);
 
-    glBegin(GL_QUADS);
-    glVertex3f(0, -0.001f, 0);
-    glVertex3f(0, -0.001f, SIZE);
-    glVertex3f(SIZE, -0.001f, SIZE);
-    glVertex3f(SIZE, -0.001f, 0);
-    glEnd();
+//    glBegin(GL_QUADS);
+//    glVertex3f(0, -0.001f, 0);
+//    glVertex3f(0, -0.001f, SIZE);
+//    glVertex3f(SIZE, -0.001f, SIZE);
+//    glVertex3f(SIZE, -0.001f, 0);
+//    glEnd();
 
     glBegin(GL_LINES);
+    glColor3f(1.0f, 0.0f, 0.0f);
     for (int i = 0; i <= SIZE; i++) {
-        if (i == 0) { glColor3f(.6, .3, .3); } else { glColor3f(.25, .25, .25); };
+        //if (i == 0) { glColor3f(.6, .3, .3); } else { glColor3f(.25, .25, .25); };
         glVertex3f(i, 0, 0);
         glVertex3f(i, 0, SIZE);
-        if (i == 0) { glColor3f(.3, .3, .6); } else { glColor3f(.25, .25, .25); };
+        //if (i == 0) { glColor3f(.3, .3, .6); } else { glColor3f(.25, .25, .25); };
         glVertex3f(0, 0, i);
         glVertex3f(SIZE, 0, i);
     };

@@ -13,6 +13,8 @@ public:
 
     void addObject(SceneObject *element);
 
+    std::vector<SceneObject *> getObjects();
+
     void simulateObjects();
 
     void drawObjects();

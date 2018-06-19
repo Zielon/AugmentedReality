@@ -14,6 +14,8 @@ public:
 
     void setPosition(double x, double y) override;
 
+    Type getType() override;
+
     static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
 
 private:

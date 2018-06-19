@@ -30,12 +30,12 @@ SceneObject *Ball::getDefault(btVector3 origin, btVector3 boxShape, int size, bo
     btDefaultMotionState *motionState;
     btTransform trans;
 
+    // The ball is considered as a box for simplification
     shape = new btBoxShape(boxShape);
 
     trans.setIdentity();
-    qtn.setEuler(0.8, 0.7, 0.4);
-    trans.setRotation(qtn);
     trans.setOrigin(origin);
+
     motionState = new btDefaultMotionState(trans);
 
     btScalar mass = gravity ? btScalar(1.0) : btScalar(0.0);
@@ -44,8 +44,12 @@ SceneObject *Ball::getDefault(btVector3 origin, btVector3 boxShape, int size, bo
     auto ball = new Ball(mass, motionState, shape, inertia);
 
     ball->transform = trans;
-    ball->motionState = motionState;
+    ball->quaternion = qtn;
     ball->ballSize = size;
 
     return ball;
+}
+
+Type Ball::getType() {
+    return BALL;
 }

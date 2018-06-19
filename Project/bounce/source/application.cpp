@@ -1,9 +1,11 @@
 #include <cmath>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <algorithm>
+#include <string>
 
 #include "../headers/application.h"
-#include "../headers/scene.h"
+#include "../headers/grid.h"
 
 using namespace std;
 
@@ -11,11 +13,19 @@ float cameraX = 0.0;
 float cameraY = 0.0;
 float cameraZ = 0.0;
 
+Scene *Application::scene = new Scene();
+
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY -= 0.1;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX -= 0.1;
+
+    auto v = Application::scene->getObjects();
+    Grid *grid = (Grid *) find_if(v.begin(), v.end(), [](auto object) { return object->getType() == GRID; }).base();
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setAngle(0.1, 0.0, 0.0);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
 }
@@ -146,17 +156,15 @@ void Application::start() {
 
     initialize();
 
-    Scene scene;
-
     // Set default objects [ 1 ball and 1 grid ]
-    scene.defaultSetting();
+    scene->defaultSetting();
 
     while (!glfwWindowShouldClose(window)) {
 
         display();
 
-        scene.drawObjects();
-        scene.simulateObjects();
+        scene->drawObjects();
+        scene->simulateObjects();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

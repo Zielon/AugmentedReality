@@ -8,14 +8,16 @@ Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisio
 }
 
 void Grid::draw() {
+    glPushMatrix();
     drawer.drawGrid();
+    glPopMatrix();
 }
 
 void Grid::setPosition(double x, double y) {
 
 }
 
-SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape, int size, bool gravity) {
+SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape) {
     btQuaternion qtn;
     btCollisionShape *shape;
     btDefaultMotionState *motionState;
@@ -24,18 +26,25 @@ SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape, int size, bo
     shape = new btBoxShape(boxShape);
 
     trans.setIdentity();
-    qtn.setEuler(0.8, 0.7, 0.4);
+    qtn.setEuler(0.0, 0.0, 0.0);
     trans.setRotation(qtn);
     trans.setOrigin(origin);
     motionState = new btDefaultMotionState(trans);
 
-    btScalar mass = gravity ? btScalar(1.0) : btScalar(0.0);
-    btVector3 inertia = gravity ? btVector3(1, 1, 1) : btVector3(0, 0, 0);
+    auto grid = new Grid(btScalar(0.0), motionState, shape, btVector3(0, 0, 0));
 
-    auto ball = new Grid(mass, motionState, shape, inertia);
+    grid->transform = trans;
+    grid->quaternion = qtn;
 
-    ball->transform = trans;
-    ball->motionState = motionState;
+    return grid;
+}
 
-    return ball;
+void Grid::setAngle(btScalar x, btScalar y, btScalar z) {
+    transform.setIdentity();
+    quaternion.setEuler(x, y, z);
+    transform.setRotation(quaternion);
+}
+
+Type Grid::getType() {
+    return GRID;
 }

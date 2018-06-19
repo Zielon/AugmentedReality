@@ -7,6 +7,12 @@
 #include <bullet/LinearMath/btVector3.h>
 #include "drawing.h"
 
+enum Type
+{
+    GRID,
+    BALL
+};
+
 class SceneObject : public btRigidBody {
 public:
 
@@ -19,11 +25,13 @@ public:
 
     virtual void setPosition(double x, double y) = 0;
 
+    virtual Type getType() = 0;
+
 protected:
     Drawer drawer;
     btTransform transform;
     btScalar matrix[16];
-    btMotionState *motionState;
+    btQuaternion quaternion;
 };
 
 #endif //PROJECT_OBJECT_H

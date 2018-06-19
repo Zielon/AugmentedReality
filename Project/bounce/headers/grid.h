@@ -15,7 +15,11 @@ public:
 
     void setPosition(double x, double y) override;
 
-    static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
+    Type getType() override;
+
+    void setAngle(btScalar x, btScalar y, btScalar z);
+
+    static SceneObject *getDefault(btVector3 origin, btVector3 shape);
 };
 
 #endif //PROJECT_GRID_H
