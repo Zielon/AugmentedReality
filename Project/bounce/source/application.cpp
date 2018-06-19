@@ -6,6 +6,7 @@
 
 #include "../headers/application.h"
 #include "../headers/grid.h"
+#include "../headers/ball.h"
 
 using namespace std;
 
@@ -35,6 +36,11 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if(scene->getObjects().size() < 200)
+            scene->addObject(Ball::getDefault(btVector3(0, 3, 0), 0.3, true));
+    }
 }
 
 void Application::keyboardUp(unsigned char key, int x, int y) {

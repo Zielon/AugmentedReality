@@ -18,12 +18,12 @@ void Scene::simulateObjects() {
     float dtime = time;
     time = (float) glfwGetTime();
     dtime = time - dtime;
-    dynamicsWorld->stepSimulation(dtime, 10);
+    dynamicsWorld->stepSimulation(dtime);
 }
 
 Scene::Scene() {
     btDefaultCollisionConfiguration *collisionCfg = new btDefaultCollisionConfiguration();
-    btAxisSweep3 *axisSweep = new btAxisSweep3(btVector3(-100, -100, -100), btVector3(100, 100, 100), 128);
+    btAxisSweep3 *axisSweep = new btAxisSweep3(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000), 1000);
 
     dynamicsWorld = new btDiscreteDynamicsWorld(new btCollisionDispatcher(collisionCfg), axisSweep,
                                                 new btSequentialImpulseConstraintSolver, collisionCfg);

@@ -32,9 +32,9 @@ SceneObject *Ball::getDefault(btVector3 origin, float size, bool gravity) {
     shape = new btSphereShape(size);
 
     trans.setIdentity();
-    qtn.setEuler(0.8, 0.7, 0.4);
+    qtn.setEuler(0.0, 0.0, 0.0);
     trans.setRotation(qtn);
-    trans.setOrigin(btVector3(-1, 5, 0));
+    trans.setOrigin(origin);
 
     motionState = new btDefaultMotionState(trans);
 
@@ -43,6 +43,7 @@ SceneObject *Ball::getDefault(btVector3 origin, float size, bool gravity) {
 
     auto ball = new Ball(mass, motionState, shape, inertia);
 
+    ball->setFriction(1);
     ball->quaternion = qtn;
     ball->ballSize = size;
     ball->motionState = motionState;

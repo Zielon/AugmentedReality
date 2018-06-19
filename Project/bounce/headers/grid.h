@@ -23,9 +23,10 @@ public:
 
 private:
     static float gridSize;
-    float angleX = .0;
-    float angleY = .0;
-    float angleZ = .0;
+    static float gridThickness;
+    float angleX = .0f;
+    float angleY = 0.25f;
+    float angleZ = -0.05f;
 };
 
 #endif //PROJECT_GRID_H

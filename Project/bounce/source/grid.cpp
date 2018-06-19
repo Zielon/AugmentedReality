@@ -5,17 +5,22 @@
 
 Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisionShape, const btVector3 &localInertia)
         : SceneObject(mass, motionState, collisionShape, localInertia) {
-
 }
 
 float Grid::gridSize = 7.f;
+float Grid::gridThickness = 0.1f;
 
 void Grid::draw() {
     glPushMatrix();
+    quaternion.setEuler(angleX, angleY, angleZ);
+    transform.setIdentity();
     transform.setRotation(quaternion);
+    motionState->setWorldTransform(transform);
+    setMotionState(motionState);
+
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    drawer.drawGrid((int) gridSize, 0.1);
+    drawer.drawGrid((int) gridSize, gridThickness);
     glPopMatrix();
 }
 
@@ -29,10 +34,10 @@ SceneObject *Grid::getDefault(btVector3 origin) {
     btDefaultMotionState *motionState;
     btTransform trans;
 
-    shape = new btBoxShape(btVector3(gridSize / 2, 0.05, gridSize / 2));
+    shape = new btBoxShape(btVector3(gridSize / 2, gridThickness / 2, gridSize / 2));
 
     trans.setIdentity();
-    qtn.setEuler(0, 0.25, -0.05);
+    qtn.setEuler(0, 0, 0);
     trans.setRotation(qtn);
     trans.setOrigin(origin);
 
