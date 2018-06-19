@@ -4,7 +4,6 @@ project(Project)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(Bullet REQUIRED)
 
@@ -42,7 +41,6 @@ add_executable(Project
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
-target_link_libraries(Project glut)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})
 target_link_libraries(Project ${OPENGL_glu_LIBRARY})
 target_link_libraries(Project ${BULLET_LIBRARIES})

@@ -1,5 +1,4 @@
 #include <GL/gl.h>
-#include <GL/glut.h>
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
@@ -14,12 +13,11 @@ Ball::Ball(btScalar mass,
 }
 
 void Ball::draw() {
-    glColor3f(1.0f / ballSize * 0.5f, 5.0f / ballSize, 0.7f);
     glPushMatrix();
     ((btRigidBody *) this)->getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    glutSolidCube(ballSize);
+    drawer.drawBox(ballSize, 1.0f / ballSize * 0.5f, 5.0f / ballSize, 0.7f);
     glPopMatrix();
 }
 

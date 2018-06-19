@@ -12,6 +12,8 @@ public:
     void drawSnowman();
 
     void drawGrid();
+
+    void drawBox(int size, float r, float g, float b);
 };
 
 #endif //PROJECT_DRAWING_H

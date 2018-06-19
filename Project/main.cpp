@@ -3,9 +3,6 @@
 
 int main(int argc, char *argv[]) {
 
-    // temporary only for drawing
-    glutInit(&argc, argv);
-
     Application app;
 
     app.start();
