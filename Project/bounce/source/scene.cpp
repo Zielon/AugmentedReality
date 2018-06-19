@@ -33,8 +33,8 @@ Scene::Scene() {
 }
 
 void Scene::defaultSetting() {
-    addObject(Ball::getDefault(btVector3(-10, 30, 15), btVector3(5, 5, 5), 10, true));
-    addObject(Ball::getDefault(btVector3(0, -20, 0), btVector3(20, 20, 20), 40, false));
+    addObject(Ball::getDefault(btVector3(0, 0, 0), btVector3(0.5, 0.5, 0.5), 10, true));
+    addObject(Grid::getDefault(btVector3(0, 0, 0), btVector3(0.5, 0.5, 0.5), 10, false));
 }
 
 void Scene::drawObjects() {

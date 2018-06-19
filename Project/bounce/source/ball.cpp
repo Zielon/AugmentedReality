@@ -14,10 +14,11 @@ Ball::Ball(btScalar mass,
 
 void Ball::draw() {
     glPushMatrix();
+    glColor3f(1.0f, 1.0f, 1.0f);
     ((btRigidBody *) this)->getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    drawer.drawBox(ballSize, 1.0f / ballSize * 0.5f, 5.0f / ballSize, 0.7f);
+    drawer.drawSphere(0.5, 30, 30);
     glPopMatrix();
 }
 

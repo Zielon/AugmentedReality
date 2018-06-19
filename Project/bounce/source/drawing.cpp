@@ -122,10 +122,10 @@ void Drawer::drawGrid() {
 void Drawer::drawBox(int size, float r, float g, float b) {
 
     glScalef(size, size, size);
-    glColor3f(r, g, b);
 
     // White side - BACK
     glBegin(GL_POLYGON);
+    glColor3f(r, g, b);
     glVertex3f(0.5, -0.5, 0.5);
     glVertex3f(0.5, 0.5, 0.5);
     glVertex3f(-0.5, 0.5, 0.5);
@@ -134,6 +134,7 @@ void Drawer::drawBox(int size, float r, float g, float b) {
 
     // Purple side - RIGHT
     glBegin(GL_POLYGON);
+    glColor3f(1.0, 0.0, 1.0);
     glVertex3f(0.5, -0.5, -0.5);
     glVertex3f(0.5, 0.5, -0.5);
     glVertex3f(0.5, 0.5, 0.5);
@@ -142,6 +143,7 @@ void Drawer::drawBox(int size, float r, float g, float b) {
 
     // Green side - LEFT
     glBegin(GL_POLYGON);
+    glColor3f(0.0, 1.0, 0.0);
     glVertex3f(-0.5, -0.5, 0.5);
     glVertex3f(-0.5, 0.5, 0.5);
     glVertex3f(-0.5, 0.5, -0.5);
@@ -150,6 +152,7 @@ void Drawer::drawBox(int size, float r, float g, float b) {
 
     // Blue side - TOP
     glBegin(GL_POLYGON);
+    glColor3f(0.0, 0.0, 1.0);
     glVertex3f(0.5, 0.5, 0.5);
     glVertex3f(0.5, 0.5, -0.5);
     glVertex3f(-0.5, 0.5, -0.5);
@@ -158,6 +161,7 @@ void Drawer::drawBox(int size, float r, float g, float b) {
 
     // Red side - BOTTOM
     glBegin(GL_POLYGON);
+    glColor3f(1.0, 0.0, 0.0);
     glVertex3f(0.5, -0.5, -0.5);
     glVertex3f(0.5, -0.5, 0.5);
     glVertex3f(-0.5, -0.5, 0.5);

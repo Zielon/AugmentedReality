@@ -5,6 +5,7 @@
 #include <bullet/LinearMath/btVector3.h>
 #include <bullet/LinearMath/btMotionState.h>
 #include "scene_object.h"
+#include "drawing.h"
 
 class Grid : SceneObject {
 public:
@@ -14,7 +15,7 @@ public:
 
     void setPosition(double x, double y) override;
 
-    static SceneObject *getDefault();
+    static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
 };
 
 #endif //PROJECT_GRID_H

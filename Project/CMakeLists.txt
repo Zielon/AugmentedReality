@@ -37,7 +37,12 @@ add_executable(Project
         bounce/headers/application.h
         bounce/source/application.cpp
         bounce/headers/drawing.h
-        bounce/source/drawing.cpp bounce/headers/grid.h bounce/headers/scene_object.h bounce/headers/scene.h bounce/source/scene.cpp bounce/source/grid.cpp)
+        bounce/source/drawing.cpp
+        bounce/headers/grid.h
+        bounce/headers/scene_object.h
+        bounce/headers/scene.h
+        bounce/source/scene.cpp
+        bounce/source/grid.cpp)
 
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)

@@ -80,8 +80,8 @@ void Application::display() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    int fov = 50;
-    float near = 0.01f, far = 200.f;
+    int fov = 30;
+    float near = 0.01f, far = 100.f;
     auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
     float bottom = -top;
     float left = ratio * bottom;
@@ -93,14 +93,8 @@ void Application::display() {
     glLoadIdentity();
 
     // move the object backwards
-    glTranslatef(0.0f, 0.0f, -100.0f);
-
-    // move the object in a fancy way
-    const float t = (float) glfwGetTime() * 2.0f;
-    const float n = 0.5f;
-    //glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
-
-    //glRotatef(10, 1.0, 0.0, 0.0);
+    glTranslatef(0.0f, 0.0f, -20.0f);
+    glRotatef(10, 1.0, 0.0, 0.0);
     glTranslatef(cameraX, cameraY, cameraZ);
 }
 
@@ -116,12 +110,9 @@ void Application::initialize() {
     glEnable(GL_LIGHTING);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-    GLfloat global_ambient[] = {1.0, 1.0, 1.0, 1.0};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-
-    GLfloat light_position[] = {1.0, 0.0, 1.0, 0.0};
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
+    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
     glfwWindowHint(GLFW_SAMPLES, 5);
@@ -138,7 +129,7 @@ void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(600, 600, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(800, 800, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();

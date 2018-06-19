@@ -5,6 +5,7 @@
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <bullet/LinearMath/btScalar.h>
 #include <bullet/LinearMath/btVector3.h>
+#include "drawing.h"
 
 class SceneObject : public btRigidBody {
 public:
@@ -17,6 +18,12 @@ public:
     virtual void draw() = 0;
 
     virtual void setPosition(double x, double y) = 0;
+
+protected:
+    Drawer drawer;
+    btTransform transform;
+    btScalar matrix[16];
+    btMotionState *motionState;
 };
 
 #endif //PROJECT_OBJECT_H
