@@ -1,8 +1,10 @@
 #ifndef PROJECT_OBJECT_H
 #define PROJECT_OBJECT_H
 
-#include <BulletDynamics/Dynamics/btRigidBody.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
+#include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <bullet/LinearMath/btScalar.h>
+#include <bullet/LinearMath/btVector3.h>
 
 class SceneObject : public btRigidBody {
 public:

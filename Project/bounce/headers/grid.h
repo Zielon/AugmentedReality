@@ -1,9 +1,9 @@
 #ifndef PROJECT_GRID_H
 #define PROJECT_GRID_H
 
-#include <BulletCollision/CollisionShapes/btCollisionShape.h>
-#include <LinearMath/btVector3.h>
-#include <LinearMath/btMotionState.h>
+#include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
+#include <bullet/LinearMath/btVector3.h>
+#include <bullet/LinearMath/btMotionState.h>
 #include "scene_object.h"
 
 class Grid : SceneObject {

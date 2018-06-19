@@ -2,7 +2,7 @@
 #define PROJECT_BALL_H
 
 #include <vector>
-#include <LinearMath/btDefaultMotionState.h>
+#include <bullet/LinearMath/btDefaultMotionState.h>
 #include "drawing.h"
 #include "scene_object.h"
 
@@ -17,6 +17,7 @@ public:
     static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
 
 private:
+    Drawer drawer;
     btTransform transform;
     btScalar matrix[16];
     btMotionState *motionState;

@@ -1,6 +1,6 @@
-#include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
-#include <BulletCollision/BroadphaseCollision/btAxisSweep3.h>
-#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
+#include <bullet/BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
+#include <bullet/BulletCollision/BroadphaseCollision/btAxisSweep3.h>
+#include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
 #include "../headers/scene_object.h"

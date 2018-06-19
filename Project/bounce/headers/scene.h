@@ -1,9 +1,9 @@
 #ifndef PROJECT_SCENE_H
 #define PROJECT_SCENE_H
 
-#include <LinearMath/btScalar.h>
-#include <LinearMath/btTransform.h>
-#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <bullet/LinearMath/btScalar.h>
+#include <bullet/LinearMath/btTransform.h>
+#include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <vector>
 #include "scene_object.h"
 
