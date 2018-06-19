@@ -46,6 +46,7 @@ SceneObject *Ball::getDefault(btVector3 origin, btVector3 boxShape, int size, bo
     ball->transform = trans;
     ball->quaternion = qtn;
     ball->ballSize = size;
+    ball->motionState = motionState;
 
     return ball;
 }

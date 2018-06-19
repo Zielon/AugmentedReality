@@ -2,7 +2,6 @@
 #include <bullet/BulletCollision/BroadphaseCollision/btAxisSweep3.h>
 #include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
-#include <GL/glut.h>
 #include "../headers/scene_object.h"
 #include "../headers/scene.h"
 #include "../headers/ball.h"
@@ -10,7 +9,7 @@
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
-        dynamicsWorld->addRigidBody((btRigidBody*) element);
+        dynamicsWorld->addRigidBody((btRigidBody *) element);
         objects.push_back(element);
     }
 }

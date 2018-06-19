@@ -5,10 +5,10 @@
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <bullet/LinearMath/btScalar.h>
 #include <bullet/LinearMath/btVector3.h>
+#include <LinearMath/btDefaultMotionState.h>
 #include "drawing.h"
 
-enum Type
-{
+enum Type {
     GRID,
     BALL
 };
@@ -32,6 +32,7 @@ protected:
     btTransform transform;
     btScalar matrix[16];
     btQuaternion quaternion;
+    btDefaultMotionState *motionState;
 };
 
 #endif //PROJECT_OBJECT_H

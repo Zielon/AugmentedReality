@@ -17,10 +17,17 @@ Scene *Application::scene = new Scene();
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
-    auto v = Application::scene->getObjects();
-    Grid *grid = (Grid *) find_if(v.begin(), v.end(), [](auto object) { return object->getType() == GRID; }).base();
+    Grid *grid = ((Grid *) scene->getObjects()[1]);
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setAngle(0.1, 0.0, 0.0);
+    // ========== GRID ROTATION ==========
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setRotation(-2.5f, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) grid->setRotation(2.5, 0.f, 0.f, 1.f);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) grid->setRotation(2.5, 1.f, 0.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) grid->setRotation(-2.5f, 1.f, 0.f, 0.f);
+
+    // ==========
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY += 0.1;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY -= 0.1;

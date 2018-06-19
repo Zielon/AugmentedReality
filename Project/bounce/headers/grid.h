@@ -17,9 +17,16 @@ public:
 
     Type getType() override;
 
-    void setAngle(btScalar x, btScalar y, btScalar z);
+    void setRotation(float angle, float x, float y, float z);
+
+    void setTransform(btTransform &worldTrans);
 
     static SceneObject *getDefault(btVector3 origin, btVector3 shape);
+
+private:
+    float angleX;
+    float angleY;
+    float angleZ;
 };
 
 #endif //PROJECT_GRID_H

@@ -9,6 +9,9 @@ Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisio
 
 void Grid::draw() {
     glPushMatrix();
+    glRotatef(angleX, 1.0, 0.0, 0.0);
+    glRotatef(angleY, 0.0, 1.0, 0.0);
+    glRotatef(angleZ, 0.0, 0.0, 1.0);
     drawer.drawGrid();
     glPopMatrix();
 }
@@ -35,16 +38,21 @@ SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape) {
 
     grid->transform = trans;
     grid->quaternion = qtn;
+    grid->motionState = motionState;
 
     return grid;
 }
 
-void Grid::setAngle(btScalar x, btScalar y, btScalar z) {
-    transform.setIdentity();
-    quaternion.setEuler(x, y, z);
-    transform.setRotation(quaternion);
+void Grid::setTransform(btTransform &worldTrans) {
+    motionState->setWorldTransform(worldTrans);
 }
 
 Type Grid::getType() {
     return GRID;
+}
+
+void Grid::setRotation(float angle, float x, float y, float z) {
+    if (x > 0.0) this->angleX += angle;
+    if (y > 0.0) this->angleY += angle;
+    if (z > 0.0) this->angleZ += angle;
 }
