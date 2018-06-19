@@ -1,4 +1,4 @@
-#include <GL/glut.h>
+
 #include "bounce/headers/application.h"
 
 int main(int argc, char *argv[]) {

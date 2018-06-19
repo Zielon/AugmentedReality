@@ -1,5 +1,6 @@
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <GL/glut.h>
 #include "../headers/grid.h"
 
 Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisionShape, const btVector3 &localInertia)
@@ -7,12 +8,14 @@ Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisio
 
 }
 
+float Grid::gridSize = 7.f;
+
 void Grid::draw() {
     glPushMatrix();
-    glRotatef(angleX, 1.0, 0.0, 0.0);
-    glRotatef(angleY, 0.0, 1.0, 0.0);
-    glRotatef(angleZ, 0.0, 0.0, 1.0);
-    drawer.drawGrid();
+    transform.setRotation(quaternion);
+    transform.getOpenGLMatrix(matrix);
+    glMultMatrixf(matrix);
+    drawer.drawGrid((int) gridSize, 0.1);
     glPopMatrix();
 }
 
@@ -20,18 +23,19 @@ void Grid::setPosition(double x, double y) {
 
 }
 
-SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape) {
+SceneObject *Grid::getDefault(btVector3 origin) {
     btQuaternion qtn;
     btCollisionShape *shape;
     btDefaultMotionState *motionState;
     btTransform trans;
 
-    shape = new btBoxShape(boxShape);
+    shape = new btBoxShape(btVector3(gridSize / 2, 0.05, gridSize / 2));
 
     trans.setIdentity();
-    qtn.setEuler(0.0, 0.0, 0.0);
+    qtn.setEuler(0, 0.25, -0.05);
     trans.setRotation(qtn);
     trans.setOrigin(origin);
+
     motionState = new btDefaultMotionState(trans);
 
     auto grid = new Grid(btScalar(0.0), motionState, shape, btVector3(0, 0, 0));
@@ -41,10 +45,6 @@ SceneObject *Grid::getDefault(btVector3 origin, btVector3 boxShape) {
     grid->motionState = motionState;
 
     return grid;
-}
-
-void Grid::setTransform(btTransform &worldTrans) {
-    motionState->setWorldTransform(worldTrans);
 }
 
 Type Grid::getType() {

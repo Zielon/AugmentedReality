@@ -19,14 +19,13 @@ public:
 
     void setRotation(float angle, float x, float y, float z);
 
-    void setTransform(btTransform &worldTrans);
-
-    static SceneObject *getDefault(btVector3 origin, btVector3 shape);
+    static SceneObject *getDefault(btVector3 origin);
 
 private:
-    float angleX;
-    float angleY;
-    float angleZ;
+    static float gridSize;
+    float angleX = .0;
+    float angleY = .0;
+    float angleZ = .0;
 };
 
 #endif //PROJECT_GRID_H

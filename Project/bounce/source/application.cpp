@@ -21,11 +21,11 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
 
     // ========== GRID ROTATION ==========
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setRotation(-2.5f, 0.f, 0.f, 1.f);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) grid->setRotation(2.5, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setRotation(-0.1f, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) grid->setRotation(0.1, 0.f, 0.f, 1.f);
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) grid->setRotation(2.5, 1.f, 0.f, 0.f);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) grid->setRotation(-2.5f, 1.f, 0.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) grid->setRotation(0.1, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) grid->setRotation(-0.1f, 0.f, 1.f, 0.f);
 
     // ==========
 
@@ -110,7 +110,7 @@ void Application::display() {
     glLoadIdentity();
 
     // move the object backwards
-    glTranslatef(0.0f, 0.0f, -20.0f);
+    glTranslatef(0.0f, 0.0f, -25.0f);
     glRotatef(10, 1.0, 0.0, 0.0);
     glTranslatef(cameraX, cameraY, cameraZ);
 }
