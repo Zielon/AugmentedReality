@@ -27,6 +27,8 @@ Project/Project.build
 Project/Debug
 Project/Project.xcodeproj
 
+Project/data
+
 ## User settings
 xcuserdata/
 
