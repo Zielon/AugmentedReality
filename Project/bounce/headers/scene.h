@@ -6,6 +6,7 @@
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <vector>
 #include "scene_object.h"
+#include "grid.h"
 
 class Scene {
 public:
@@ -20,6 +21,12 @@ public:
     void drawObjects();
 
     void defaultSetting();
+
+    void clear();
+
+    void remove();
+
+    static Grid *grid;
 
 private:
     std::vector<SceneObject *> objects;

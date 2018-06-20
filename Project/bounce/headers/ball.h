@@ -16,7 +16,7 @@ public:
 
     Type getType() override;
 
-    static SceneObject *getDefault(btVector3 origin, float size, bool gravity);
+    static SceneObject *getDefault(btVector3 origin, float size);
 
 private:
     float ballSize;

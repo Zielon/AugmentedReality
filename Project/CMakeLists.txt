@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(Project)
 
+set(GCC_COVERAGE_COMPILE_FLAGS -pthread)
+
+find_package(Threads REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -44,6 +47,7 @@ add_executable(Project
         bounce/source/scene.cpp
         bounce/source/grid.cpp)
 
+target_link_libraries(Project ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})

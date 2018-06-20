@@ -14,7 +14,7 @@ Ball::Ball(btScalar mass,
 
 void Ball::draw() {
     glPushMatrix();
-    ((btRigidBody *) this)->getMotionState()->getWorldTransform(transform);
+    getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
     drawer.drawSphere(ballSize, 50, 50);
@@ -23,7 +23,7 @@ void Ball::draw() {
 
 void Ball::setPosition(double x, double y) {}
 
-SceneObject *Ball::getDefault(btVector3 origin, float size, bool gravity) {
+SceneObject *Ball::getDefault(btVector3 origin, float size) {
     btQuaternion qtn;
     btCollisionShape *shape;
     btDefaultMotionState *motionState;
@@ -32,18 +32,18 @@ SceneObject *Ball::getDefault(btVector3 origin, float size, bool gravity) {
     shape = new btSphereShape(size);
 
     trans.setIdentity();
-    qtn.setEuler(0.0, 0.0, 0.0);
-    trans.setRotation(qtn);
     trans.setOrigin(origin);
 
     motionState = new btDefaultMotionState(trans);
 
-    btScalar mass = gravity ? btScalar(1) : btScalar(0.0);
-    btVector3 inertia = gravity ? btVector3(1, 1, 1) : btVector3(0, 0, 0);
+    btScalar mass = 3.0;
 
-    auto ball = new Ball(mass, motionState, shape, inertia);
+    btVector3 fallInertia(0, 0, 0);
+    shape->calculateLocalInertia(mass, fallInertia);
 
-    ball->setFriction(1);
+    auto ball = new Ball(mass, motionState, shape, fallInertia);
+
+    ball->setUserIndex(-1);
     ball->quaternion = qtn;
     ball->ballSize = size;
     ball->motionState = motionState;

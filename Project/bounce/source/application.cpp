@@ -1,11 +1,10 @@
 #include <cmath>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include <algorithm>
 #include <string>
+#include <thread>
 
 #include "../headers/application.h"
-#include "../headers/grid.h"
 #include "../headers/ball.h"
 
 using namespace std;
@@ -18,15 +17,13 @@ Scene *Application::scene = new Scene();
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
-    Grid *grid = ((Grid *) scene->getObjects()[1]);
-
     // ========== GRID ROTATION ==========
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) grid->setRotation(-0.1f, 0.f, 0.f, 1.f);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) grid->setRotation(0.1, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.1f, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.1, 0.f, 0.f, 1.f);
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) grid->setRotation(0.1, 0.f, 1.f, 0.f);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) grid->setRotation(-0.1f, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.1, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.1f, 0.f, 1.f, 0.f);
 
     // ==========
 
@@ -38,8 +35,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        if (scene->getObjects().size() < 200)
-            scene->addObject(Ball::getDefault(btVector3(0, 3, 0), 0.3, true));
+        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
     }
 }
 
@@ -172,16 +168,23 @@ void Application::start() {
     // Set default objects [ 1 ball and 1 grid ]
     scene->defaultSetting();
 
+    thread simulator([this]() {
+        while (!glfwWindowShouldClose(window)) {
+            scene->simulateObjects();
+            Scene::grid->update();
+            this_thread::sleep_for(10ms);
+        }
+    });
+
     while (!glfwWindowShouldClose(window)) {
-
         display();
-
+        // Ignore synchronization
         scene->drawObjects();
-        scene->simulateObjects();
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    simulator.join();
+    scene->clear();
     glfwTerminate();
 }

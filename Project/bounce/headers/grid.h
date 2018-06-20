@@ -15,6 +15,8 @@ public:
 
     void setPosition(double x, double y) override;
 
+    void update();
+
     Type getType() override;
 
     void setRotation(float euler, float x, float y, float z);
@@ -25,8 +27,8 @@ private:
     static float gridSize;
     static float gridThickness;
     float gridYaw = .0f;
-    float gridPitch = 0.25f;
-    float gridRoll = -0.05f;
+    float gridPitch = .0f;
+    float gridRoll = .0f;
 };
 
 #endif //PROJECT_GRID_H
