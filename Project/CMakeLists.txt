@@ -18,6 +18,7 @@ configure_file(resources/stuff resources/stuff COPYONLY)
 
 link_directories(${BULLET_LIBRARY_DIRS})
 include_directories(${BULLET_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(Project
         main.cpp
@@ -47,6 +48,7 @@ add_executable(Project
         bounce/source/scene.cpp
         bounce/source/grid.cpp)
 
+target_link_libraries(Project ${OpenCV_LIBS})
 target_link_libraries(Project ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
