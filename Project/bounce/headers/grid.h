@@ -17,16 +17,16 @@ public:
 
     Type getType() override;
 
-    void setRotation(float angle, float x, float y, float z);
+    void setRotation(float euler, float x, float y, float z);
 
     static SceneObject *getDefault(btVector3 origin);
 
 private:
     static float gridSize;
     static float gridThickness;
-    float angleX = .0f;
-    float angleY = 0.25f;
-    float angleZ = -0.05f;
+    float gridYaw = .0f;
+    float gridPitch = 0.25f;
+    float gridRoll = -0.05f;
 };
 
 #endif //PROJECT_GRID_H

@@ -12,7 +12,7 @@ float Grid::gridThickness = 0.1f;
 
 void Grid::draw() {
     glPushMatrix();
-    quaternion.setEuler(angleX, angleY, angleZ);
+    quaternion.setEuler(gridYaw, gridPitch, gridRoll);
     transform.setIdentity();
     transform.setRotation(quaternion);
     motionState->setWorldTransform(transform);
@@ -56,8 +56,8 @@ Type Grid::getType() {
     return GRID;
 }
 
-void Grid::setRotation(float angle, float x, float y, float z) {
-    if (x > 0.0) this->angleX += angle;
-    if (y > 0.0) this->angleY += angle;
-    if (z > 0.0) this->angleZ += angle;
+void Grid::setRotation(float euler, float yaw, float pitch, float roll) {
+    if (yaw > 0.0) this->gridYaw += euler;
+    if (pitch > 0.0) this->gridPitch += euler;
+    if (roll > 0.0) this->gridRoll += euler;
 }

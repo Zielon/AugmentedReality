@@ -28,7 +28,7 @@ Scene::Scene() {
     dynamicsWorld = new btDiscreteDynamicsWorld(new btCollisionDispatcher(collisionCfg), axisSweep,
                                                 new btSequentialImpulseConstraintSolver, collisionCfg);
 
-    dynamicsWorld->setGravity(btVector3(0, -10, 0));
+    dynamicsWorld->setGravity(btVector3(0, -9, 0));
 }
 
 void Scene::defaultSetting() {

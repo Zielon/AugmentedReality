@@ -38,7 +38,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        if(scene->getObjects().size() < 200)
+        if (scene->getObjects().size() < 200)
             scene->addObject(Ball::getDefault(btVector3(0, 3, 0), 0.3, true));
     }
 }
@@ -130,7 +130,7 @@ void Application::initialize() {
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_LIGHTING);
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
