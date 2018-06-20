@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <bullet/LinearMath/btDefaultMotionState.h>
+
 #include "drawing.h"
 #include "scene_object.h"
 

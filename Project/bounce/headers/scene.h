@@ -5,6 +5,7 @@
 #include <bullet/LinearMath/btTransform.h>
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <vector>
+
 #include "scene_object.h"
 #include "grid.h"
 

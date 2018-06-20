@@ -3,6 +3,7 @@
 #include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+
 #include "../headers/scene_object.h"
 #include "../headers/scene.h"
 #include "../headers/ball.h"

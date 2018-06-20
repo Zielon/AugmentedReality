@@ -1,6 +1,7 @@
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <GL/glut.h>
+
 #include "../headers/grid.h"
 
 using namespace std;

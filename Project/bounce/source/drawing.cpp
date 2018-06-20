@@ -1,5 +1,6 @@
-#include "../headers/drawing.h"
 #include <cmath>
+
+#include "../headers/drawing.h"
 
 /* PI */
 #ifndef M_PI

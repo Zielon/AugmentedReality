@@ -4,6 +4,7 @@
 #include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <bullet/LinearMath/btVector3.h>
 #include <bullet/LinearMath/btMotionState.h>
+
 #include "scene_object.h"
 #include "drawing.h"
 

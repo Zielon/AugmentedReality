@@ -3,6 +3,7 @@
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btSphereShape.h>
+
 #include "../headers/ball.h"
 
 Ball::Ball(btScalar mass,

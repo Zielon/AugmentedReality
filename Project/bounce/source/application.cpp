@@ -187,4 +187,6 @@ void Application::start() {
     simulator.join();
     scene->clear();
     glfwTerminate();
+
+    delete scene;
 }
