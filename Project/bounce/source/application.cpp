@@ -19,11 +19,11 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
 
     // ========== GRID ROTATION ==========
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.1f, 0.f, 0.f, 1.f);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.1, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 0.f, 1.f);
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.1, 0.f, 1.f, 0.f);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.1f, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
 
     // ==========
 
