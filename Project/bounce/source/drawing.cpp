@@ -1,5 +1,6 @@
-#include "../headers/drawing.h"
 #include <cmath>
+
+#include "../headers/drawing.h"
 
 /* PI */
 #ifndef M_PI
@@ -18,6 +19,7 @@ void Drawer::drawSphere(double r, int lats, int longs) {
         double zr1 = r * cos(lat1);
 
         glBegin(GL_QUAD_STRIP);
+        glColor3f(1.0f, 1.0f, 1.0f);
         for (j = 0; j <= longs; j++) {
             double lng = 2 * M_PI * (double) (j - 1) / longs;
             double x = cos(lng);
@@ -91,15 +93,14 @@ void Drawer::drawSnowman() {
     drawCone(0.05, 0.5, 10, 10);
 }
 
-void Drawer::drawGrid() {
+void Drawer::drawGrid(int size) {
     glPushMatrix();
+    float SIZE = size;
 
-    float SIZE = 7.f;
-
-    glColor3f(1.0f, 0.0f, 0.0f);
     glTranslatef(-SIZE / 2, -1.5f, -SIZE / 2);
 
     glBegin(GL_QUADS);
+    glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(0, -0.001f, 0);
     glVertex3f(0, -0.001f, SIZE);
     glVertex3f(SIZE, -0.001f, SIZE);
@@ -107,57 +108,62 @@ void Drawer::drawGrid() {
     glEnd();
 
     glBegin(GL_LINES);
+    glColor3f(1.0f, 0.0f, 0.0f);
     for (int i = 0; i <= SIZE; i++) {
-        if (i == 0) { glColor3f(.6, .3, .3); } else { glColor3f(.25, .25, .25); };
         glVertex3f(i, 0, 0);
         glVertex3f(i, 0, SIZE);
-        if (i == 0) { glColor3f(.3, .3, .6); } else { glColor3f(.25, .25, .25); };
         glVertex3f(0, 0, i);
         glVertex3f(SIZE, 0, i);
     };
+
     glEnd();
+
     glPopMatrix();
 }
 
-void Drawer::drawBox(int size, float r, float g, float b) {
+void Drawer::drawGrid(int size, float thickness) {
 
-    glScalef(size, size, size);
-    glColor3f(r, g, b);
+    glScalef(size, thickness, size);
 
-    // White side - BACK
+    // BACK
     glBegin(GL_POLYGON);
+    glColor3f(1.0, 0.0, 1.0);
     glVertex3f(0.5, -0.5, 0.5);
     glVertex3f(0.5, 0.5, 0.5);
     glVertex3f(-0.5, 0.5, 0.5);
     glVertex3f(-0.5, -0.5, 0.5);
     glEnd();
 
-    // Purple side - RIGHT
+    // RIGHT
     glBegin(GL_POLYGON);
+    glColor3f(1.0, 0.0, 1.0);
     glVertex3f(0.5, -0.5, -0.5);
     glVertex3f(0.5, 0.5, -0.5);
     glVertex3f(0.5, 0.5, 0.5);
     glVertex3f(0.5, -0.5, 0.5);
     glEnd();
 
-    // Green side - LEFT
+    // LEFT
     glBegin(GL_POLYGON);
+    glColor3f(0.0, 1.0, 0.0);
     glVertex3f(-0.5, -0.5, 0.5);
     glVertex3f(-0.5, 0.5, 0.5);
     glVertex3f(-0.5, 0.5, -0.5);
     glVertex3f(-0.5, -0.5, -0.5);
     glEnd();
 
-    // Blue side - TOP
+    // TOP
     glBegin(GL_POLYGON);
+    glColor3f(0.0, 0.0, 1.0);
     glVertex3f(0.5, 0.5, 0.5);
     glVertex3f(0.5, 0.5, -0.5);
     glVertex3f(-0.5, 0.5, -0.5);
     glVertex3f(-0.5, 0.5, 0.5);
     glEnd();
 
-    // Red side - BOTTOM
+    // BOTTOM
     glBegin(GL_POLYGON);
+    glColor3f(1.0, 0.0, 0.0);
     glVertex3f(0.5, -0.5, -0.5);
     glVertex3f(0.5, -0.5, 0.5);
     glVertex3f(-0.5, -0.5, 0.5);

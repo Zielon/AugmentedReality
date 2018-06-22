@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(Project)
 
+set(GCC_COVERAGE_COMPILE_FLAGS -pthread)
+
+find_package(Threads REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -10,11 +13,12 @@ find_package(Bullet REQUIRED)
 configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)
 configure_file(resources/stuff resources/stuff COPYONLY)
-configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
-configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
+#configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
+#configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
 
 link_directories(${BULLET_LIBRARY_DIRS})
 include_directories(${BULLET_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(Project
         main.cpp
@@ -37,8 +41,15 @@ add_executable(Project
         bounce/headers/application.h
         bounce/source/application.cpp
         bounce/headers/drawing.h
-        bounce/source/drawing.cpp bounce/headers/grid.h bounce/headers/scene_object.h bounce/headers/scene.h bounce/source/scene.cpp bounce/source/grid.cpp)
+        bounce/source/drawing.cpp
+        bounce/headers/grid.h
+        bounce/headers/scene_object.h
+        bounce/headers/scene.h
+        bounce/source/scene.cpp
+        bounce/source/grid.cpp)
 
+target_link_libraries(Project ${OpenCV_LIBS})
+target_link_libraries(Project ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(Project Eigen3::Eigen)
 target_link_libraries(Project glfw)
 target_link_libraries(Project ${OPENGL_gl_LIBRARY})

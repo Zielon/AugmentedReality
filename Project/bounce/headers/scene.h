@@ -5,7 +5,9 @@
 #include <bullet/LinearMath/btTransform.h>
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <vector>
+
 #include "scene_object.h"
+#include "grid.h"
 
 class Scene {
 public:
@@ -13,11 +15,19 @@ public:
 
     void addObject(SceneObject *element);
 
+    std::vector<SceneObject *> getObjects();
+
     void simulateObjects();
 
     void drawObjects();
 
     void defaultSetting();
+
+    void clear();
+
+    void remove();
+
+    static Grid *grid;
 
 private:
     std::vector<SceneObject *> objects;
