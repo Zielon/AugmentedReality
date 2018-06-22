@@ -1,9 +1,11 @@
 #include <cmath>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <string>
+#include <thread>
 
 #include "../headers/application.h"
-#include "../headers/scene.h"
+#include "../headers/ball.h"
 
 using namespace std;
 
@@ -11,13 +13,30 @@ float cameraX = 0.0;
 float cameraY = 0.0;
 float cameraZ = 0.0;
 
+Scene *Application::scene = new Scene();
+
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY -= 0.1;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX -= 0.1;
+
+    // ========== GRID ROTATION ==========
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 0.f, 1.f);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 0.f, 1.f);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
+
+    // ==========
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY += 0.1;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
+    }
 }
 
 void Application::keyboardUp(unsigned char key, int x, int y) {
@@ -80,8 +99,8 @@ void Application::display() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    int fov = 50;
-    float near = 0.01f, far = 200.f;
+    int fov = 30;
+    float near = 0.01f, far = 100.f;
     auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
     float bottom = -top;
     float left = ratio * bottom;
@@ -93,14 +112,8 @@ void Application::display() {
     glLoadIdentity();
 
     // move the object backwards
-    glTranslatef(0.0f, 0.0f, -100.0f);
-
-    // move the object in a fancy way
-    const float t = (float) glfwGetTime() * 2.0f;
-    const float n = 0.5f;
-    //glTranslatef(static_cast<GLfloat>(1.5f * sin(n * t)), 0.f, static_cast<GLfloat>(1.5f * cos(n * t)));
-
-    //glRotatef(10, 1.0, 0.0, 0.0);
+    glTranslatef(0.0f, 0.0f, -25.0f);
+    glRotatef(10, 1.0, 0.0, 0.0);
     glTranslatef(cameraX, cameraY, cameraZ);
 }
 
@@ -113,15 +126,12 @@ void Application::initialize() {
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_LIGHTING);
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-    GLfloat global_ambient[] = {1.0, 1.0, 1.0, 1.0};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-
-    GLfloat light_position[] = {1.0, 0.0, 1.0, 0.0};
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
+    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
     glfwWindowHint(GLFW_SAMPLES, 5);
@@ -138,7 +148,7 @@ void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(600, 600, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(800, 800, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
@@ -155,21 +165,28 @@ void Application::start() {
 
     initialize();
 
-    Scene scene;
-
     // Set default objects [ 1 ball and 1 grid ]
-    scene.defaultSetting();
+    scene->defaultSetting();
+
+    thread simulator([this]() {
+        while (!glfwWindowShouldClose(window)) {
+            scene->simulateObjects();
+            Scene::grid->update();
+            this_thread::sleep_for(10ms);
+        }
+    });
 
     while (!glfwWindowShouldClose(window)) {
-
         display();
-
-        scene.drawObjects();
-        scene.simulateObjects();
-
+        // Ignore synchronization
+        scene->drawObjects();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    simulator.join();
+    scene->clear();
     glfwTerminate();
+
+    delete scene;
 }

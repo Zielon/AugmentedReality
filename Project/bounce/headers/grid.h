@@ -4,7 +4,9 @@
 #include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <bullet/LinearMath/btVector3.h>
 #include <bullet/LinearMath/btMotionState.h>
+
 #include "scene_object.h"
+#include "drawing.h"
 
 class Grid : SceneObject {
 public:
@@ -14,7 +16,20 @@ public:
 
     void setPosition(double x, double y) override;
 
-    static SceneObject *getDefault();
+    void update();
+
+    Type getType() override;
+
+    void setRotation(float euler, float x, float y, float z);
+
+    static SceneObject *getDefault(btVector3 origin);
+
+private:
+    static float gridSize;
+    static float gridThickness;
+    float gridYaw = .0f;
+    float gridPitch = .0f;
+    float gridRoll = .0f;
 };
 
 #endif //PROJECT_GRID_H

@@ -5,6 +5,14 @@
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <bullet/LinearMath/btScalar.h>
 #include <bullet/LinearMath/btVector3.h>
+#include <LinearMath/btDefaultMotionState.h>
+
+#include "drawing.h"
+
+enum Type {
+    GRID,
+    BALL
+};
 
 class SceneObject : public btRigidBody {
 public:
@@ -17,6 +25,15 @@ public:
     virtual void draw() = 0;
 
     virtual void setPosition(double x, double y) = 0;
+
+    virtual Type getType() = 0;
+
+protected:
+    Drawer drawer;
+    btTransform transform;
+    btScalar matrix[16];
+    btQuaternion quaternion;
+    btDefaultMotionState *motionState;
 };
 
 #endif //PROJECT_OBJECT_H

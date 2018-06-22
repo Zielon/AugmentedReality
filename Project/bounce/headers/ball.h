@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <bullet/LinearMath/btDefaultMotionState.h>
+
 #include "drawing.h"
 #include "scene_object.h"
 
@@ -14,14 +15,12 @@ public:
 
     void setPosition(double x, double y) override;
 
-    static SceneObject *getDefault(btVector3 origin, btVector3 shape, int size, bool gravity);
+    Type getType() override;
+
+    static SceneObject *getDefault(btVector3 origin, float size);
 
 private:
-    Drawer drawer;
-    btTransform transform;
-    btScalar matrix[16];
-    btMotionState *motionState;
-    int ballSize;
+    float ballSize;
 };
 
 #endif //PROJECT_BALL_H
