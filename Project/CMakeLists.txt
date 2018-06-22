@@ -22,8 +22,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(Project
         main.cpp
-        neural_net_plain/source/neutral_network.cpp
-        neural_net_plain/headers/neutral_network.h
+        neural_net_plain/source/neural_network.cpp
+        neural_net_plain/headers/neural_network.h
         tracker/source/tracker.cpp
         tracker/headers/tracker.h
         mnist_loader/data_loader.h
