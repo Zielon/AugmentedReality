@@ -1,6 +1,12 @@
 #ifndef PROJECT_BALL_H
 #define PROJECT_BALL_H
 
+#ifdef __APPLE__
+#include <gl.h>
+#elif __linux__
+#include <GL/gl.h>
+#endif
+
 #include <vector>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 

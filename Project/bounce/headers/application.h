@@ -1,6 +1,13 @@
 #ifndef PROJECT_APPLICATION_H
 #define PROJECT_APPLICATION_H
 
+#ifdef __APPLE__
+#include <gl.h>
+#elif __linux__
+#include <GL/gl.h>
+#endif
+
+#include <GLFW/glfw3.h>
 #include <GLFW/glfw3.h>
 
 #include "scene.h"

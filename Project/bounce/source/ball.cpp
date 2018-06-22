@@ -1,4 +1,3 @@
-#include <GL/gl.h>
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
