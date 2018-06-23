@@ -14,9 +14,8 @@ Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, -5, 0));
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
-        remove();
         if (objects.size() < 50) {
-            dynamicsWorld->addRigidBody((btRigidBody *) element);
+            dynamicsWorld->addRigidBody(element);
             objects.push_back(element);
         }
     }
@@ -26,7 +25,8 @@ void Scene::simulateObjects() {
     float dtime = time;
     time = (float) glfwGetTime();
     dtime = time - dtime;
-    dynamicsWorld->stepSimulation(dtime, 10);
+    dynamicsWorld->clearForces();
+    dynamicsWorld->stepSimulation(dtime, 5);
 }
 
 Scene::Scene() {
@@ -42,14 +42,17 @@ Scene::Scene() {
 }
 
 void Scene::defaultSetting() {
-    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
     addObject((SceneObject *) grid);
+    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.4));
 }
 
 void Scene::drawObjects(float matrix[16]) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT
-    //glMultMatrixf(matrix);
-    for (auto object : objects) object->draw();
+    try {
+        //glMultMatrixf(matrix);
+        for (auto object : objects) object->draw();
+    } catch (const std::exception& e) { /* */ }
 }
 
 std::vector<SceneObject *> Scene::getObjects() {

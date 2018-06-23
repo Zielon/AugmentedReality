@@ -46,7 +46,9 @@ add_executable(Project
         bounce/headers/scene_object.h
         bounce/headers/scene.h
         bounce/source/scene.cpp
-        bounce/source/grid.cpp tracker/headers/camera.h tracker/source/camera.cpp)
+        bounce/source/grid.cpp
+        tracker/headers/camera.h
+        tracker/source/camera.cpp)
 
 target_link_libraries(Project ${OpenCV_LIBS})
 target_link_libraries(Project ${CMAKE_THREAD_LIBS_INIT})

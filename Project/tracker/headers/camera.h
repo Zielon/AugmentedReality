@@ -10,8 +10,10 @@ public:
 
     void nextFrame(cv::Mat &frame);
 
+    ~Camera();
+
 private:
-    cv::VideoCapture capture;
+    cv::VideoCapture *capture;
 };
 
 #endif //PROJECT_CAMERA_H

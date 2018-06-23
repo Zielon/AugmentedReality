@@ -3,6 +3,8 @@
 
 #include <opencv2/core/mat.hpp>
 #include <GLFW/glfw3.h>
+#include <thread>
+
 #include "camera.h"
 
 class Tracker {
@@ -12,16 +14,22 @@ public:
 
     void findMatrix();
 
-    void findMarker();
+    std::thread findMarker();
 
     void defaultSetting();
 
     float *getMatrix();
 
+    void setMatrix(float* matrix);
+
+    void end(bool flag);
+
 private:
     Camera *camera;
     cv::Mat mat;
-    float matrix[16] = {};
+    std::mutex mutex;
+    float matrix[16];
+    bool running;
 };
 
 #endif //PROJECT_TRACKER_H

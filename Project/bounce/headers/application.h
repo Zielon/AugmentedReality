@@ -37,7 +37,6 @@ public:
 private:
     GLFWwindow *window;
     static Scene *scene;
-    static Tracker *tracker;
 
     static void reshape(GLFWwindow *window, int width, int height);
 
