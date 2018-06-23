@@ -46,8 +46,9 @@ void Scene::defaultSetting() {
     addObject((SceneObject *) grid);
 }
 
-void Scene::drawObjects() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void Scene::drawObjects(float matrix[16]) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT
+    //glMultMatrixf(matrix);
     for (auto object : objects) object->draw();
 }
 

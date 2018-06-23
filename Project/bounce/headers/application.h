@@ -4,13 +4,16 @@
 #ifdef __APPLE__
 #include <gl.h>
 #elif __linux__
+
 #include <GL/gl.h>
+
 #endif
 
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3.h>
 
 #include "scene.h"
+#include "../../tracker/headers/tracker.h"
 
 class Application {
 public:
@@ -34,6 +37,7 @@ public:
 private:
     GLFWwindow *window;
     static Scene *scene;
+    static Tracker *tracker;
 
     static void reshape(GLFWwindow *window, int width, int height);
 

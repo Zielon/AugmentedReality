@@ -1,5 +1,4 @@
 #include <cmath>
-#include <string>
 #include <thread>
 
 #include "../headers/application.h"
@@ -12,6 +11,7 @@ float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
+Tracker *Application::tracker = new Tracker();
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -165,6 +165,7 @@ void Application::start() {
 
     // Set default objects [ 1 ball and 1 grid ]
     scene->defaultSetting();
+    tracker->defaultSetting();
 
     thread simulator([this]() {
         while (!glfwWindowShouldClose(window)) {
@@ -176,8 +177,13 @@ void Application::start() {
 
     while (!glfwWindowShouldClose(window)) {
         display();
-        // Ignore synchronization
-        scene->drawObjects();
+
+        tracker->findMarker();
+
+        auto transformation = tracker->getMatrix();
+
+        scene->drawObjects(transformation);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -187,4 +193,5 @@ void Application::start() {
     glfwTerminate();
 
     delete scene;
+    delete tracker;
 }

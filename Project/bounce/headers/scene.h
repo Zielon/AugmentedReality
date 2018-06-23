@@ -19,7 +19,7 @@ public:
 
     void simulateObjects();
 
-    void drawObjects();
+    void drawObjects(float resultTransposedMatrix[16]);
 
     void defaultSetting();
 

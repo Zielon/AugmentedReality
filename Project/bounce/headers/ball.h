@@ -4,7 +4,9 @@
 #ifdef __APPLE__
 #include <gl.h>
 #elif __linux__
+
 #include <GL/gl.h>
+
 #endif
 
 #include <vector>
