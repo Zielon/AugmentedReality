@@ -9,27 +9,24 @@
 
 class Tracker {
 public:
-
     Tracker();
 
     void findMatrix();
 
-    std::thread findMarker();
+    void findMarker();
 
     void defaultSetting();
 
     float *getMatrix();
 
-    void setMatrix(float* matrix);
+    void setMatrix(float *matrix);
 
-    void end(bool flag);
+    cv::Mat mat;
 
 private:
     Camera *camera;
-    cv::Mat mat;
     std::mutex mutex;
     float matrix[16];
-    bool running;
 };
 
 #endif //PROJECT_TRACKER_H

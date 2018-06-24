@@ -25,8 +25,7 @@ void Scene::simulateObjects() {
     float dtime = time;
     time = (float) glfwGetTime();
     dtime = time - dtime;
-    dynamicsWorld->clearForces();
-    dynamicsWorld->stepSimulation(dtime, 5);
+    dynamicsWorld->stepSimulation(dtime);
 }
 
 Scene::Scene() {
@@ -52,7 +51,7 @@ void Scene::drawObjects(float matrix[16]) {
     try {
         //glMultMatrixf(matrix);
         for (auto object : objects) object->draw();
-    } catch (const std::exception& e) { /* */ }
+    } catch (const std::exception &e) { /* */ }
 }
 
 std::vector<SceneObject *> Scene::getObjects() {
@@ -72,19 +71,25 @@ void Scene::clear() {
     delete dynamicsWorld;
 }
 
-void Scene::remove() {
+void Scene::remove(bool all) {
+    mutex.lock();
+
     vector<SceneObject *> visible;
     for (auto *body : objects) {
         auto y = body->getCenterOfMassPosition().getY();
-        if (y > -7.0) {
-            visible.push_back(body);
-        } else {
-            dynamicsWorld->removeRigidBody(body);
-            delete body->getMotionState();
-            delete body;
-        };
+        if (body->getType() == BALL) {
+            if (!all && y > -7.0) {
+                visible.push_back(body);
+            } else {
+                dynamicsWorld->removeRigidBody(body);
+                delete body->getMotionState();
+                delete body;
+            };
+        } else visible.push_back(body);
     }
 
     objects.clear();
     objects = visible;
+
+    mutex.unlock();
 }

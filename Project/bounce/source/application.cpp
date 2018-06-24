@@ -1,11 +1,11 @@
 #include <cmath>
-#include <thread>
-#include <iostream>
+#include <opencv/highgui.h>
 
 #include "../headers/application.h"
 #include "../headers/ball.h"
 
 using namespace std;
+using namespace cv;
 
 float cameraX = 0.0;
 float cameraY = 0.0;
@@ -31,6 +31,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) scene->remove(true);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
@@ -83,8 +84,11 @@ void Application::motion(int x, int y) {
 
 }
 
-void Application::display() {
+void Application::display(Mat mat) {
 
+    unsigned char pixels[mat.cols * mat.rows * 3];
+
+    memcpy(pixels, mat.data, sizeof(pixels));
     float ratio;
     int width, height;
 
@@ -96,6 +100,8 @@ void Application::display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+
+    //glDrawPixels(mat.cols, mat.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -163,26 +169,28 @@ void Application::start() {
 
     initialize();
 
-    scene->defaultSetting();
-
     auto *tracker = new Tracker();
 
-    cout << "MAIN " << this_thread::get_id() << endl;
-
-    thread tracking = tracker->findMarker();
+    scene->defaultSetting();
+    tracker->defaultSetting();
 
     while (!glfwWindowShouldClose(window)) {
-        display();
+
+        tracker->findMarker();
+
+        auto matrix = tracker->getMatrix();
+
+        display(tracker->mat);
+
+        scene->drawObjects(matrix);
         scene->simulateObjects();
-        scene->remove();
-        scene->drawObjects(nullptr);
+        scene->remove(false);
+
         Scene::grid->update();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    tracker->end(true);
-    tracking.join();
 
     scene->clear();
     delete scene;
