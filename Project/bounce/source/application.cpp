@@ -1,5 +1,6 @@
 #include <cmath>
 #include <opencv/highgui.h>
+#include <opencv2/imgproc.hpp>
 
 #include "../headers/application.h"
 #include "../headers/ball.h"
@@ -12,6 +13,8 @@ float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
+int Application::WINDOWS_WIDTH = 800;
+int Application::WINDOWS_HEIGHT = 800;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -86,9 +89,12 @@ void Application::motion(int x, int y) {
 
 void Application::display(Mat mat) {
 
-    unsigned char pixels[mat.cols * mat.rows * 3];
+    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
+    Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
+    Mat windowPixels;
+    resize(mat, windowPixels, size);
+    memcpy(pixels, windowPixels.data, sizeof(pixels));
 
-    memcpy(pixels, mat.data, sizeof(pixels));
     float ratio;
     int width, height;
 
@@ -96,12 +102,17 @@ void Application::display(Mat mat) {
     ratio = width / (float) height;
 
     glViewport(0, 0, width, height);
-
+    glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
 
-    //glDrawPixels(mat.cols, mat.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glPushMatrix();
+    glDrawPixels(WINDOWS_HEIGHT, WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
 
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -131,6 +142,10 @@ void Application::initialize() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
@@ -144,15 +159,13 @@ void Application::initialize() {
 
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-    glClearDepth(1.0);
 }
 
 void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(800, 800, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOWS_HEIGHT, WINDOWS_WIDTH, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
