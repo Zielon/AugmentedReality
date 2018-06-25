@@ -26,11 +26,11 @@ class Tracker {
 public:
     Tracker();
 
-    void findMarker();
-
     void defaultSetting();
 
     float *getMatrix();
+
+    Mat &getFrame();
 
     void setMatrix(float *matrix);
 
@@ -45,20 +45,16 @@ public:
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
 
-    void initVideoStream(cv::VideoCapture &cap);
-
     int detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients);
 
     Mat getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients);
 
-    cv::Mat mat;
-
 private:
+    cv::Mat frame;
     Camera *camera;
     std::mutex mutex;
     float matrix[16];
     vector<Vec3d> rotationVectors, translationVectors;
-    const cv::String webCam = "webCam";
     const float calibrationSquareDimension = 0.0247;    //meters
     const float arucoSquareDimension = 0.049;
     const Size boardSize = Size(9, 6);

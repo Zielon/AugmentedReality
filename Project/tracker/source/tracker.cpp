@@ -1,3 +1,5 @@
+#include <opencv/highgui.h>
+#include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
 
 using namespace cv;
@@ -9,10 +11,6 @@ Tracker::Tracker() {
 
 void Tracker::defaultSetting() {
 
-}
-
-void Tracker::findMarker() {
-    camera->nextFrame(mat);
 }
 
 float *Tracker::getMatrix() {
@@ -43,7 +41,7 @@ void Tracker::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &
     for (vector<Mat>::iterator iter = images.begin(); iter != images.end(); iter++) {
         vector<Point2f> pointBuffer;
         bool found = findChessboardCorners(*iter, boardSize, pointBuffer,
-                                           CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
+                                           CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE);
         if (found) {
             allFoundCorners.push_back(pointBuffer);
         }
@@ -147,47 +145,21 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
     return false;
 }
 
-void Tracker::initVideoStream(cv::VideoCapture &cap) {
-    if (cap.isOpened())
-        cap.release();
-    cap.open(0);
-    std::cout << "webcam opened." << std::endl;
-    if (cap.isOpened() == false) {
-        std::cout << "no webcam found." << std::endl;
-    }
-}
-
 int Tracker::detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients) {
-    Mat frame;
+    camera->nextFrame(frame);
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
     aruco::DetectorParameters parameters;
 
     Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
 
-    VideoCapture cap(0);
-    if (!cap.isOpened())
-        return -1;
+    aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
+    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
+                                     rotationVectors, translationVectors);
 
-    namedWindow(webCam, CV_WINDOW_AUTOSIZE);
-
-    while (1) {
-        if (!cap.read(frame))
-            break;
-
-        aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-        aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
-                                         rotationVectors, translationVectors);
-
-
-        for (int i = 0; i < markerIds.size(); i++) {
-            aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
-        }
-
-        imshow(webCam, frame);
-        if (waitKey(30) >= 0) break;
+    for (int i = 0; i < markerIds.size(); i++) {
+        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
     }
-    return 1;
 }
 
 Mat Tracker::getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients) {
@@ -208,6 +180,10 @@ Mat Tracker::getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffient
     Mat quat = mRot2Quat(rotationMatrix);
 
     return quat;
+}
+
+Mat &Tracker::getFrame() {
+    return frame;
 }
 
 float SIGN(float x) {

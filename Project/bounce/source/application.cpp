@@ -87,7 +87,7 @@ void Application::motion(int x, int y) {
 
 }
 
-void Application::display(Mat mat) {
+void Application::display(Mat &mat) {
 
     unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
     Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
@@ -189,11 +189,11 @@ void Application::start() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        tracker->findMarker();
+        tracker->detectMarker();
 
         auto matrix = tracker->getMatrix();
 
-        display(tracker->mat);
+        display(tracker->getFrame());
 
         scene->drawObjects(matrix);
         scene->simulateObjects();
