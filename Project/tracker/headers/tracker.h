@@ -47,21 +47,36 @@ public:
 
     void initVideoStream(cv::VideoCapture &cap);
 
-    int detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients);
+    int detectMarkerTest();
 
-    Mat getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients);
+    Mat getQuaternion(Mat matrix);
+    
+    Mat getRotationMatrix();
 
     cv::Mat mat;
 
 private:
+    
     Camera *camera;
+    
     std::mutex mutex;
+    
     float matrix[16];
+    
+    Mat cameraMatrix = Mat::eye(3,3,CV_64F);
+    
+    Mat distanceCoeffients;
+    
     vector<Vec3d> rotationVectors, translationVectors;
+    
     const cv::String webCam = "webCam";
+    
     const float calibrationSquareDimension = 0.0247;    //meters
+    
     const float arucoSquareDimension = 0.049;
+    
     const Size boardSize = Size(9, 6);
+    
 };
 
 #endif //PROJECT_TRACKER_H

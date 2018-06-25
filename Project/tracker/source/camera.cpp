@@ -5,8 +5,16 @@
 using namespace cv;
 using namespace std;
 
-Camera::Camera() {
-    this->capture = new VideoCapture("resources/movie");
+Camera::Camera(int mode) {
+    switch (mode) {
+        case 0:
+            this->capture->open(0);             //how to open camera with this videoCapture pointer??
+            break;
+        case 1:
+            this->capture = new VideoCapture("resources/movie");
+        default:
+            break;
+    }
 }
 
 void Camera::nextFrame(cv::Mat &frame) {

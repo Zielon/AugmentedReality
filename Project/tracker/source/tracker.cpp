@@ -3,8 +3,13 @@
 using namespace cv;
 using namespace std;
 
+float SIGN(float x);
+float NORM(float a, float b, float c, float d);
+Mat mRot2Quat(const Mat &m);
+
 Tracker::Tracker() {
     this->camera = new Camera();
+    loadCameraCalibration("CameraMatrix", cameraMatrix, distanceCoeffients);
 }
 
 void Tracker::defaultSetting() {
@@ -13,23 +18,64 @@ void Tracker::defaultSetting() {
 
 void Tracker::findMarker() {
     camera->nextFrame(mat);
+    
+    vector<int> markerIds;
+    vector<vector<Point2f>> markerCorners, rejectedCandidates;
+    aruco::DetectorParameters parameters;
+    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
+    
+    aruco::detectMarkers(mat, dictionary, markerCorners, markerIds);
+    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
+                                     rotationVectors, translationVectors);
+    
 }
 
 float *Tracker::getMatrix() {
+    
+    Mat rotationMatrix = getRotationMatrix();
+    Mat isotropyMatrix;
+    
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            isotropyMatrix.at<double>(i,j) = rotationMatrix.at<double>(i,j);
+        }
+    }
+    isotropyMatrix.at<double>(0,3) = translationVectors[0][0];
+    isotropyMatrix.at<double>(1,3) = translationVectors[0][1];
+    isotropyMatrix.at<double>(2,3) = translationVectors[0][2];
+    
+    isotropyMatrix.at<double>(3,0) = 0;
+    isotropyMatrix.at<double>(3,1) = 0;
+    isotropyMatrix.at<double>(3,2) = 0;
+    isotropyMatrix.at<double>(3,3) = 1;
+
+    //homography matrix = isotropy matrix multiplied by projection matrix
+    //focalLength for projection Matrix???
+    
     return this->matrix;
 }
 
-void Tracker::setMatrix(float *matrix) {
+void Tracker::setMatrix(float *matrix) {                    //???
     mutex.lock();
     memcpy(this->matrix, matrix, sizeof(float) * 16);
     mutex.unlock();
 }
 
-float SIGN(float x);
+Mat Tracker::getRotationMatrix(){
+    Mat rotationMatrix;
+    if (rotationVectors.size() != 0) {
+        cout << rotationVectors[0] << endl;
+        Rodrigues(rotationVectors[0], rotationMatrix);      //convert Rodriges angle to rotation matrix
+    }
+    
+    return rotationMatrix;
+}
 
-float NORM(float a, float b, float c, float d);
-
-Mat mRot2Quat(const Mat &m);
+Mat Tracker::getQuaternion(Mat matrix) {
+    Mat quat = mRot2Quat(matrix);
+    
+    return quat;
+}
 
 void Tracker::createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f> &corners) {
     for (int i = 0; i < boardSize.height; i++) {
@@ -147,17 +193,7 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
     return false;
 }
 
-void Tracker::initVideoStream(cv::VideoCapture &cap) {
-    if (cap.isOpened())
-        cap.release();
-    cap.open(0);
-    std::cout << "webcam opened." << std::endl;
-    if (cap.isOpened() == false) {
-        std::cout << "no webcam found." << std::endl;
-    }
-}
-
-int Tracker::detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients) {
+int Tracker::detectMarkerTest() {
     Mat frame;
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
@@ -190,25 +226,7 @@ int Tracker::detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients) {
     return 1;
 }
 
-Mat Tracker::getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients) {
-    vector<int> markerIds;
-    vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco::DetectorParameters parameters;
-    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
 
-    aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
-                                     rotationVectors, translationVectors);
-
-    Mat rotationMatrix;
-    if (rotationVectors.size() != 0) {
-        cout << rotationVectors[0] << endl;
-        Rodrigues(rotationVectors[0], rotationMatrix);      //convert Rodriges angle to rotation matrix
-    }
-    Mat quat = mRot2Quat(rotationMatrix);
-
-    return quat;
-}
 
 float SIGN(float x) {
     return (x >= 0.0f) ? +1.0f : -1.0f;
