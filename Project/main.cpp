@@ -1,15 +1,12 @@
 #include "bounce/headers/application.h"
 #include "tracker/headers/tracker.h"
 
-
-
 int main(int argc, char *argv[]) {
 
-    //Application app;
+    Application app;
 
-    //app.start();
+    app.start();
     
-
     Mat frame;
     Mat drawOnFrame;
     

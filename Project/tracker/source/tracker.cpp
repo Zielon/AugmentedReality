@@ -7,10 +7,6 @@ Tracker::Tracker() {
     this->camera = new Camera();
 }
 
-void Tracker::findMatrix() {
-
-}
-
 void Tracker::defaultSetting() {
 
 }
@@ -28,26 +24,30 @@ void Tracker::setMatrix(float *matrix) {
     memcpy(this->matrix, matrix, sizeof(float) * 16);
     mutex.unlock();
 }
-float SIGN(float x);
-float NORM(float a, float b, float c, float d);
-Mat mRot2Quat(const Mat& m);
 
-void Tracker::createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners){
-    for(int i=0; i<boardSize.height;i++){
-        for(int j=0; j<boardSize.width;j++){
+float SIGN(float x);
+
+float NORM(float a, float b, float c, float d);
+
+Mat mRot2Quat(const Mat &m);
+
+void Tracker::createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f> &corners) {
+    for (int i = 0; i < boardSize.height; i++) {
+        for (int j = 0; j < boardSize.width; j++) {
             corners.push_back(Point3f(j * squareEdgeLength, i * squareEdgeLength, 0.0f));
         }
     }
 }
 
-void Tracker::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResult){
-    for(vector<Mat>::iterator iter = images.begin(); iter!=images.end();iter++){
+void Tracker::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &allFoundCorners, bool showResult) {
+    for (vector<Mat>::iterator iter = images.begin(); iter != images.end(); iter++) {
         vector<Point2f> pointBuffer;
-        bool found = findChessboardCorners(*iter, boardSize, pointBuffer, CV_CALIB_CB_ADAPTIVE_THRESH|CV_CALIB_CB_NORMALIZE_IMAGE);
-        if(found){
+        bool found = findChessboardCorners(*iter, boardSize, pointBuffer,
+                                           CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
+        if (found) {
             allFoundCorners.push_back(pointBuffer);
         }
-        if(showResult){
+        if (showResult) {
             drawChessboardCorners(*iter, boardSize, pointBuffer, found);
             imshow("Chessboard Corners", *iter);
             waitKey(0);
@@ -55,48 +55,50 @@ void Tracker::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& 
     }
 }
 
-void Tracker::cameraCalibration(vector<Mat> images,Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoeffients){
+void Tracker::cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength, Mat &cameraMatrix,
+                                Mat &distanceCoeffients) {
     vector<vector<Point2f>> chessboardCornerPoints;
     getChessboardCorners(images, chessboardCornerPoints, false);
-    
-    vector<vector<Point3f>> worldSpaceCornerPoints(1);     
-    
+
+    vector<vector<Point3f>> worldSpaceCornerPoints(1);
+
     createBoardPosition(boardSize, squareEdgeLength, worldSpaceCornerPoints[0]);
-    worldSpaceCornerPoints.resize(chessboardCornerPoints.size(),worldSpaceCornerPoints[0]);
-    cout<<worldSpaceCornerPoints.size();
-    
+    worldSpaceCornerPoints.resize(chessboardCornerPoints.size(), worldSpaceCornerPoints[0]);
+    cout << worldSpaceCornerPoints.size();
+
     vector<Mat> rVectors, tVectors;
-    distanceCoeffients = Mat::zeros(8,1,CV_64F);
-    
-    calibrateCamera(worldSpaceCornerPoints, chessboardCornerPoints, boardSize, cameraMatrix, distanceCoeffients, rVectors, tVectors);
-    
+    distanceCoeffients = Mat::zeros(8, 1, CV_64F);
+
+    calibrateCamera(worldSpaceCornerPoints, chessboardCornerPoints, boardSize, cameraMatrix, distanceCoeffients,
+                    rVectors, tVectors);
+
 }
 
-bool Tracker::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients){
+bool Tracker::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients) {
     ofstream outstream(name);
-    if (outstream){
+    if (outstream) {
         uint16_t rows = cameraMatrix.rows;
         uint16_t cols = cameraMatrix.cols;
-        
+
         outstream << rows << endl;
         outstream << cols << endl;
-        
-        for(int r=0; r<rows; r++){
-            for(int c=0; c<cols; c++){
-                double value = cameraMatrix.at<double>(r,c);
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                double value = cameraMatrix.at<double>(r, c);
                 outstream << value << endl;
             }
         }
-        
+
         rows = distanceCoeffients.rows;
         cols = distanceCoeffients.cols;
-        
+
         outstream << rows << endl;
         outstream << cols << endl;
-        
-        for(int r=0; r<rows; r++){
-            for(int c=0; c<cols; c++){
-                double value = distanceCoeffients.at<double>(r,c);
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                double value = distanceCoeffients.at<double>(r, c);
                 outstream << value << endl;
             }
         }
@@ -106,36 +108,36 @@ bool Tracker::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceC
     return false;
 }
 
-bool Tracker::loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanceCoeffients){
+bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients) {
     ifstream instream(name);
-    if(instream){
+    if (instream) {
         uint16_t rows;
         uint16_t cols;
-        
+
         rows = 3;
         cols = 3;
-        
-        cameraMatrix = Mat(Size(cols,rows),CV_64F);
-        
-        for(int r=0; r<rows; r++){
-            for(int c=0; c<cols; c++){
+
+        cameraMatrix = Mat(Size(cols, rows), CV_64F);
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
                 double read = 0.0f;
                 instream >> read;
-                cameraMatrix.at<double>(r,c) = read;
+                cameraMatrix.at<double>(r, c) = read;
 //                cout << cameraMatrix.at<double>(r,c) << "\n";
             }
         }
-        
+
         rows = 5;
         cols = 1;
-        
-        distanceCoeffients = Mat::zeros(rows,cols,CV_64F);
-        
-        for(int r=0; r<rows; r++){
-            for(int c=0; c<cols; c++){
+
+        distanceCoeffients = Mat::zeros(rows, cols, CV_64F);
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
                 double read = 0.0f;
                 instream >> read;
-                distanceCoeffients.at<double>(r,c) = read;
+                distanceCoeffients.at<double>(r, c) = read;
 //                cout << distanceCoeffients.at<double>(r,c) << "\n";
             }
         }
@@ -145,65 +147,66 @@ bool Tracker::loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanc
     return false;
 }
 
-void Tracker::initVideoStream(cv::VideoCapture &cap){
-    if(cap.isOpened())
+void Tracker::initVideoStream(cv::VideoCapture &cap) {
+    if (cap.isOpened())
         cap.release();
     cap.open(0);
-    std::cout<<"webcam opened."<<std::endl;
-    if(cap.isOpened()==false){
-        std::cout<<"no webcam found."<<std::endl;
+    std::cout << "webcam opened." << std::endl;
+    if (cap.isOpened() == false) {
+        std::cout << "no webcam found." << std::endl;
     }
 }
 
-int Tracker::detectMarker (Mat& cameraMatrix, Mat& distanceCoeffients){
+int Tracker::detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients) {
     Mat frame;
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco:: DetectorParameters parameters;
-    
-    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
-    
-    VideoCapture cap(0);
-    if(!cap.isOpened())
-        return -1;
-    
-    namedWindow(webCam,CV_WINDOW_AUTOSIZE);
-    
-    while (1){
-        if(!cap.read(frame))
-            break;
-        
-        aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-        aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors);
-        
+    aruco::DetectorParameters parameters;
 
-        
-        for(int i=0; i<markerIds.size(); i++){
+    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
+
+    VideoCapture cap(0);
+    if (!cap.isOpened())
+        return -1;
+
+    namedWindow(webCam, CV_WINDOW_AUTOSIZE);
+
+    while (1) {
+        if (!cap.read(frame))
+            break;
+
+        aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
+        aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
+                                         rotationVectors, translationVectors);
+
+
+        for (int i = 0; i < markerIds.size(); i++) {
             aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
         }
-        
+
         imshow(webCam, frame);
-        if(waitKey(30)>=0) break;
+        if (waitKey(30) >= 0) break;
     }
     return 1;
 }
 
-Mat Tracker::getQuaternion(Mat& frame, Mat& cameraMatrix, Mat& distanceCoeffients){
+Mat Tracker::getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients) {
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco:: DetectorParameters parameters;
+    aruco::DetectorParameters parameters;
     Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
-    
+
     aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors);
-    
+    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
+                                     rotationVectors, translationVectors);
+
     Mat rotationMatrix;
-    if(rotationVectors.size()!=0){
+    if (rotationVectors.size() != 0) {
         cout << rotationVectors[0] << endl;
         Rodrigues(rotationVectors[0], rotationMatrix);      //convert Rodriges angle to rotation matrix
     }
     Mat quat = mRot2Quat(rotationMatrix);
-    
+
     return quat;
 }
 
@@ -216,7 +219,7 @@ float NORM(float a, float b, float c, float d) {
 }
 
 // quaternion = [w, x, y, z]'
-Mat mRot2Quat(const Mat& m) {
+Mat mRot2Quat(const Mat &m) {
     float r11 = m.at<float>(0, 0);
     float r12 = m.at<float>(0, 1);
     float r13 = m.at<float>(0, 2);
@@ -251,26 +254,22 @@ Mat mRot2Quat(const Mat& m) {
         q1 *= SIGN(r32 - r23);
         q2 *= SIGN(r13 - r31);
         q3 *= SIGN(r21 - r12);
-    }
-    else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
+    } else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
         q0 *= SIGN(r32 - r23);
         q1 *= +1.0f;
         q2 *= SIGN(r21 + r12);
         q3 *= SIGN(r13 + r31);
-    }
-    else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
+    } else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
         q0 *= SIGN(r13 - r31);
         q1 *= SIGN(r21 + r12);
         q2 *= +1.0f;
         q3 *= SIGN(r32 + r23);
-    }
-    else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
+    } else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
         q0 *= SIGN(r21 - r12);
         q1 *= SIGN(r31 + r13);
         q2 *= SIGN(r32 + r23);
         q3 *= +1.0f;
-    }
-    else {
+    } else {
         printf("coding error\n");
     }
     float r = NORM(q0, q1, q2, q3);
@@ -278,7 +277,7 @@ Mat mRot2Quat(const Mat& m) {
     q1 /= r;
     q2 /= r;
     q3 /= r;
-    
+
     Mat res = (Mat_<float>(4, 1) << q0, q1, q2, q3);
     return res;
 }

@@ -26,8 +26,6 @@ class Tracker {
 public:
     Tracker();
 
-    void findMatrix();
-
     void findMarker();
 
     void defaultSetting();
@@ -36,40 +34,34 @@ public:
 
     void setMatrix(float *matrix);
 
-    cv::Mat mat;
-    
-    void createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners);
-    
-    void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResult=false);
-    
-    void cameraCalibration(vector<Mat> images,Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoeffients);
-    
-    bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients);
-    
-    bool loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanceCoeffients);
-    
-    void initVideoStream(cv::VideoCapture &cap);
-    
-    int detectMarker (Mat& cameraMatrix, Mat& distanceCoeffients);
-    
-    Mat getQuaternion(Mat& frame, Mat& cameraMatrix, Mat& distanceCoeffients);
-    
-private:
+    void createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f> &corners);
 
+    void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &allFoundCorners, bool showResult = false);
+
+    void cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength, Mat &cameraMatrix,
+                           Mat &distanceCoeffients);
+
+    bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients);
+
+    bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
+
+    void initVideoStream(cv::VideoCapture &cap);
+
+    int detectMarker(Mat &cameraMatrix, Mat &distanceCoeffients);
+
+    Mat getQuaternion(Mat &frame, Mat &cameraMatrix, Mat &distanceCoeffients);
+
+    cv::Mat mat;
+
+private:
     Camera *camera;
     std::mutex mutex;
     float matrix[16];
-
     vector<Vec3d> rotationVectors, translationVectors;
-    
     const cv::String webCam = "webCam";
-    
     const float calibrationSquareDimension = 0.0247;    //meters
-    
     const float arucoSquareDimension = 0.049;
-    
-    const Size boardSize = Size(9,6);
-    
+    const Size boardSize = Size(9, 6);
 };
 
 #endif //PROJECT_TRACKER_H
