@@ -5,6 +5,7 @@
 #include <bullet/LinearMath/btTransform.h>
 #include <bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <vector>
+#include <mutex>
 
 #include "scene_object.h"
 #include "grid.h"
@@ -19,13 +20,13 @@ public:
 
     void simulateObjects();
 
-    void drawObjects();
+    void drawObjects(float resultTransposedMatrix[16]);
 
     void defaultSetting();
 
     void clear();
 
-    void remove();
+    void remove(bool all);
 
     static Grid *grid;
 
@@ -35,6 +36,7 @@ private:
     btTransform trans;
     btScalar matrix[16];
     float time;
+    std::mutex mutex;
 };
 
 #endif //PROJECT_SCENE_H

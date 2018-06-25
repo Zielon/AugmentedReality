@@ -14,9 +14,8 @@ Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, -5, 0));
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
-        remove();
         if (objects.size() < 50) {
-            dynamicsWorld->addRigidBody((btRigidBody *) element);
+            dynamicsWorld->addRigidBody(element);
             objects.push_back(element);
         }
     }
@@ -26,7 +25,7 @@ void Scene::simulateObjects() {
     float dtime = time;
     time = (float) glfwGetTime();
     dtime = time - dtime;
-    dynamicsWorld->stepSimulation(dtime, 10);
+    dynamicsWorld->stepSimulation(dtime);
 }
 
 Scene::Scene() {
@@ -42,13 +41,17 @@ Scene::Scene() {
 }
 
 void Scene::defaultSetting() {
-    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
     addObject((SceneObject *) grid);
+    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.4));
 }
 
-void Scene::drawObjects() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    for (auto object : objects) object->draw();
+void Scene::drawObjects(float matrix[16]) {
+    try {
+        //glMultMatrixf(matrix);
+        for (auto object : objects) object->draw();
+    } catch (const std::exception &e) { /* */ }
 }
 
 std::vector<SceneObject *> Scene::getObjects() {
@@ -68,19 +71,25 @@ void Scene::clear() {
     delete dynamicsWorld;
 }
 
-void Scene::remove() {
+void Scene::remove(bool all) {
+    mutex.lock();
+
     vector<SceneObject *> visible;
     for (auto *body : objects) {
         auto y = body->getCenterOfMassPosition().getY();
-        if (y > -7.0) {
-            visible.push_back(body);
-        } else {
-            dynamicsWorld->removeRigidBody(body);
-            delete body->getMotionState();
-            delete body;
-        };
+        if (body->getType() == BALL) {
+            if (!all && y > -7.0) {
+                visible.push_back(body);
+            } else {
+                dynamicsWorld->removeRigidBody(body);
+                delete body->getMotionState();
+                delete body;
+            };
+        } else visible.push_back(body);
     }
 
     objects.clear();
     objects = visible;
+
+    mutex.unlock();
 }

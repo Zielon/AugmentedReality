@@ -3,7 +3,7 @@
 
 #include <tuple>
 #include <Eigen/Dense>
-#include "neutral_network.h"
+#include "neural_network.h"
 
 using namespace std;
 using namespace Eigen;

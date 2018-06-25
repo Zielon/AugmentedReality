@@ -1,19 +1,20 @@
 #include <cmath>
-#include <GL/gl.h>
-#include <GLFW/glfw3.h>
-#include <string>
-#include <thread>
+#include <opencv/highgui.h>
+#include <opencv2/imgproc.hpp>
 
 #include "../headers/application.h"
 #include "../headers/ball.h"
 
 using namespace std;
+using namespace cv;
 
 float cameraX = 0.0;
 float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
+int Application::WINDOWS_WIDTH = 800;
+int Application::WINDOWS_HEIGHT = 800;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -33,6 +34,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) scene->remove(true);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
@@ -85,7 +87,13 @@ void Application::motion(int x, int y) {
 
 }
 
-void Application::display() {
+void Application::display(Mat mat) {
+
+    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
+    Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
+    Mat windowPixels;
+    resize(mat, windowPixels, size);
+    memcpy(pixels, windowPixels.data, sizeof(pixels));
 
     float ratio;
     int width, height;
@@ -94,10 +102,17 @@ void Application::display() {
     ratio = width / (float) height;
 
     glViewport(0, 0, width, height);
-
+    glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+
+    glPushMatrix();
+    glDrawPixels(WINDOWS_HEIGHT, WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
 
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -127,6 +142,10 @@ void Application::initialize() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
@@ -140,15 +159,13 @@ void Application::initialize() {
 
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-    glClearDepth(1.0);
 }
 
 void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(800, 800, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOWS_HEIGHT, WINDOWS_WIDTH, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
@@ -165,28 +182,31 @@ void Application::start() {
 
     initialize();
 
-    // Set default objects [ 1 ball and 1 grid ]
-    scene->defaultSetting();
+    auto *tracker = new Tracker();
 
-    thread simulator([this]() {
-        while (!glfwWindowShouldClose(window)) {
-            scene->simulateObjects();
-            Scene::grid->update();
-            this_thread::sleep_for(10ms);
-        }
-    });
+    scene->defaultSetting();
+    tracker->defaultSetting();
 
     while (!glfwWindowShouldClose(window)) {
-        display();
-        // Ignore synchronization
-        scene->drawObjects();
+
+        tracker->findMarker();
+
+        auto matrix = tracker->getMatrix();
+
+        display(tracker->mat);
+
+        scene->drawObjects(matrix);
+        scene->simulateObjects();
+        scene->remove(false);
+
+        Scene::grid->update();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    simulator.join();
     scene->clear();
-    glfwTerminate();
-
     delete scene;
+
+    glfwTerminate();
 }

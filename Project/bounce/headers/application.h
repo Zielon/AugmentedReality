@@ -1,9 +1,19 @@
 #ifndef PROJECT_APPLICATION_H
 #define PROJECT_APPLICATION_H
 
+#ifdef __APPLE__
+#include <gl.h>
+#elif __linux__
+
+#include <GL/gl.h>
+
+#endif
+
+#include <GLFW/glfw3.h>
 #include <GLFW/glfw3.h>
 
 #include "scene.h"
+#include "../../tracker/headers/tracker.h"
 
 class Application {
 public:
@@ -21,12 +31,15 @@ public:
 
     virtual void motion(int x, int y);
 
-    virtual void display();
+    virtual void display(cv::Mat mat);
 
 
 private:
     GLFWwindow *window;
     static Scene *scene;
+
+    static int WINDOWS_WIDTH;
+    static int WINDOWS_HEIGHT;
 
     static void reshape(GLFWwindow *window, int width, int height);
 

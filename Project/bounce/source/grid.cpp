@@ -1,6 +1,5 @@
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
-#include <GL/glut.h>
 
 #include "../headers/grid.h"
 
@@ -44,10 +43,9 @@ SceneObject *Grid::getDefault(btVector3 origin) {
 
     auto grid = new Grid(0, motionState, shape, fallInertia);
 
-    grid->setFriction(0.05f);
+    grid->setFriction(0.5f);
     grid->setCollisionFlags(grid->getCollisionFlags() | CF_KINEMATIC_OBJECT);
     grid->setActivationState(DISABLE_DEACTIVATION);
-    grid->setUserIndex(-1);
 
     grid->transform = trans;
     grid->quaternion = qtn;

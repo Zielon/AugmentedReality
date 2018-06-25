@@ -24,8 +24,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(Project
         main.cpp
-        neural_net_plain/source/neutral_network.cpp
-        neural_net_plain/headers/neutral_network.h
+        neural_net_plain/source/neural_network.cpp
+        neural_net_plain/headers/neural_network.h
         tracker/source/tracker.cpp
         tracker/headers/tracker.h
         mnist_loader/data_loader.h
@@ -48,7 +48,9 @@ add_executable(Project
         bounce/headers/scene_object.h
         bounce/headers/scene.h
         bounce/source/scene.cpp
-        bounce/source/grid.cpp)
+        bounce/source/grid.cpp
+        tracker/headers/camera.h
+        tracker/source/camera.cpp)
 
 target_link_libraries(Project ${OpenCV_LIBS})
 target_link_libraries(Project ${CMAKE_THREAD_LIBS_INIT})

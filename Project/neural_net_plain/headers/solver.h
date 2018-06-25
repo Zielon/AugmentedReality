@@ -2,7 +2,7 @@
 #define PROJECT_SOLVER_H
 
 #include "../../data_models/digit.cpp"
-#include "neutral_network.h"
+#include "neural_network.h"
 #include <Eigen/Dense>
 #include <iterator>
 #include <map>

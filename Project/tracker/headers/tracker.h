@@ -3,6 +3,9 @@
 
 #include <opencv2/core/mat.hpp>
 #include <GLFW/glfw3.h>
+#include <thread>
+
+#include "camera.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -20,9 +23,20 @@ using namespace std;
 using namespace cv;
 
 class Tracker {
-    
 public:
-    Tracker(){};
+    Tracker();
+
+    void findMatrix();
+
+    void findMarker();
+
+    void defaultSetting();
+
+    float *getMatrix();
+
+    void setMatrix(float *matrix);
+
+    cv::Mat mat;
     
     void createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners);
     
@@ -41,6 +55,11 @@ public:
     Mat getQuaternion(Mat& frame, Mat& cameraMatrix, Mat& distanceCoeffients);
     
 private:
+
+    Camera *camera;
+    std::mutex mutex;
+    float matrix[16];
+
     vector<Vec3d> rotationVectors, translationVectors;
     
     const cv::String webCam = "webCam";

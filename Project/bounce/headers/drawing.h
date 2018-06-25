@@ -1,7 +1,13 @@
 #ifndef PROJECT_DRAWING_H
 #define PROJECT_DRAWING_H
 
+#ifdef __APPLE__
+#include <gl.h>
+#elif __linux__
+
 #include <GL/gl.h>
+
+#endif
 
 class Drawer {
 public:

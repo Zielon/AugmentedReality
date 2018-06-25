@@ -1,4 +1,3 @@
-#include <GL/gl.h>
 #include <LinearMath/btDefaultMotionState.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
@@ -37,14 +36,13 @@ SceneObject *Ball::getDefault(btVector3 origin, float size) {
 
     motionState = new btDefaultMotionState(trans);
 
-    btScalar mass = 3.0;
+    btScalar mass = 500.0;
 
     btVector3 fallInertia(0, 0, 0);
     shape->calculateLocalInertia(mass, fallInertia);
 
     auto ball = new Ball(mass, motionState, shape, fallInertia);
 
-    ball->setUserIndex(-1);
     ball->quaternion = qtn;
     ball->ballSize = size;
     ball->motionState = motionState;

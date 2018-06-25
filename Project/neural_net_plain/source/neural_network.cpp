@@ -1,4 +1,4 @@
-#include "../headers/neutral_network.h"
+#include "../headers/neural_network.h"
 #include "../../data_models/consts.h"
 
 #include <random>
