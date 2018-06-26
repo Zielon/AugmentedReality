@@ -45,8 +45,6 @@ public:
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
 
-    void initVideoStream(cv::VideoCapture &cap);
-
     int detectMarkerTest();
 
     Mat getQuaternion(Mat matrix);
