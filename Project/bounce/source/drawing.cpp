@@ -118,7 +118,7 @@ void Drawer::drawGrid(int size) {
 
     glEnd();
 
-    glPopMatrix();
+    glPopMatrix();  
 }
 
 void Drawer::drawGrid(int size, float thickness) {

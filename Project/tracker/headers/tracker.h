@@ -50,6 +50,8 @@ public:
     Mat getQuaternion(Mat matrix);
     
     Mat getRotationMatrix();
+    
+    int detectMarkerTest ();
 
 private:
     cv::Mat frame;

@@ -7,5 +7,8 @@ int main(int argc, char *argv[]) {
 
     app.start();
 
+//    Tracker t;
+//    t.detectMarkerTest();
+    
     return 0;
 }

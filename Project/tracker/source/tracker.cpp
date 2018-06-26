@@ -1,6 +1,7 @@
 #include <opencv/highgui.h>
 #include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
+#include "../../bounce/headers/drawing.h"
 
 using namespace cv;
 using namespace std;
@@ -33,6 +34,24 @@ void Tracker::findMarker() {
     aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
                                      rotationVectors, translationVectors);
     
+    vector< Point3f > axisPoints;
+    axisPoints.push_back(Point3f(0, 0, 0));
+
+    vector< Point2f > imagePoints;
+
+
+    if(markerIds.size()>0) {
+        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1);
+        projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
+
+        Drawer drawer;
+        glPushMatrix();
+        glTranslatef(imagePoints[0].x, imagePoints[0].y, 0);
+        drawer.drawSnowman();
+        glPopMatrix();
+    };
+    
+
 }
 
 float *Tracker::getMatrix() {
@@ -198,6 +217,37 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
     return false;
 }
 
+int Tracker::detectMarkerTest (){
+    Mat frame;
+    vector<int> markerIds;
+    vector<vector<Point2f>> markerCorners, rejectedCandidates;
+    aruco:: DetectorParameters parameters;
+    
+    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
+    
+    VideoCapture cap(0);
+    if(!cap.isOpened())
+        return -1;
+    
+    namedWindow("webCam",CV_WINDOW_AUTOSIZE);
+    
+    while (1){
+        if(!cap.read(frame))
+            break;
+        
+        aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
+        aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors);
+        
+        for(int i=0; i<markerIds.size(); i++){
+            aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
+        }
+        
+        imshow("webCam", frame);
+        if(waitKey(30)>=0) break;
+    }
+    return 1;
+}
+
 float SIGN(float x) {
     return (x >= 0.0f) ? +1.0f : -1.0f;
 }
@@ -269,3 +319,4 @@ Mat mRot2Quat(const Mat &m) {
     Mat res = (Mat_<float>(4, 1) << q0, q1, q2, q3);
     return res;
 }
+
