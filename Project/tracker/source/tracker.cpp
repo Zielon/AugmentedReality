@@ -1,6 +1,7 @@
 #include <opencv/highgui.h>
 #include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
+#include "../../bounce/headers/drawing.h"
 
 using namespace cv;
 using namespace std;
@@ -33,10 +34,19 @@ void Tracker::findMarker() {
     aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
     aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
                                      rotationVectors, translationVectors);
+
     vector<Point2f> imagePoints;
 
-    if (markerIds.size() > 0)
+    if (markerIds.size() > 0) {
         aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
+        Drawer drawer;
+
+        projectPoints(drawer.getGridPoints(), rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
+
+        glPushMatrix();
+        //drawer.drawGrid(10, 0.01, imagePoints);
+        glPopMatrix();
+    };
 }
 
 float *Tracker::getMatrix() {

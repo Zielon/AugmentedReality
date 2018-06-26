@@ -1,6 +1,5 @@
 #include <cmath>
 #include <opencv/highgui.h>
-#include <opencv2/imgproc.hpp>
 
 #include "../headers/application.h"
 #include "../headers/ball.h"
@@ -13,8 +12,8 @@ float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
-int Application::WINDOWS_WIDTH = 800;
-int Application::WINDOWS_HEIGHT = 800;
+int Application::WINDOWS_WIDTH = 1280;
+int Application::WINDOWS_HEIGHT = 720;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -89,50 +88,35 @@ void Application::motion(int x, int y) {
 
 void Application::display(Mat &mat) {
 
-    if(mat.rows == 0 || mat.cols == 0) return;
+    if (mat.rows == 0 || mat.cols == 0) return;
 
     unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
-    Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
-    Mat windowPixels;
-    resize(mat, windowPixels, size);
-    flip(windowPixels, windowPixels, -1);
-    memcpy(pixels, windowPixels.data, sizeof(pixels));
 
-    float ratio;
-    int width, height;
+    memcpy(pixels, mat.data, sizeof(pixels));
 
-    glfwGetFramebufferSize(window, &width, &height);
-    ratio = width / (float) height;
+    int width0, height0;
+    glfwGetFramebufferSize(window, &width0, &height0);
 
-    glViewport(0, 0, width, height);
-    glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
+
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
     glDisable(GL_DEPTH_TEST);
 
+    glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glDrawPixels(WINDOWS_HEIGHT, WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glLoadIdentity();
+
+    glOrtho(0.0, WINDOWS_WIDTH, 0.0, WINDOWS_HEIGHT, -1, 1);
+    glRasterPos2i(0, WINDOWS_HEIGHT - 1);
+    glDrawPixels(WINDOWS_WIDTH, WINDOWS_HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
     glPopMatrix();
 
     glEnable(GL_DEPTH_TEST);
 
-    int fov = 30;
-    float near = 0.01f, far = 100.f;
-    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
-    float bottom = -top;
-    float left = ratio * bottom;
-    float right = ratio * top;
-
-    glFrustum(left, right, bottom, top, near, far);
-    // move to origin
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // move the object backwards
-    glTranslatef(0.0f, 0.0f, -25.0f);
-    glRotatef(10, 1.0, 0.0, 0.0);
-    glTranslatef(cameraX, cameraY, cameraZ);
 }
 
 void Application::initialize() {
@@ -144,6 +128,11 @@ void Application::initialize() {
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glPixelZoom(1.0, -1.0);
 
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
@@ -157,18 +146,13 @@ void Application::initialize() {
     glEnable(GL_LIGHT0);
 
     glfwWindowHint(GLFW_SAMPLES, 5);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 }
 
 void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(WINDOWS_HEIGHT, WINDOWS_WIDTH, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOWS_WIDTH, WINDOWS_HEIGHT, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
