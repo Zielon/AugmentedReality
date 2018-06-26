@@ -8,10 +8,11 @@ using namespace std;
 Camera::Camera(int mode) {
     switch (mode) {
         case 0:
-            this->capture->open(0);             //how to open camera with this videoCapture pointer??
+            this->capture = new VideoCapture(0);
             break;
         case 1:
             this->capture = new VideoCapture("resources/movie");
+            break;
         default:
             break;
     }

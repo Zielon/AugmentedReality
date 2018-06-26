@@ -6,7 +6,7 @@
 
 class Camera {
 public:
-    Camera(int mode = 0);
+    Camera(int mode);
 
     void nextFrame(cv::Mat &frame);
 

@@ -10,23 +10,26 @@ float NORM(float a, float b, float c, float d);
 Mat mRot2Quat(const Mat &m);
 
 Tracker::Tracker() {
-    this->camera = new Camera();
-    loadCameraCalibration("CameraMatrix", cameraMatrix, distanceCoeffients);
+    this->camera = new Camera(0);
 }
 
 void Tracker::defaultSetting() {
+    loadCameraCalibration("CameraMatrix", cameraMatrix, distanceCoeffients);
+}
 
+Mat& Tracker::getFrame(){
+    return frame;
 }
 
 void Tracker::findMarker() {
-    camera->nextFrame(mat);
+    camera->nextFrame(frame);
     
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
     aruco::DetectorParameters parameters;
     Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
     
-    aruco::detectMarkers(mat, dictionary, markerCorners, markerIds);
+    aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
     aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
                                      rotationVectors, translationVectors);
     
@@ -35,7 +38,7 @@ void Tracker::findMarker() {
 float *Tracker::getMatrix() {
     
     Mat rotationMatrix = getRotationMatrix();
-    Mat isotropyMatrix;
+    Mat isotropyMatrix = Mat(4, 4, CV_64F);
     
     for(int i=0; i<3; i++){
         for(int j=0; j<3; j++){
@@ -194,25 +197,6 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
     }
     return false;
 }
-
-int Tracker::detectMarkerTest() {
-    Mat frame;
-    vector<int> markerIds;
-    vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco::DetectorParameters parameters;
-
-    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
-
-    aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-    aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
-                                     rotationVectors, translationVectors);
-
-    for (int i = 0; i < markerIds.size(); i++) {
-        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
-    }
-}
-
-
 
 float SIGN(float x) {
     return (x >= 0.0f) ? +1.0f : -1.0f;

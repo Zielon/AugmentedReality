@@ -44,8 +44,8 @@ public:
     bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients);
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
-
-    int detectMarkerTest();
+    
+    void findMarker();
 
     Mat getQuaternion(Mat matrix);
     
