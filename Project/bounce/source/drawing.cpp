@@ -1,4 +1,5 @@
 #include <cmath>
+#include <opencv2/core/types.hpp>
 
 #include "../headers/drawing.h"
 
@@ -6,6 +7,9 @@
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
 #endif
+
+using namespace cv;
+using namespace std;
 
 void Drawer::drawSphere(double r, int lats, int longs) {
     int i, j;
@@ -93,82 +97,32 @@ void Drawer::drawSnowman() {
     drawCone(0.05, 0.5, 10, 10);
 }
 
-void Drawer::drawGrid(int size) {
-    glPushMatrix();
-    float SIZE = size;
+void Drawer::drawGrid(int size, float thickness, vector<Point2f> points) {
 
-    glTranslatef(-SIZE / 2, -1.5f, -SIZE / 2);
+    glBegin(GL_POLYGON);
 
-    glBegin(GL_QUADS);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0, -0.001f, 0);
-    glVertex3f(0, -0.001f, SIZE);
-    glVertex3f(SIZE, -0.001f, SIZE);
-    glVertex3f(SIZE, -0.001f, 0);
-    glEnd();
+    glColor3f(0.0, 0.0, 1.0);
+    glScalef(size, thickness, size);
+    glTranslatef(points[0].x, points[0].y, 0);
 
-    glBegin(GL_LINES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    for (int i = 0; i <= SIZE; i++) {
-        glVertex3f(i, 0, 0);
-        glVertex3f(i, 0, SIZE);
-        glVertex3f(0, 0, i);
-        glVertex3f(SIZE, 0, i);
-    };
+    bool first = true;
+    for (auto point : points) {
+        if (first) {
+            first = false;
+            continue;
+        }
+        glVertex3f(point.x, point.y, 0);
+    }
 
     glEnd();
-
-    glPopMatrix();  
 }
 
-void Drawer::drawGrid(int size, float thickness) {
-
-    glScalef(size, thickness, size);
-
-    // BACK
-    glBegin(GL_POLYGON);
-    glColor3f(1.0, 0.0, 1.0);
-    glVertex3f(0.5, -0.5, 0.5);
-    glVertex3f(0.5, 0.5, 0.5);
-    glVertex3f(-0.5, 0.5, 0.5);
-    glVertex3f(-0.5, -0.5, 0.5);
-    glEnd();
-
-    // RIGHT
-    glBegin(GL_POLYGON);
-    glColor3f(1.0, 0.0, 1.0);
-    glVertex3f(0.5, -0.5, -0.5);
-    glVertex3f(0.5, 0.5, -0.5);
-    glVertex3f(0.5, 0.5, 0.5);
-    glVertex3f(0.5, -0.5, 0.5);
-    glEnd();
-
-    // LEFT
-    glBegin(GL_POLYGON);
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex3f(-0.5, -0.5, 0.5);
-    glVertex3f(-0.5, 0.5, 0.5);
-    glVertex3f(-0.5, 0.5, -0.5);
-    glVertex3f(-0.5, -0.5, -0.5);
-    glEnd();
-
-    // TOP
-    glBegin(GL_POLYGON);
-    glColor3f(0.0, 0.0, 1.0);
-    glVertex3f(0.5, 0.5, 0.5);
-    glVertex3f(0.5, 0.5, -0.5);
-    glVertex3f(-0.5, 0.5, -0.5);
-    glVertex3f(-0.5, 0.5, 0.5);
-    glEnd();
-
-    // BOTTOM
-    glBegin(GL_POLYGON);
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex3f(0.5, -0.5, -0.5);
-    glVertex3f(0.5, -0.5, 0.5);
-    glVertex3f(-0.5, -0.5, 0.5);
-    glVertex3f(-0.5, -0.5, -0.5);
-    glEnd();
-
-    glFlush();
+vector<Point3f> Drawer::getGridPoints() {
+    return {
+            Point3f(0, 0, 0),
+            Point3f(0.5, 0.5, 0.5),
+            Point3f(0.5, 0.5, -0.5),
+            Point3f(-0.5, 0.5, -0.5),
+            Point3f(-0.5, 0.5, 0.5)
+    };
 }

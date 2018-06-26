@@ -17,7 +17,7 @@ void Grid::draw() {
     getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    drawer.drawGrid((int) gridSize, gridThickness);
+    //drawer.drawGrid((int) gridSize, gridThickness, drawer.getGridPoints());
     glPopMatrix();
 }
 

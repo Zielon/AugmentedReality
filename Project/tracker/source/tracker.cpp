@@ -1,103 +1,61 @@
 #include <opencv/highgui.h>
 #include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
-#include "../../bounce/headers/drawing.h"
 
 using namespace cv;
 using namespace std;
 
 float SIGN(float x);
+
 float NORM(float a, float b, float c, float d);
+
 Mat mRot2Quat(const Mat &m);
 
 Tracker::Tracker() {
-    this->camera = new Camera(0);
+    this->camera = new Camera(1);
 }
 
 void Tracker::defaultSetting() {
-    loadCameraCalibration("CameraMatrix", cameraMatrix, distanceCoeffients);
+    loadCameraCalibration("resources/CameraMatrix", cameraMatrix, distanceCoeffients);
 }
 
-Mat& Tracker::getFrame(){
+Mat &Tracker::getFrame() {
     return frame;
 }
 
 void Tracker::findMarker() {
     camera->nextFrame(frame);
-    
+
     vector<int> markerIds;
     vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco::DetectorParameters parameters;
-    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
-    
+    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_1000);
+
     aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
     aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
                                      rotationVectors, translationVectors);
-    
-    vector< Point3f > axisPoints;
-    axisPoints.push_back(Point3f(0, 0, 0));
+    vector<Point2f> imagePoints;
 
-    vector< Point2f > imagePoints;
-
-
-    if(markerIds.size()>0) {
-        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1);
-        projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
-
-        Drawer drawer;
-        glPushMatrix();
-        glTranslatef(imagePoints[0].x, imagePoints[0].y, 0);
-        drawer.drawSnowman();
-        glPopMatrix();
-    };
-    
-
+    if (markerIds.size() > 0)
+        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
 }
 
 float *Tracker::getMatrix() {
-    
-    Mat rotationMatrix = getRotationMatrix();
-    Mat isotropyMatrix = Mat(4, 4, CV_64F);
-    
-    for(int i=0; i<3; i++){
-        for(int j=0; j<3; j++){
-            isotropyMatrix.at<double>(i,j) = rotationMatrix.at<double>(i,j);
-        }
-    }
-    isotropyMatrix.at<double>(0,3) = translationVectors[0][0];
-    isotropyMatrix.at<double>(1,3) = translationVectors[0][1];
-    isotropyMatrix.at<double>(2,3) = translationVectors[0][2];
-    
-    isotropyMatrix.at<double>(3,0) = 0;
-    isotropyMatrix.at<double>(3,1) = 0;
-    isotropyMatrix.at<double>(3,2) = 0;
-    isotropyMatrix.at<double>(3,3) = 1;
-
-    //homography matrix = isotropy matrix multiplied by projection matrix
-    //focalLength for projection Matrix???
-    
     return this->matrix;
 }
 
-void Tracker::setMatrix(float *matrix) {                    //???
-    mutex.lock();
-    memcpy(this->matrix, matrix, sizeof(float) * 16);
-    mutex.unlock();
-}
-
-Mat Tracker::getRotationMatrix(){
+Mat Tracker::getRotationMatrix() {
     Mat rotationMatrix;
     if (rotationVectors.size() != 0) {
         cout << rotationVectors[0] << endl;
         Rodrigues(rotationVectors[0], rotationMatrix);      //convert Rodriges angle to rotation matrix
     }
-    
+
     return rotationMatrix;
 }
 
 Mat Tracker::getQuaternion(Mat matrix) {
     Mat quat = mRot2Quat(matrix);
-    
+
     return quat;
 }
 
@@ -194,7 +152,7 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
                 double read = 0.0f;
                 instream >> read;
                 cameraMatrix.at<double>(r, c) = read;
-//                cout << cameraMatrix.at<double>(r,c) << "\n";
+                //cout << cameraMatrix.at<double>(r,c) << "\n";
             }
         }
 
@@ -208,44 +166,13 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
                 double read = 0.0f;
                 instream >> read;
                 distanceCoeffients.at<double>(r, c) = read;
-//                cout << distanceCoeffients.at<double>(r,c) << "\n";
+                //cout << distanceCoeffients.at<double>(r,c) << "\n";
             }
         }
         instream.close();
         return true;
     }
     return false;
-}
-
-int Tracker::detectMarkerTest (){
-    Mat frame;
-    vector<int> markerIds;
-    vector<vector<Point2f>> markerCorners, rejectedCandidates;
-    aruco:: DetectorParameters parameters;
-    
-    Ptr<aruco::Dictionary> dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);
-    
-    VideoCapture cap(0);
-    if(!cap.isOpened())
-        return -1;
-    
-    namedWindow("webCam",CV_WINDOW_AUTOSIZE);
-    
-    while (1){
-        if(!cap.read(frame))
-            break;
-        
-        aruco::detectMarkers(frame, dictionary, markerCorners, markerIds);
-        aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors);
-        
-        for(int i=0; i<markerIds.size(); i++){
-            aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.1f);
-        }
-        
-        imshow("webCam", frame);
-        if(waitKey(30)>=0) break;
-    }
-    return 1;
 }
 
 float SIGN(float x) {

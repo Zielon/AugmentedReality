@@ -88,9 +88,11 @@ void Application::motion(int x, int y) {
 }
 
 void Application::display(Mat &mat) {
-    
-    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 12];
-    Size size(WINDOWS_HEIGHT * 2, WINDOWS_WIDTH * 2);
+
+    if(mat.rows == 0 || mat.cols == 0) return;
+
+    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
+    Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
     Mat windowPixels;
     resize(mat, windowPixels, size);
     flip(windowPixels, windowPixels, -1);
@@ -110,7 +112,7 @@ void Application::display(Mat &mat) {
     glDisable(GL_DEPTH_TEST);
 
     glPushMatrix();
-    glDrawPixels(WINDOWS_HEIGHT*2, 2*WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glDrawPixels(WINDOWS_HEIGHT, WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
     glPopMatrix();
 
     glEnable(GL_DEPTH_TEST);
@@ -190,13 +192,13 @@ void Application::start() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        tracker->findMarker();
-
-//        auto matrix = tracker->getMatrix();
-
         display(tracker->getFrame());
 
-  //      scene->drawObjects(NULL);
+        tracker->findMarker();
+
+        auto matrix = tracker->getMatrix();
+
+        //scene->drawObjects(NULL);
         scene->simulateObjects();
         scene->remove(false);
 

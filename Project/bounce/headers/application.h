@@ -31,7 +31,7 @@ public:
 
     virtual void motion(int x, int y);
 
-    virtual void display(cv::Mat& mat);
+    virtual void display(cv::Mat &mat);
 
 
 private:

@@ -32,8 +32,6 @@ public:
 
     Mat &getFrame();
 
-    void setMatrix(float *matrix);
-
     void createBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f> &corners);
 
     void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &allFoundCorners, bool showResult = false);
@@ -44,34 +42,32 @@ public:
     bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients);
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
-    
+
     void findMarker();
 
     Mat getQuaternion(Mat matrix);
-    
+
     Mat getRotationMatrix();
-    
-    int detectMarkerTest ();
 
 private:
     cv::Mat frame;
     Camera *camera;
-    
+
     std::mutex mutex;
-    
+
     float matrix[16];
-    
-    Mat cameraMatrix = Mat::eye(3,3,CV_64F);
-    
+
+    Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
+
     Mat distanceCoeffients;
-    
+
     vector<Vec3d> rotationVectors, translationVectors;
     const float calibrationSquareDimension = 0.0247;    //meters
-    
+
     const float arucoSquareDimension = 0.049;
-    
+
     const Size boardSize = Size(9, 6);
-    
+
 };
 
 #endif //PROJECT_TRACKER_H

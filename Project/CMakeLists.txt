@@ -15,6 +15,7 @@ find_package(Bullet REQUIRED)
 configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)
 configure_file(resources/stuff resources/stuff COPYONLY)
+configure_file(resources/CameraMatrix resources/CameraMatrix COPYONLY)
 #configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
 #configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
 
