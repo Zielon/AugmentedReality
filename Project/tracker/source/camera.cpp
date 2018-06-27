@@ -1,6 +1,8 @@
 #include <opencv2/videoio/videoio_c.h>
+#include <opencv/cv.hpp>
 
 #include "../headers/camera.h"
+#include "../../bounce/headers/application.h"
 
 using namespace cv;
 using namespace std;
@@ -25,6 +27,8 @@ void Camera::nextFrame(cv::Mat &frame) {
         capture->set(CV_CAP_PROP_POS_FRAMES, 0);
         capture->read(frame);
     };
+
+    resize(frame, frame, Size(Application::WIDTH, Application::HEIGHT));
 }
 
 Camera::~Camera() {

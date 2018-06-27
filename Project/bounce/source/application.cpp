@@ -12,8 +12,8 @@ float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
-int Application::WINDOWS_WIDTH = 1280;
-int Application::WINDOWS_HEIGHT = 720;
+int Application::WIDTH = 600;
+int Application::HEIGHT = 400;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -90,7 +90,7 @@ void Application::display(Mat &mat) {
 
     if (mat.rows == 0 || mat.cols == 0) return;
 
-    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
+    unsigned char pixels[HEIGHT * WIDTH * 3];
 
     memcpy(pixels, mat.data, sizeof(pixels));
 
@@ -108,9 +108,9 @@ void Application::display(Mat &mat) {
     glPushMatrix();
     glLoadIdentity();
 
-    glOrtho(0.0, WINDOWS_WIDTH, 0.0, WINDOWS_HEIGHT, -1, 1);
-    glRasterPos2i(0, WINDOWS_HEIGHT - 1);
-    glDrawPixels(WINDOWS_WIDTH, WINDOWS_HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    glOrtho(0.0, WIDTH, 0.0, HEIGHT, -1, 1);
+    glRasterPos2i(0, HEIGHT - 1);
+    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
     glPopMatrix();
 
@@ -158,7 +158,7 @@ void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(WINDOWS_WIDTH, WINDOWS_HEIGHT, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();

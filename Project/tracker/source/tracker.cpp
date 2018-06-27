@@ -68,7 +68,7 @@ float *Tracker::findMarker() {
 
     glMatrixMode(GL_MODELVIEW);
 
-    //glLoadMatrixf(resultMatrix);
+    //glLoadMatrixf(T);
     glLineWidth(2.5);
     glBegin(GL_LINES);
 

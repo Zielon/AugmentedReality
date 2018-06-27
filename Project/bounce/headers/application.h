@@ -33,13 +33,12 @@ public:
 
     virtual void display(cv::Mat &mat);
 
+    static int WIDTH;
+    static int HEIGHT;
 
 private:
     GLFWwindow *window;
     static Scene *scene;
-
-    static int WINDOWS_WIDTH;
-    static int WINDOWS_HEIGHT;
 
     static void reshape(GLFWwindow *window, int width, int height);
 
