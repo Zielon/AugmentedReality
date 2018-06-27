@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, -5, 0));
+Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, 0, 0));
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
@@ -42,15 +42,18 @@ Scene::Scene() {
 
 void Scene::defaultSetting() {
     addObject((SceneObject *) grid);
-    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.4));
-    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.4));
-    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.2));
+    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
+    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
 }
 
 void Scene::drawObjects(float matrix[16]) {
     try {
-        //glMultMatrixf(matrix);
+        glPushMatrix();
+
+        glScalef(0.25, 0.25, 0.25);
         for (auto object : objects) object->draw();
+        glPopMatrix();
     } catch (const std::exception &e) { /* */ }
 }
 

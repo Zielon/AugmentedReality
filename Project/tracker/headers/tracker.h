@@ -43,7 +43,7 @@ public:
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
 
-    void findMarker();
+    float* findMarker();
 
     Mat getQuaternion(Mat matrix);
 

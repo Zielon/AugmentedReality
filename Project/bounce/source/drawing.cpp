@@ -97,29 +97,22 @@ void Drawer::drawSnowman() {
     drawCone(0.05, 0.5, 10, 10);
 }
 
-void Drawer::drawGrid(int size, float thickness, vector<Point2f> points) {
+void Drawer::drawGrid(int size, float thickness, vector<Point3f> points) {
+
+    glScalef(size, thickness, size);
 
     glBegin(GL_POLYGON);
 
     glColor3f(0.0, 0.0, 1.0);
-    glScalef(size, thickness, size);
-    glTranslatef(points[0].x, points[0].y, 0);
 
-    bool first = true;
-    for (auto point : points) {
-        if (first) {
-            first = false;
-            continue;
-        }
-        glVertex3f(point.x, point.y, 0);
-    }
+    for (auto point : points)
+        glVertex3f(point.x, point.y, point.z);
 
     glEnd();
 }
 
 vector<Point3f> Drawer::getGridPoints() {
     return {
-            Point3f(0, 0, 0),
             Point3f(0.5, 0.5, 0.5),
             Point3f(0.5, 0.5, -0.5),
             Point3f(-0.5, 0.5, -0.5),

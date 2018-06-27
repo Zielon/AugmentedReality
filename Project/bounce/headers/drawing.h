@@ -23,7 +23,7 @@ public:
 
     void drawGrid(int size);
 
-    void drawGrid(int size, float thickness, std::vector<cv::Point2f> points);
+    void drawGrid(int size, float thickness, std::vector<cv::Point3f> points);
 
     std::vector<cv::Point3f> getGridPoints();
 };

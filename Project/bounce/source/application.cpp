@@ -128,6 +128,7 @@ void Application::initialize() {
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_TEXTURE_2D);
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -140,8 +141,13 @@ void Application::initialize() {
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    GLfloat light_pos[] = {1.0, 1.0, 1.0, 0.0};
+    GLfloat light_amb[] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat light_dif[] = {0.7, 0.7, 0.7, 1.0};
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_dif);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
@@ -178,11 +184,9 @@ void Application::start() {
 
         display(tracker->getFrame());
 
-        tracker->findMarker();
+        auto matrix = tracker->findMarker();
 
-        auto matrix = tracker->getMatrix();
-
-        //scene->drawObjects(NULL);
+        //scene->drawObjects(matrix);
         scene->simulateObjects();
         scene->remove(false);
 

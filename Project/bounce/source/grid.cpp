@@ -9,15 +9,15 @@ Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisio
         : SceneObject(mass, motionState, collisionShape, localInertia) {
 }
 
-float Grid::gridSize = 10.f;
-float Grid::gridThickness = 0.01f;
+float Grid::gridSize = 5.f;
+float Grid::gridThickness = 0.05f;
 
 void Grid::draw() {
     glPushMatrix();
     getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    //drawer.drawGrid((int) gridSize, gridThickness, drawer.getGridPoints());
+    drawer.drawGrid((int) gridSize, gridThickness, drawer.getGridPoints());
     glPopMatrix();
 }
 

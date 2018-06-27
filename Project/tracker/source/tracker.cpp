@@ -1,7 +1,7 @@
 #include <opencv/highgui.h>
 #include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
-#include "../../bounce/headers/drawing.h"
+#include "../source/PoseEstimation.cpp"
 
 using namespace cv;
 using namespace std;
@@ -24,7 +24,7 @@ Mat &Tracker::getFrame() {
     return frame;
 }
 
-void Tracker::findMarker() {
+float *Tracker::findMarker() {
     camera->nextFrame(frame);
 
     vector<int> markerIds;
@@ -35,18 +35,59 @@ void Tracker::findMarker() {
     aruco::estimatePoseSingleMarkers(markerCorners, arucoSquareDimension, cameraMatrix, distanceCoeffients,
                                      rotationVectors, translationVectors);
 
+    if (markerIds.empty()) return nullptr;
+
+    aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
+
+    float length = 0.05;
+
+    vector<Point3f> axisPoints;
+    axisPoints.push_back(Point3f(0, 0, 0));
+    axisPoints.push_back(Point3f(length, 0, 0));
+    axisPoints.push_back(Point3f(0, length, 0));
+    axisPoints.push_back(Point3f(0, 0, length));
     vector<Point2f> imagePoints;
 
-    if (markerIds.size() > 0) {
-        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
-        Drawer drawer;
+    projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
 
-        projectPoints(drawer.getGridPoints(), rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
+    auto R = getRotationMatrix();
+    auto V = translationVectors;
 
-        glPushMatrix();
-        //drawer.drawGrid(10, 0.01, imagePoints);
-        glPopMatrix();
+    float T[16] = {
+            R.at<float>(0, 0), -R.at<float>(1, 0), -R.at<float>(2, 0), 0.0,
+            R.at<float>(0, 1), -R.at<float>(1, 1), -R.at<float>(2, 1), 0.0,
+            R.at<float>(0, 2), -R.at<float>(1, 2), -R.at<float>(2, 2), 0.0,
+            (float) V[0][0], -(float) V[0][1], -(float) V[0][2], 1.0
     };
+
+    auto corners = markerCorners[0].data();
+
+    float resultMatrix[16];
+
+    estimateSquarePose(resultMatrix, corners, 0.048);
+
+    glMatrixMode(GL_MODELVIEW);
+
+    glLoadMatrixf(resultMatrix);
+    glLineWidth(2.5);
+    glBegin(GL_LINES);
+
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
+    glVertex3f(imagePoints[1].x / 720, imagePoints[1].y / 1280, 0.0);
+
+
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
+    glVertex3f(imagePoints[2].x / 720, imagePoints[2].y / 1280, 0.0);
+
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
+    glVertex3f(imagePoints[2].x / 720, 0.0, imagePoints[2].y / 1280);
+
+    glEnd();
+
+    return T;
 }
 
 float *Tracker::getMatrix() {
@@ -55,10 +96,8 @@ float *Tracker::getMatrix() {
 
 Mat Tracker::getRotationMatrix() {
     Mat rotationMatrix;
-    if (rotationVectors.size() != 0) {
-        cout << rotationVectors[0] << endl;
-        Rodrigues(rotationVectors[0], rotationMatrix);      //convert Rodriges angle to rotation matrix
-    }
+    if (rotationVectors.size() != 0)
+        Rodrigues(rotationVectors[0], rotationMatrix);
 
     return rotationMatrix;
 }
