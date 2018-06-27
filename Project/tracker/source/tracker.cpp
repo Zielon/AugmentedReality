@@ -64,11 +64,11 @@ float *Tracker::findMarker() {
 
     float resultMatrix[16];
 
-    estimateSquarePose(resultMatrix, corners, 0.048);
+    estimateSquarePose(resultMatrix, corners, 1);
 
     glMatrixMode(GL_MODELVIEW);
 
-    glLoadMatrixf(resultMatrix);
+    //glLoadMatrixf(resultMatrix);
     glLineWidth(2.5);
     glBegin(GL_LINES);
 
@@ -83,7 +83,7 @@ float *Tracker::findMarker() {
 
     glColor3f(1.0, 0.0, 0.0);
     glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
-    glVertex3f(imagePoints[2].x / 720, 0.0, imagePoints[2].y / 1280);
+    glVertex3f(imagePoints[3].x / 720, 0.0, imagePoints[3].y / 1280);
 
     glEnd();
 
