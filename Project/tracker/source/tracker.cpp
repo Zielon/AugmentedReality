@@ -2,6 +2,8 @@
 #include <opencv2/aruco.hpp>
 #include "../headers/tracker.h"
 #include "../source/PoseEstimation.cpp"
+#include "../../bounce/headers/drawing.h"
+#include "../../bounce/headers/application.h"
 
 using namespace cv;
 using namespace std;
@@ -11,6 +13,9 @@ float SIGN(float x);
 float NORM(float a, float b, float c, float d);
 
 Mat mRot2Quat(const Mat &m);
+
+Mat Tracker::cameraMatrix = Mat::eye(3, 3, CV_64F);
+Mat Tracker::distanceCoeffients = Mat();
 
 Tracker::Tracker() {
     this->camera = new Camera(1);
@@ -22,6 +27,42 @@ void Tracker::defaultSetting() {
 
 Mat &Tracker::getFrame() {
     return frame;
+}
+
+void Tracker::buildProjectionMatrix(double *projectionMatrix) {
+
+    // Clipping
+    float near = 0.01f;
+    float far = 100.0f;
+
+    float width = Application::WIDTH;
+    float height = Application::HEIGHT;
+
+    // Camera parameters
+    double fx = cameraMatrix.at<double>(0, 0);
+    double fy = cameraMatrix.at<double>(1, 1);
+    double cx = cameraMatrix.at<double>(0, 2);
+    double cy = cameraMatrix.at<double>(1, 2);
+
+    projectionMatrix[0] = 2.0f * fx / width;
+    projectionMatrix[1] = 0.0f;
+    projectionMatrix[2] = 0.0f;
+    projectionMatrix[3] = 0.0f;
+
+    projectionMatrix[4] = 0.0f;
+    projectionMatrix[5] = -2.0f * fy / height;
+    projectionMatrix[6] = 0.0f;
+    projectionMatrix[7] = 0.0f;
+
+    projectionMatrix[8] = 1.0f - 2.0f * cx / width;
+    projectionMatrix[9] = 2.0f * cy / height - 1.0f;
+    projectionMatrix[10] = (far + near) / (near - far);
+    projectionMatrix[11] = -1.0f;
+
+    projectionMatrix[12] = 0.0f;
+    projectionMatrix[13] = 0.0f;
+    projectionMatrix[14] = 2.0f * far * near / (near - far);
+    projectionMatrix[15] = 0.0f;
 }
 
 float *Tracker::findMarker() {
@@ -37,57 +78,50 @@ float *Tracker::findMarker() {
 
     if (markerIds.empty()) return nullptr;
 
-    aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
+    try {
+        aruco::drawAxis(frame, cameraMatrix, distanceCoeffients, rotationVectors, translationVectors, 0.05);
 
-    float length = 0.05;
+        float length = 0.5;
 
-    vector<Point3f> axisPoints;
-    axisPoints.push_back(Point3f(0, 0, 0));
-    axisPoints.push_back(Point3f(length, 0, 0));
-    axisPoints.push_back(Point3f(0, length, 0));
-    axisPoints.push_back(Point3f(0, 0, length));
-    vector<Point2f> imagePoints;
+        vector<Point3f> axisPoints;
+        axisPoints.push_back(Point3f(0, 0, 0));
+        axisPoints.push_back(Point3f(length, 0, 0));
+        axisPoints.push_back(Point3f(0, length, 0));
+        axisPoints.push_back(Point3f(0, 0, length));
+        vector<Point2f> imagePoints;
 
-    projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
+        projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
 
-    auto R = getRotationMatrix();
-    auto V = translationVectors;
+        auto R = getRotationMatrix();
+        auto V = translationVectors;
 
-    float T[16] = {
-            R.at<float>(0, 0), -R.at<float>(1, 0), -R.at<float>(2, 0), 0.0,
-            R.at<float>(0, 1), -R.at<float>(1, 1), -R.at<float>(2, 1), 0.0,
-            R.at<float>(0, 2), -R.at<float>(1, 2), -R.at<float>(2, 2), 0.0,
-            (float) V[0][0], -(float) V[0][1], -(float) V[0][2], 1.0
-    };
+        float T[16] = {
+                R.at<float>(0, 0), -R.at<float>(1, 0), -R.at<float>(2, 0), 0.0,
+                R.at<float>(0, 1), -R.at<float>(1, 1), -R.at<float>(2, 1), 0.0,
+                R.at<float>(0, 2), -R.at<float>(1, 2), -R.at<float>(2, 2), 0.0,
+                (float) V[0][0], -(float) V[0][1], -(float) V[0][2], 1.0
+        };
 
-    auto corners = markerCorners[0].data();
+        auto corners = markerCorners[0].data();
 
-    float resultMatrix[16];
+        double projectionMatrix[16];
 
-    estimateSquarePose(resultMatrix, corners, 1);
+        buildProjectionMatrix(projectionMatrix);
 
-    glMatrixMode(GL_MODELVIEW);
+        estimateSquarePose(T, corners, 0.05);
 
-    //glLoadMatrixf(T);
-    glLineWidth(2.5);
-    glBegin(GL_LINES);
+//        glMatrixMode(GL_PROJECTION);
+//        glLoadTransposeMatrixd(projectionMatrix);
+//
+        glMatrixMode(GL_MODELVIEW);
+        glLoadTransposeMatrixf(T);
 
-    glColor3f(0.0, 0.0, 1.0);
-    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
-    glVertex3f(imagePoints[1].x / 720, imagePoints[1].y / 1280, 0.0);
+        Drawer drawer;
+        drawer.drawSnowman();
 
+        return T;
 
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
-    glVertex3f(imagePoints[2].x / 720, imagePoints[2].y / 1280, 0.0);
-
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex3f(imagePoints[0].x / 720, imagePoints[0].y / 1280, 0.0);
-    glVertex3f(imagePoints[3].x / 720, 0.0, imagePoints[3].y / 1280);
-
-    glEnd();
-
-    return T;
+    } catch (const std::exception &e) { return nullptr; }
 }
 
 float *Tracker::getMatrix() {
@@ -212,9 +246,9 @@ bool Tracker::loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanc
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                double read = 0.0f;
+                float read = 0.0f;
                 instream >> read;
-                distanceCoeffients.at<double>(r, c) = read;
+                distanceCoeffients.at<float>(r, c) = read;
                 //cout << distanceCoeffients.at<double>(r,c) << "\n";
             }
         }

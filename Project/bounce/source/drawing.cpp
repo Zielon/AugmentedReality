@@ -69,6 +69,8 @@ void Drawer::drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks
 }
 
 void Drawer::drawSnowman() {
+
+    glScalef(0.25, 0.25, 0.25);
     glColor3f(1.0f, 1.0f, 1.0f);
     drawSphere(0.5, 40, 40);
 

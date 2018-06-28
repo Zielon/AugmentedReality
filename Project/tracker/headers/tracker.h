@@ -43,11 +43,13 @@ public:
 
     bool loadCameraCalibration(string name, Mat &cameraMatrix, Mat &distanceCoeffients);
 
-    float* findMarker();
+    float *findMarker();
 
     Mat getQuaternion(Mat matrix);
 
     Mat getRotationMatrix();
+
+    static void buildProjectionMatrix(double *projectionMatrix);
 
 private:
     cv::Mat frame;
@@ -57,9 +59,9 @@ private:
 
     float matrix[16];
 
-    Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
+    static Mat cameraMatrix;
 
-    Mat distanceCoeffients;
+    static Mat distanceCoeffients;
 
     vector<Vec3d> rotationVectors, translationVectors;
     const float calibrationSquareDimension = 0.0247;    //meters

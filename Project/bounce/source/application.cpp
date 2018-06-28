@@ -12,8 +12,8 @@ float cameraY = 0.0;
 float cameraZ = 0.0;
 
 Scene *Application::scene = new Scene();
-int Application::WIDTH = 600;
-int Application::HEIGHT = 400;
+int Application::WIDTH = 900;
+int Application::HEIGHT = 600;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -53,13 +53,12 @@ void Application::specialUp(int key, int x, int y) {
 }
 
 void Application::reshape(GLFWwindow *window, int width, int height) {
-    // set a whole-window viewport
+
     glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
-    // create a perspective projection matrix
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //gluPerspective( 30, ((GLfloat)width/(GLfloat)height), 0.01, 100 );
+
     float ratio = (GLfloat) width / (GLfloat) height;
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -94,8 +93,8 @@ void Application::display(Mat &mat) {
 
     memcpy(pixels, mat.data, sizeof(pixels));
 
-    int width0, height0;
-    glfwGetFramebufferSize(window, &width0, &height0);
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -108,8 +107,8 @@ void Application::display(Mat &mat) {
     glPushMatrix();
     glLoadIdentity();
 
-    glOrtho(0.0, WIDTH, 0.0, HEIGHT, -1, 1);
-    glRasterPos2i(0, HEIGHT - 1);
+    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+    glRasterPos2i(0, mat.cols - 1);
     glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
     glPopMatrix();
