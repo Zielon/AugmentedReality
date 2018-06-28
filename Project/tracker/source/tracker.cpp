@@ -54,14 +54,14 @@ void Tracker::buildProjectionMatrix(double *projectionMatrix) {
     projectionMatrix[6] = 0.0f;
     projectionMatrix[7] = 0.0f;
 
-    projectionMatrix[8] = 1.0f - 2.0f * cx / width;
-    projectionMatrix[9] = 2.0f * cy / height - 1.0f;
-    projectionMatrix[10] = (far + near) / (near - far);
+    projectionMatrix[8] = (width - 2 * cx) / width;
+    projectionMatrix[9] = (height - 2 * cy) / height;
+    projectionMatrix[10] = (-far - near) / (far - near);
     projectionMatrix[11] = -1.0f;
 
     projectionMatrix[12] = 0.0f;
     projectionMatrix[13] = 0.0f;
-    projectionMatrix[14] = 2.0f * far * near / (near - far);
+    projectionMatrix[14] = -2.0f * far * near / (far - near);
     projectionMatrix[15] = 0.0f;
 }
 
@@ -93,13 +93,13 @@ float *Tracker::findMarker() {
         projectPoints(axisPoints, rotationVectors, translationVectors, cameraMatrix, distanceCoeffients, imagePoints);
 
         auto R = getRotationMatrix();
-        auto V = translationVectors;
+        auto V = translationVectors[0];
 
         float T[16] = {
-                R.at<float>(0, 0), -R.at<float>(1, 0), -R.at<float>(2, 0), 0.0,
-                R.at<float>(0, 1), -R.at<float>(1, 1), -R.at<float>(2, 1), 0.0,
-                R.at<float>(0, 2), -R.at<float>(1, 2), -R.at<float>(2, 2), 0.0,
-                (float) V[0][0], -(float) V[0][1], -(float) V[0][2], 1.0
+                R.at<float>(0, 0), R.at<float>(0, 1), R.at<float>(0, 2), (float) V[0],
+                -R.at<float>(1, 0), -R.at<float>(1, 1), -R.at<float>(1, 2), -(float) V[1],
+                -R.at<float>(2, 0), -R.at<float>(2, 1), -R.at<float>(2, 2), -(float) V[2],
+                0.0, 0.0, 0.0, 1.0
         };
 
         auto corners = markerCorners[0].data();
@@ -108,16 +108,20 @@ float *Tracker::findMarker() {
 
         buildProjectionMatrix(projectionMatrix);
 
-        estimateSquarePose(T, corners, 0.05);
+        //estimateSquarePose(T, corners, 0.1);
 
-//        glMatrixMode(GL_PROJECTION);
-//        glLoadTransposeMatrixd(projectionMatrix);
-//
+        glPushMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        //glLoadMatrixd(projectionMatrix);
+
         glMatrixMode(GL_MODELVIEW);
-        glLoadTransposeMatrixf(T);
+        //glLoadTransposeMatrixf(T);
 
         Drawer drawer;
         drawer.drawSnowman();
+
+        glPopMatrix();
 
         return T;
 

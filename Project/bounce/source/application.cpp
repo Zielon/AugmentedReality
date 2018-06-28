@@ -87,7 +87,11 @@ void Application::motion(int x, int y) {
 
 void Application::display(Mat &mat) {
 
-    if (mat.rows == 0 || mat.cols == 0) return;
+    if (mat.rows == 0 || mat.cols == 0) {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        return;
+    };
 
     unsigned char pixels[HEIGHT * WIDTH * 3];
 
@@ -104,6 +108,7 @@ void Application::display(Mat &mat) {
     glDisable(GL_DEPTH_TEST);
 
     glMatrixMode(GL_PROJECTION);
+
     glPushMatrix();
     glLoadIdentity();
 
@@ -111,11 +116,9 @@ void Application::display(Mat &mat) {
     glRasterPos2i(0, mat.cols - 1);
     glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
-    glPopMatrix();
-
     glEnable(GL_DEPTH_TEST);
 
-    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 void Application::initialize() {
