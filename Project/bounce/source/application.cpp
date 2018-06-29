@@ -36,7 +36,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) scene->remove(true);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
+        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
     }
 }
 
@@ -87,11 +87,7 @@ void Application::motion(int x, int y) {
 
 void Application::display(Mat &mat) {
 
-    if (mat.rows == 0 || mat.cols == 0) {
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        return;
-    };
+    if (mat.rows == 0 || mat.cols == 0) return;
 
     unsigned char pixels[HEIGHT * WIDTH * 3];
 
@@ -102,21 +98,34 @@ void Application::display(Mat &mat) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glDisable(GL_DEPTH_TEST);
-
     glMatrixMode(GL_PROJECTION);
 
     glPushMatrix();
     glLoadIdentity();
 
-    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
-    glRasterPos2i(0, mat.cols - 1);
-    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    float ratio = width / (float) height;
 
-    glEnable(GL_DEPTH_TEST);
+    int fov = 30;
+    float near = 0.01f, far = 100.f;
+    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
+    float bottom = -top;
+    float left = ratio * bottom;
+    float right = ratio * top;
+
+    glFrustum(left, right, bottom, top, near, far);
+
+    //glDisable(GL_DEPTH_TEST);
+    //glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+    //glRasterPos2i(0, mat.cols - 1);
+    //glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+    //glEnable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glTranslatef(0.0f, 0.0f, -3.0f);
+    glRotatef(10, 1.0, 0.0, 0.0);
 
     glPopMatrix();
 }
@@ -188,7 +197,7 @@ void Application::start() {
 
         auto matrix = tracker->findMarker();
 
-        //scene->drawObjects(matrix);
+        scene->drawObjects(matrix);
         scene->simulateObjects();
         scene->remove(false);
 
