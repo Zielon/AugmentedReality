@@ -119,7 +119,7 @@ float *Tracker::findMarker() {
         //glLoadTransposeMatrixf(T);
 
         Drawer drawer;
-        //drawer.drawSnowman();
+        drawer.drawSnowman();
 
         glPopMatrix();
 

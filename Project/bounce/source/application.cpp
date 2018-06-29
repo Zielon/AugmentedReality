@@ -98,34 +98,21 @@ void Application::display(Mat &mat) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDisable(GL_DEPTH_TEST);
+
     glMatrixMode(GL_PROJECTION);
 
     glPushMatrix();
     glLoadIdentity();
 
-    float ratio = width / (float) height;
+    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+    glRasterPos2i(0, mat.cols - 1);
+    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
-    int fov = 30;
-    float near = 0.01f, far = 100.f;
-    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
-    float bottom = -top;
-    float left = ratio * bottom;
-    float right = ratio * top;
-
-    glFrustum(left, right, bottom, top, near, far);
-
-    //glDisable(GL_DEPTH_TEST);
-    //glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
-    //glRasterPos2i(0, mat.cols - 1);
-    //glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-
-    //glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glTranslatef(0.0f, 0.0f, -3.0f);
-    glRotatef(10, 1.0, 0.0, 0.0);
+    glEnable(GL_DEPTH_TEST);
 
     glPopMatrix();
 }
@@ -197,7 +184,7 @@ void Application::start() {
 
         auto matrix = tracker->findMarker();
 
-        scene->drawObjects(matrix);
+        //scene->drawObjects(matrix);
         scene->simulateObjects();
         scene->remove(false);
 
