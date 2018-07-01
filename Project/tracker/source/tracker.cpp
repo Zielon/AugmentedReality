@@ -50,7 +50,7 @@ void Tracker::buildProjectionMatrix(double *projectionMatrix) {
     projectionMatrix[3] = 0.0f;
 
     projectionMatrix[4] = 0.0f;
-    projectionMatrix[5] = -2.0f * fy / height;
+    projectionMatrix[5] = 2.0f * fy / height;
     projectionMatrix[6] = 0.0f;
     projectionMatrix[7] = 0.0f;
 
@@ -97,10 +97,17 @@ float *Tracker::findMarker() {
 
         float T[16] = {
                 R.at<float>(0, 0), R.at<float>(0, 1), R.at<float>(0, 2), (float) V[0],
-                -R.at<float>(1, 0), -R.at<float>(1, 1), -R.at<float>(1, 2), -(float) V[1],
+                R.at<float>(1, 0), R.at<float>(1, 1), R.at<float>(1, 2), (float) V[1],
                 -R.at<float>(2, 0), -R.at<float>(2, 1), -R.at<float>(2, 2), -(float) V[2],
                 0.0, 0.0, 0.0, 1.0
         };
+
+//        float T[16] = {
+//                R.at<float>(0, 0), R.at<float>(1, 0), R.at<float>(2, 0), 0.0,
+//                R.at<float>(0, 1), R.at<float>(1, 1), R.at<float>(2, 1), 0.0,
+//                R.at<float>(0, 2), R.at<float>(1, 2), R.at<float>(2, 2), 0.0,
+//                (float) V[0], (float) V[1], (float) V[2], 1.0
+//        };
 
         auto corners = markerCorners[0].data();
 
@@ -120,35 +127,22 @@ float *Tracker::findMarker() {
 
         glViewport(0, 0, (GLsizei) Application::WIDTH, (GLsizei) Application::HEIGHT);
 
-        float zmin = 0.01f, zmax = 100.f;
-        float H = Application::HEIGHT;
-        float W = Application::WIDTH;
-
-        double fx = cameraMatrix.at<double>(0, 0);
-        double s = cameraMatrix.at<double>(0, 1);
-        double fy = cameraMatrix.at<double>(1, 1);
-        double cx = cameraMatrix.at<double>(0, 2);
-        double cy = cameraMatrix.at<double>(1, 2);
-
-        GLdouble perspMatrix[16] = {2 * fx / W, 0, 0, 0, 2 * s / W, 2 * fy / H, 0, 0, 2 * (cx / W) - 1,
-                                    2 * (cy / H) - 1, (zmax + zmin) / (zmax - zmin), 1, 0, 0,
-                                    2 * zmax * zmin / (zmin - zmax), 0};
-
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glMultMatrixd(perspMatrix);
+        glMultMatrixd(projectionMatrix);
 
-//        glDisable(GL_DEPTH_TEST);
-//
-//        glRasterPos2i(0, frame.cols - 1);
-//        glDrawPixels(Application::WIDTH, Application::HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-//
-//        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
+
+        glRasterPos2i(0, frame.cols - 1);
+        glDrawPixels(Application::WIDTH, Application::HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+        glEnable(GL_DEPTH_TEST);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+        //glMultMatrixf(T);
 
-        glTranslatef(0, 0, -10);
+        glTranslatef(0, 0, -5);
 
         return T;
 
