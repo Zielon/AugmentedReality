@@ -87,34 +87,34 @@ void Application::motion(int x, int y) {
 
 void Application::display(Mat &mat) {
 
-    if (mat.rows == 0 || mat.cols == 0) return;
-
-    unsigned char pixels[HEIGHT * WIDTH * 3];
-
-    memcpy(pixels, mat.data, sizeof(pixels));
-
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glDisable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-
-    glPushMatrix();
-    glLoadIdentity();
-
-    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
-    glRasterPos2i(0, mat.cols - 1);
-    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glPopMatrix();
+//    if (mat.rows == 0 || mat.cols == 0) return;
+//
+//    unsigned char pixels[HEIGHT * WIDTH * 3];
+//
+//    memcpy(pixels, mat.data, sizeof(pixels));
+//
+//    int width, height;
+//    glfwGetFramebufferSize(window, &width, &height);
+//
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+//
+//    glDisable(GL_DEPTH_TEST);
+//
+//    glMatrixMode(GL_PROJECTION);
+//
+//    glPushMatrix();
+//    glLoadIdentity();
+//
+//    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+//    glRasterPos2i(0, mat.cols - 1);
+//    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+//
+//    glEnable(GL_DEPTH_TEST);
+//
+//    glPopMatrix();
 }
 
 void Application::initialize() {
@@ -184,7 +184,7 @@ void Application::start() {
 
         auto matrix = tracker->findMarker();
 
-        //scene->drawObjects(matrix);
+        scene->drawObjects(matrix);
         scene->simulateObjects();
         scene->remove(false);
 

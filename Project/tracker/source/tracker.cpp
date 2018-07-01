@@ -110,18 +110,45 @@ float *Tracker::findMarker() {
 
         //estimateSquarePose(T, corners, 0.1);
 
-        glPushMatrix();
+        if (frame.rows == 0 || frame.cols == 0) return nullptr;
+
+        unsigned char pixels[Application::HEIGHT * Application::WIDTH * 3];
+
+        memcpy(pixels, frame.data, sizeof(pixels));
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glViewport(0, 0, (GLsizei) Application::WIDTH, (GLsizei) Application::HEIGHT);
+
+        float zmin = 0.01f, zmax = 100.f;
+        float H = Application::HEIGHT;
+        float W = Application::WIDTH;
+
+        double fx = cameraMatrix.at<double>(0, 0);
+        double s = cameraMatrix.at<double>(0, 1);
+        double fy = cameraMatrix.at<double>(1, 1);
+        double cx = cameraMatrix.at<double>(0, 2);
+        double cy = cameraMatrix.at<double>(1, 2);
+
+        GLdouble perspMatrix[16] = {2 * fx / W, 0, 0, 0, 2 * s / W, 2 * fy / H, 0, 0, 2 * (cx / W) - 1,
+                                    2 * (cy / H) - 1, (zmax + zmin) / (zmax - zmin), 1, 0, 0,
+                                    2 * zmax * zmin / (zmin - zmax), 0};
 
         glMatrixMode(GL_PROJECTION);
-        //glLoadMatrixd(projectionMatrix);
+        glLoadIdentity();
+        glMultMatrixd(perspMatrix);
+
+//        glDisable(GL_DEPTH_TEST);
+//
+//        glRasterPos2i(0, frame.cols - 1);
+//        glDrawPixels(Application::WIDTH, Application::HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+//
+//        glEnable(GL_DEPTH_TEST);
 
         glMatrixMode(GL_MODELVIEW);
-        //glLoadTransposeMatrixf(T);
+        glLoadIdentity();
 
-        Drawer drawer;
-        drawer.drawSnowman();
-
-        glPopMatrix();
+        glTranslatef(0, 0, -10);
 
         return T;
 
