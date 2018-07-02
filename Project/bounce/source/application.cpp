@@ -15,8 +15,9 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
 
     // ========== GRID ROTATION ==========
 
-//    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 0.f, 1.f);
-//    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 0.f, 1.f);
+//    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(0.5, 0.5, 0));
+//    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(-0.5, -0.5, 0));
+
 //
 //    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
 //    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
@@ -26,7 +27,7 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) scene->remove(true);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
+        scene->addObject(Ball::getDefault(Scene::grid->getOrigin() + btVector3(0, 5, 0), 0.2));
     }
 }
 

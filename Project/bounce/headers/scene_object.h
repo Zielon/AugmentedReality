@@ -24,8 +24,6 @@ public:
 
     virtual void draw() = 0;
 
-    virtual void setPosition(double x, double y) = 0;
-
     virtual Type getType() = 0;
 
 protected:

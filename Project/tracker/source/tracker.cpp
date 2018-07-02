@@ -46,7 +46,7 @@ double *Tracker::findMarker() {
         auto V = translationVectors[0];
 
         std::vector<float> array;
-        array.assign((float*)R.datastart, (float*)R.dataend);
+        array.assign((float *) R.datastart, (float *) R.dataend);
 
 //        float T[16] = {
 //                R.at<float>(0, 0), R.at<float>(0, 1), R.at<float>(0, 2), (float) V[0],
@@ -56,18 +56,19 @@ double *Tracker::findMarker() {
 //        };
 
         double T[16] = {
-                R.at<float>(0, 0), R.at<float>(1, 0), R.at<float>(2, 0), 0.0,
-                R.at<float>(0, 1), R.at<float>(1, 1), R.at<float>(2, 1), 0.0,
-                R.at<float>(0, 2), R.at<float>(1, 2), R.at<float>(2, 2), 0.0,
-                (float) V[0], (float) V[1], (float) V[2], 1.0
+                R.at<double>(0, 0), R.at<double>(1, 0), R.at<double>(2, 0), 0.0,
+                R.at<double>(0, 1), R.at<double>(1, 1), R.at<double>(2, 1), 0.0,
+                R.at<double>(0, 2), R.at<double>(1, 2), R.at<double>(2, 2), 0.0,
+                (double) V[0], (double) V[1], (double) V[2], 1.0
         };
 
         auto modelview = new double[16];
 
         memcpy(modelview, T, 16 * sizeof(double));
 
-        Scene::grid->setRotation(rotationVectors[0]);
-        Scene::grid->setMatrix((btScalar*)modelview);
+        Scene::grid->setRotation(-rotationVectors[0]);
+        Scene::grid->setOrigin(btVector3(V[0], V[1], -V[2]) * 20);
+        Scene::grid->setMatrix(modelview);
 
         return modelview;
 

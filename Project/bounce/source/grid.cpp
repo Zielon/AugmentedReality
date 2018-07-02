@@ -21,10 +21,6 @@ void Grid::draw() {
     glPopMatrix();
 }
 
-void Grid::setPosition(double x, double y) {
-
-}
-
 SceneObject *Grid::getDefault(btVector3 origin) {
     btQuaternion qtn;
     btCollisionShape *shape;
@@ -35,6 +31,7 @@ SceneObject *Grid::getDefault(btVector3 origin) {
 
     trans.setIdentity();
     trans.setOrigin(origin);
+    trans.setRotation(qtn);
 
     motionState = new btDefaultMotionState(trans);
 
@@ -66,7 +63,6 @@ void Grid::update() {
 
     transform.setRotation(quaternion);
     transform.setOrigin(origin);
-    //transform.setFromOpenGLMatrix(matrix);
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
@@ -77,10 +73,15 @@ void Grid::setRotation(cv::Vec3d rotation) {
     quaternion.setEulerZYX(rotation[0], rotation[1], rotation[2]);
 }
 
-void Grid::setMatrix(btScalar *m) {
-    this->matrix = m;
+void Grid::setMatrix(double matrix[16]) {
+    for (int i = 0; i < 16; i++)
+        this->matrix[i] = (btScalar) matrix[i];
 }
 
 void Grid::setOrigin(btVector3 origin) {
     this->origin = origin;
+}
+
+btVector3 Grid::getOrigin() {
+    return origin;
 }
