@@ -51,19 +51,17 @@ void Scene::defaultSetting() {
 
 void Scene::drawObjects(double modelview[16]) {
     try {
-        glPushMatrix();
 
         glMatrixMode(GL_PROJECTION);
-        //glLoadMatrixd(projection);
+        glLoadMatrixd(projection);
 
         glMatrixMode(GL_MODELVIEW);
         //glLoadMatrixd(modelview);
 
+        glTranslatef(0, 0, -5);
         glScalef(0.25, 0.25, 0.25);
 
         for (auto object : objects) object->draw();
-
-        glPopMatrix();
 
     } catch (const std::exception &e) { /* */ }
 }

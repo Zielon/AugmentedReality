@@ -59,29 +59,24 @@ Type Grid::getType() {
     return GRID;
 }
 
-void Grid::setRotation(float euler, float yaw, float pitch, float roll) {
-    if (yaw > 0.0) this->gridYaw += euler;
-    if (pitch > 0.0) this->gridPitch += euler;
-    if (roll > 0.0) this->gridRoll += euler;
-}
-
 void Grid::update() {
-    //quaternion.setEuler(gridYaw, gridPitch, gridRoll);
     getMotionState()->getWorldTransform(transform);
 
     transform.setIdentity();
+
     transform.setRotation(quaternion);
     transform.setOrigin(origin);
+    //transform.setFromOpenGLMatrix(matrix);
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
     motionState->setWorldTransform(transform);
 }
 
-void Grid::setRotationV(std::vector<cv::Vec3d> rot) {
-    quaternion.setEuler(rot[0][0], rot[0][1], rot[0][2]);
+void Grid::setRotation(cv::Vec3d rotation) {
+    quaternion.setEuler(rotation[0], rotation[1], rotation[2]);
 }
 
-void Grid::setOriginV(btVector3 vec) {
-    origin = vec;
+void Grid::setMatrix(btScalar *m) {
+    this->matrix = m;
 }

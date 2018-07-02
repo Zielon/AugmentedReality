@@ -45,8 +45,6 @@ double *Tracker::findMarker() {
         auto R = getRotationMatrix();
         auto V = translationVectors[0];
 
-        Scene::grid->setRotationV(rotationVectors);
-
         std::vector<float> array;
         array.assign((float*)R.datastart, (float*)R.dataend);
 
@@ -67,6 +65,9 @@ double *Tracker::findMarker() {
         auto modelview = new double[16];
 
         memcpy(modelview, T, 16 * sizeof(double));
+
+        Scene::grid->setRotation(rotationVectors[0]);
+        Scene::grid->setMatrix((btScalar*)modelview);
 
         return modelview;
 

@@ -20,11 +20,9 @@ public:
 
     Type getType() override;
 
-    void setRotation(float euler, float x, float y, float z);
+    void setRotation(cv::Vec3d rotation);
 
-    void setRotationV(std::vector<cv::Vec3d> rot);
-
-    void setOriginV(btVector3 vec);
+    void setMatrix(btScalar *m);
 
     static SceneObject *getDefault(btVector3 origin);
 
@@ -32,9 +30,7 @@ private:
     static float gridSize;
     static float gridThickness;
     btVector3 origin;
-    float gridYaw = .0f;
-    float gridPitch = .0f;
-    float gridRoll = .0f;
+    btScalar *matrix;
 };
 
 #endif //PROJECT_GRID_H

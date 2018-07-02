@@ -157,7 +157,7 @@ void Camera::buildProjectionMatrix() {
 
     // Clipping
     float near = 0.01f;
-    float far = 100.0f;
+    float far = 200.0f;
 
     float width = Application::WIDTH;
     float height = Application::HEIGHT;
