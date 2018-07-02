@@ -20,6 +20,8 @@ public:
 
     Type getType() override;
 
+    void setOrigin(btVector3 origin);
+
     void setRotation(cv::Vec3d rotation);
 
     void setMatrix(btScalar *m);
