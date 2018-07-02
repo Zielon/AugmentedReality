@@ -50,6 +50,7 @@ SceneObject *Grid::getDefault(btVector3 origin) {
     grid->transform = trans;
     grid->quaternion = qtn;
     grid->motionState = motionState;
+    grid->origin = origin;
 
     return grid;
 }
@@ -65,13 +66,22 @@ void Grid::setRotation(float euler, float yaw, float pitch, float roll) {
 }
 
 void Grid::update() {
-    quaternion.setEuler(gridYaw, gridPitch, gridRoll);
+    //quaternion.setEuler(gridYaw, gridPitch, gridRoll);
     getMotionState()->getWorldTransform(transform);
 
     transform.setIdentity();
     transform.setRotation(quaternion);
+    transform.setOrigin(origin);
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
     motionState->setWorldTransform(transform);
+}
+
+void Grid::setRotationV(std::vector<cv::Vec3d> rot) {
+    quaternion.setEuler(rot[0][0], rot[0][1], rot[0][2]);
+}
+
+void Grid::setOriginV(btVector3 vec) {
+    origin = vec;
 }

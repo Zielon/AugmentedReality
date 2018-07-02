@@ -3,6 +3,8 @@
 #include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 
 #include "../headers/scene_object.h"
 #include "../headers/scene.h"
@@ -47,9 +49,16 @@ void Scene::defaultSetting() {
     addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
 }
 
-void Scene::drawObjects(float matrix[16]) {
+void Scene::drawObjects(double *modelview) {
     try {
         glPushMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadMatrixd(projection);
+
+        glMatrixMode(GL_MODELVIEW);
+        //glLoadIdentity();
+        //glLoadMatrixd(modelview);
 
         glScalef(0.25, 0.25, 0.25);
         for (auto object : objects) object->draw();
@@ -95,4 +104,8 @@ void Scene::remove(bool all) {
     objects = visible;
 
     mutex.unlock();
+}
+
+void Scene::setProjectionMatrix(double projection[16]) {
+    memcpy(this->projection, projection, 16 * sizeof(double));
 }
