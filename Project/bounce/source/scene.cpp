@@ -49,20 +49,22 @@ void Scene::defaultSetting() {
     addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
 }
 
-void Scene::drawObjects(double *modelview) {
+void Scene::drawObjects(double modelview[16]) {
     try {
         glPushMatrix();
 
         glMatrixMode(GL_PROJECTION);
-        glLoadMatrixd(projection);
+        //glLoadMatrixd(projection);
 
         glMatrixMode(GL_MODELVIEW);
-        //glLoadIdentity();
         //glLoadMatrixd(modelview);
 
         glScalef(0.25, 0.25, 0.25);
+
         for (auto object : objects) object->draw();
+
         glPopMatrix();
+
     } catch (const std::exception &e) { /* */ }
 }
 

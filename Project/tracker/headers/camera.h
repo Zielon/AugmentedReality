@@ -20,10 +20,9 @@ public:
 
     void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &allFoundCorners, bool showResult = false);
 
-    void cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength, Mat &cameraMatrix,
-                           Mat &distanceCoeffients);
+    void cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength);
 
-    bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients);
+    bool saveCameraCalibration(string name);
 
     void loadCameraCalibration(string name);
 

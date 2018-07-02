@@ -45,6 +45,11 @@ double *Tracker::findMarker() {
         auto R = getRotationMatrix();
         auto V = translationVectors[0];
 
+        Scene::grid->setRotationV(rotationVectors);
+
+        std::vector<float> array;
+        array.assign((float*)R.datastart, (float*)R.dataend);
+
 //        float T[16] = {
 //                R.at<float>(0, 0), R.at<float>(0, 1), R.at<float>(0, 2), (float) V[0],
 //                R.at<float>(1, 0), R.at<float>(1, 1), R.at<float>(1, 2), (float) V[1],
@@ -59,13 +64,11 @@ double *Tracker::findMarker() {
                 (float) V[0], (float) V[1], (float) V[2], 1.0
         };
 
-        auto corners = markerCorners[0].data();
+        auto modelview = new double[16];
 
-        //estimateSquarePose(T, corners, 0.1);
+        memcpy(modelview, T, 16 * sizeof(double));
 
-        Scene::grid->setRotationV(rotationVectors);
-
-        return T;
+        return modelview;
 
     } catch (const std::exception &e) { return nullptr; }
 }
@@ -75,7 +78,9 @@ Mat Tracker::getRotationMatrix() {
     if (!rotationVectors.empty())
         Rodrigues(rotationVectors[0], rotationMatrix);
 
-    return rotationMatrix;
+    Mat matrix;
+    rotationMatrix.convertTo(matrix, CV_32FC1);
+    return matrix;
 }
 
 Camera *Tracker::getCamera() {

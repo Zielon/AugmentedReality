@@ -172,9 +172,9 @@ void Application::start() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        display(tracker->getFrame());
-
         auto modelview = tracker->findMarker();
+
+        display(tracker->getFrame());
 
         scene->drawObjects(modelview);
         scene->simulateObjects();

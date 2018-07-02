@@ -23,7 +23,7 @@ public:
 
     void setProjectionMatrix(double projection[16]);
 
-    void drawObjects(double *modelview);
+    void drawObjects(double modelview[16]);
 
     void defaultSetting();
 

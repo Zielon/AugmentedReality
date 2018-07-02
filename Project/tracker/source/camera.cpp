@@ -17,11 +17,12 @@ Camera::Camera(int mode) {
             this->capture = new VideoCapture("resources/movie");
             break;
         default:
-            break;
+            throw new Exception();
     }
 
     cameraMatrix = Mat::eye(3, 3, CV_64F);
     distortionCoefficient = Mat();
+
     loadCameraCalibration("resources/CameraMatrix");
     buildProjectionMatrix();
 }
@@ -61,8 +62,7 @@ void Camera::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>> &a
     }
 }
 
-void Camera::cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength, Mat &cameraMatrix,
-                               Mat &distanceCoeffients) {
+void Camera::cameraCalibration(vector<Mat> images, Size boardSize, float squareEdgeLength) {
     vector<vector<Point2f>> chessboardCornerPoints;
     getChessboardCorners(images, chessboardCornerPoints, false);
 
@@ -73,14 +73,14 @@ void Camera::cameraCalibration(vector<Mat> images, Size boardSize, float squareE
     cout << worldSpaceCornerPoints.size();
 
     vector<Mat> rVectors, tVectors;
-    distanceCoeffients = Mat::zeros(8, 1, CV_64F);
+    distortionCoefficient = Mat::zeros(8, 1, CV_64F);
 
-    calibrateCamera(worldSpaceCornerPoints, chessboardCornerPoints, boardSize, cameraMatrix, distanceCoeffients,
+    calibrateCamera(worldSpaceCornerPoints, chessboardCornerPoints, boardSize, cameraMatrix, distortionCoefficient,
                     rVectors, tVectors);
 
 }
 
-bool Camera::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoeffients) {
+bool Camera::saveCameraCalibration(string name) {
     ofstream outstream(name);
     if (outstream) {
         uint16_t rows = cameraMatrix.rows;
@@ -96,15 +96,15 @@ bool Camera::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCo
             }
         }
 
-        rows = distanceCoeffients.rows;
-        cols = distanceCoeffients.cols;
+        rows = distortionCoefficient.rows;
+        cols = distortionCoefficient.cols;
 
         outstream << rows << endl;
         outstream << cols << endl;
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                double value = distanceCoeffients.at<double>(r, c);
+                double value = distortionCoefficient.at<double>(r, c);
                 outstream << value << endl;
             }
         }
@@ -148,7 +148,7 @@ void Camera::loadCameraCalibration(string name) {
             }
         }
         stream.close();
-    }else{
+    } else {
         throw new Exception();
     }
 }
