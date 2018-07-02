@@ -22,6 +22,7 @@ Project/eigen
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
+Project/tracker/source/.DS_Store
 Project/.DS_Store
 Project/Project.build
 Project/Debug

@@ -9,20 +9,16 @@ Grid::Grid(btScalar mass, btMotionState *motionState, btCollisionShape *collisio
         : SceneObject(mass, motionState, collisionShape, localInertia) {
 }
 
-float Grid::gridSize = 10.f;
-float Grid::gridThickness = 0.01f;
+float Grid::gridSize = 5.f;
+float Grid::gridThickness = 0.05f;
 
 void Grid::draw() {
     glPushMatrix();
     getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
-    drawer.drawGrid((int) gridSize, gridThickness);
+    drawer.drawGrid((int) gridSize, gridThickness, drawer.getGridPoints());
     glPopMatrix();
-}
-
-void Grid::setPosition(double x, double y) {
-
 }
 
 SceneObject *Grid::getDefault(btVector3 origin) {
@@ -35,6 +31,7 @@ SceneObject *Grid::getDefault(btVector3 origin) {
 
     trans.setIdentity();
     trans.setOrigin(origin);
+    trans.setRotation(qtn);
 
     motionState = new btDefaultMotionState(trans);
 
@@ -50,6 +47,7 @@ SceneObject *Grid::getDefault(btVector3 origin) {
     grid->transform = trans;
     grid->quaternion = qtn;
     grid->motionState = motionState;
+    grid->origin = origin;
 
     return grid;
 }
@@ -58,20 +56,32 @@ Type Grid::getType() {
     return GRID;
 }
 
-void Grid::setRotation(float euler, float yaw, float pitch, float roll) {
-    if (yaw > 0.0) this->gridYaw += euler;
-    if (pitch > 0.0) this->gridPitch += euler;
-    if (roll > 0.0) this->gridRoll += euler;
-}
-
 void Grid::update() {
-    quaternion.setEuler(gridYaw, gridPitch, gridRoll);
     getMotionState()->getWorldTransform(transform);
 
     transform.setIdentity();
+
     transform.setRotation(quaternion);
+    transform.setOrigin(origin);
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
     motionState->setWorldTransform(transform);
+}
+
+void Grid::setRotation(cv::Vec3d rotation) {
+    quaternion.setEulerZYX(rotation[0], rotation[1], rotation[2]);
+}
+
+void Grid::setMatrix(double matrix[16]) {
+    for (int i = 0; i < 16; i++)
+        this->matrix[i] = (btScalar) matrix[i];
+}
+
+void Grid::setOrigin(btVector3 origin) {
+    this->origin = origin;
+}
+
+btVector3 Grid::getOrigin() {
+    return origin;
 }

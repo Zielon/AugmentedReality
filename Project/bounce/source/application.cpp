@@ -1,6 +1,5 @@
 #include <cmath>
 #include <opencv/highgui.h>
-#include <opencv2/imgproc.hpp>
 
 #include "../headers/application.h"
 #include "../headers/ball.h"
@@ -8,36 +7,27 @@
 using namespace std;
 using namespace cv;
 
-float cameraX = 0.0;
-float cameraY = 0.0;
-float cameraZ = 0.0;
-
 Scene *Application::scene = new Scene();
-int Application::WINDOWS_WIDTH = 800;
-int Application::WINDOWS_HEIGHT = 800;
+int Application::WIDTH = 900;
+int Application::HEIGHT = 600;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
     // ========== GRID ROTATION ==========
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 0.f, 1.f);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 0.f, 1.f);
+//    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(0.5, 0.5, 0));
+//    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(-0.5, -0.5, 0));
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
+//
+//    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
+//    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
 
     // ==========
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraY += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraY -= 0.1;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraX -= 0.1;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraX += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) cameraZ += 0.1;
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) cameraZ -= 0.1;
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) scene->remove(true);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        scene->addObject(Ball::getDefault(btVector3(0, 5, 0), 0.3));
+        scene->addObject(Ball::getDefault(Scene::grid->getOrigin() + btVector3(0, 5, 0), 0.2));
     }
 }
 
@@ -54,13 +44,12 @@ void Application::specialUp(int key, int x, int y) {
 }
 
 void Application::reshape(GLFWwindow *window, int width, int height) {
-    // set a whole-window viewport
+
     glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
-    // create a perspective projection matrix
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //gluPerspective( 30, ((GLfloat)width/(GLfloat)height), 0.01, 100 );
+
     float ratio = (GLfloat) width / (GLfloat) height;
     int fov = 30;
     float near = 0.01f, far = 100.f;
@@ -87,49 +76,36 @@ void Application::motion(int x, int y) {
 
 }
 
-void Application::display(Mat mat) {
+void Application::display(Mat &mat) {
 
-    unsigned char pixels[WINDOWS_HEIGHT * WINDOWS_WIDTH * 3];
-    Size size(WINDOWS_HEIGHT, WINDOWS_WIDTH);
-    Mat windowPixels;
-    resize(mat, windowPixels, size);
-    memcpy(pixels, windowPixels.data, sizeof(pixels));
+    if (mat.rows == 0 || mat.cols == 0) return;
 
-    float ratio;
+    unsigned char pixels[HEIGHT * WIDTH * 3];
+
+    memcpy(pixels, mat.data, sizeof(pixels));
+
     int width, height;
-
     glfwGetFramebufferSize(window, &width, &height);
-    ratio = width / (float) height;
 
-    glViewport(0, 0, width, height);
-    glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
 
-    glPushMatrix();
-    glDrawPixels(WINDOWS_HEIGHT, WINDOWS_WIDTH, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-    glPopMatrix();
-
-    glEnable(GL_DEPTH_TEST);
-
-    int fov = 30;
-    float near = 0.01f, far = 100.f;
-    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
-    float bottom = -top;
-    float left = ratio * bottom;
-    float right = ratio * top;
-
-    glFrustum(left, right, bottom, top, near, far);
-    // move to origin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // move the object backwards
-    glTranslatef(0.0f, 0.0f, -25.0f);
-    glRotatef(10, 1.0, 0.0, 0.0);
-    glTranslatef(cameraX, cameraY, cameraZ);
+    glDisable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_PROJECTION);
+
+    glPushMatrix();
+    glLoadIdentity();
+
+    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+    glRasterPos2i(0, mat.cols - 1);
+    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glPopMatrix();
 }
 
 void Application::initialize() {
@@ -141,6 +117,12 @@ void Application::initialize() {
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_TEXTURE_2D);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glPixelZoom(1.0, -1.0);
 
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
@@ -148,24 +130,24 @@ void Application::initialize() {
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-    GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+    GLfloat light_pos[] = {1.0, 1.0, 1.0, 0.0};
+    GLfloat light_amb[] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat light_dif[] = {0.7, 0.7, 0.7, 1.0};
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_dif);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
     glfwWindowHint(GLFW_SAMPLES, 5);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 }
 
 void Application::start() {
 
     if (!glfwInit()) return;
 
-    window = glfwCreateWindow(WINDOWS_HEIGHT, WINDOWS_WIDTH, "Bounce", nullptr, nullptr);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Bounce", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
@@ -184,18 +166,18 @@ void Application::start() {
 
     auto *tracker = new Tracker();
 
-    scene->defaultSetting();
     tracker->defaultSetting();
+
+    scene->defaultSetting();
+    scene->setProjectionMatrix(tracker->getCamera()->getProjection());
 
     while (!glfwWindowShouldClose(window)) {
 
-        tracker->findMarker();
+        auto modelview = tracker->findMarker();
 
-        auto matrix = tracker->getMatrix();
+        display(tracker->getFrame());
 
-        display(tracker->mat);
-
-        scene->drawObjects(matrix);
+        scene->drawObjects(modelview);
         scene->simulateObjects();
         scene->remove(false);
 

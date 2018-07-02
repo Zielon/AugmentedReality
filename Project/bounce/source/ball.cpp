@@ -21,8 +21,6 @@ void Ball::draw() {
     glPopMatrix();
 }
 
-void Ball::setPosition(double x, double y) {}
-
 SceneObject *Ball::getDefault(btVector3 origin, float size) {
     btQuaternion qtn;
     btCollisionShape *shape;

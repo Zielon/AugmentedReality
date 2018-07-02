@@ -21,8 +21,6 @@ public:
 
     void draw() override;
 
-    void setPosition(double x, double y) override;
-
     Type getType() override;
 
     static SceneObject *getDefault(btVector3 origin, float size);

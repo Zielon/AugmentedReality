@@ -14,22 +14,25 @@ public:
 
     void draw() override;
 
-    void setPosition(double x, double y) override;
-
     void update();
 
     Type getType() override;
 
-    void setRotation(float euler, float x, float y, float z);
+    void setOrigin(btVector3 origin);
+
+    btVector3 getOrigin();
+
+    void setRotation(cv::Vec3d rotation);
+
+    void setMatrix(double matrix[16]);
 
     static SceneObject *getDefault(btVector3 origin);
 
 private:
     static float gridSize;
     static float gridThickness;
-    float gridYaw = .0f;
-    float gridPitch = .0f;
-    float gridRoll = .0f;
+    btVector3 origin;
+    btScalar matrix[16];
 };
 
 #endif //PROJECT_GRID_H

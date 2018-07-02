@@ -9,6 +9,7 @@
 
 #include "scene_object.h"
 #include "grid.h"
+#include "../../tracker/headers/camera.h"
 
 class Scene {
 public:
@@ -20,7 +21,9 @@ public:
 
     void simulateObjects();
 
-    void drawObjects(float resultTransposedMatrix[16]);
+    void setProjectionMatrix(double projection[16]);
+
+    void drawObjects(double modelview[16]);
 
     void defaultSetting();
 
@@ -34,7 +37,7 @@ private:
     std::vector<SceneObject *> objects;
     btDiscreteDynamicsWorld *dynamicsWorld;
     btTransform trans;
-    btScalar matrix[16];
+    double projection[16];
     float time;
     std::mutex mutex;
 };

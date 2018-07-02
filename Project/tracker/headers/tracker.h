@@ -7,26 +7,33 @@
 
 #include "camera.h"
 
+#include <sstream>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+using namespace cv;
+
 class Tracker {
 public:
     Tracker();
 
-    void findMatrix();
-
-    void findMarker();
-
     void defaultSetting();
 
-    float *getMatrix();
+    Mat &getFrame();
 
-    void setMatrix(float *matrix);
+    double *findMarker();
 
-    cv::Mat mat;
+    Camera *getCamera();
 
 private:
+    cv::Mat frame;
     Camera *camera;
-    std::mutex mutex;
-    float matrix[16];
+    vector<Vec3d> rotationVectors, translationVectors;
+
+    Mat getRotationMatrix();
+
+    Mat getQuaternion(Mat matrix);
 };
 
 #endif //PROJECT_TRACKER_H

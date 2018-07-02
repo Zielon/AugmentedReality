@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(Project)
 
+set(CMAKE_CXX_STANDARD 14)
+
 set(GCC_COVERAGE_COMPILE_FLAGS -pthread)
 
 find_package(Threads REQUIRED)
@@ -13,6 +15,7 @@ find_package(Bullet REQUIRED)
 configure_file(resources/lena resources/lena COPYONLY)
 configure_file(resources/movie resources/movie COPYONLY)
 configure_file(resources/stuff resources/stuff COPYONLY)
+configure_file(resources/CameraMatrix resources/CameraMatrix COPYONLY)
 #configure_file(data/train-images-idx3-ubyte data/train-images-idx3-ubyte COPYONLY)
 #configure_file(data/train-labels-idx1-ubyte data/train-labels-idx1-ubyte COPYONLY)
 

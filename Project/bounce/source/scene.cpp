@@ -3,6 +3,8 @@
 #include <bullet/BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 
 #include "../headers/scene_object.h"
 #include "../headers/scene.h"
@@ -10,7 +12,7 @@
 
 using namespace std;
 
-Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, -5, 0));
+Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, 0, 0));
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
@@ -42,15 +44,24 @@ Scene::Scene() {
 
 void Scene::defaultSetting() {
     addObject((SceneObject *) grid);
-    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.4));
-    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.4));
-    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.4));
+    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.2));
+    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
+    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
 }
 
-void Scene::drawObjects(float matrix[16]) {
+void Scene::drawObjects(double modelview[16]) {
     try {
-        //glMultMatrixf(matrix);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadMatrixd(projection);
+
+        glMatrixMode(GL_MODELVIEW);
+        //glLoadMatrixd(modelview);
+
+        glScalef(0.5, 0.5, 0.5);
+
         for (auto object : objects) object->draw();
+
     } catch (const std::exception &e) { /* */ }
 }
 
@@ -92,4 +103,8 @@ void Scene::remove(bool all) {
     objects = visible;
 
     mutex.unlock();
+}
+
+void Scene::setProjectionMatrix(double projection[16]) {
+    memcpy(this->projection, projection, 16 * sizeof(double));
 }

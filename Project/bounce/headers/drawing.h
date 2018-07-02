@@ -9,6 +9,10 @@
 
 #endif
 
+#include <cmath>
+#include <opencv2/core/types.hpp>
+#include <vector>
+
 class Drawer {
 public:
     void drawSphere(double r, int lats, int longs);
@@ -19,7 +23,9 @@ public:
 
     void drawGrid(int size);
 
-    void drawGrid(int size, float thickness);
+    void drawGrid(int size, float thickness, std::vector<cv::Point3f> points);
+
+    std::vector<cv::Point3f> getGridPoints();
 };
 
 #endif //PROJECT_DRAWING_H
