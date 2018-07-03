@@ -70,7 +70,7 @@ void Grid::update() {
 }
 
 void Grid::setRotation(cv::Vec3d rotation) {
-    quaternion.setEuler(rotation[0], rotation[1], rotation[2]);
+    quaternion.setEulerZYX(rotation[0], rotation[1], rotation[2]);
 }
 
 void Grid::setMatrix(double matrix[16]) {

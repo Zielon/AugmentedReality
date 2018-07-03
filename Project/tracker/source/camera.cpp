@@ -28,15 +28,13 @@ Camera::Camera(int mode) {
 }
 
 void Camera::nextFrame(cv::Mat &frame) {
-    Mat src;
     if (!capture->isOpened()) return;
 
-    if (!capture->read(src)) {
+    if (!capture->read(frame)) {
         capture->set(CV_CAP_PROP_POS_FRAMES, 0);
-        capture->read(src);
+        capture->read(frame);
     };
 
-    flip(src, frame, 1);
     resize(frame, frame, Size(Application::WIDTH, Application::HEIGHT));
 }
 

@@ -30,9 +30,6 @@ private:
     cv::Mat frame;
     Camera *camera;
     vector<Vec3d> rotationVectors, translationVectors;
-    Vec3d referenceAngles;
-    Vec3d eulerAngles;
-    bool isReference;
 
     Mat getRotationMatrix();
 
