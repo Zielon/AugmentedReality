@@ -12,7 +12,7 @@
 
 using namespace std;
 
-Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, 0, 0));
+Grid *Scene::grid = (Grid *) Grid::getDefault(btVector3(0, 0, -5));
 
 void Scene::addObject(SceneObject *element) {
     if (element != nullptr) {
@@ -44,9 +44,9 @@ Scene::Scene() {
 
 void Scene::defaultSetting() {
     addObject((SceneObject *) grid);
-//    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.2));
-//    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
-//    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
+    addObject(Ball::getDefault(grid->getOrigin() + btVector3(0, 5, 0), 0.2));
+    addObject(Ball::getDefault(grid->getOrigin() + btVector3(0, 5, 0), 0.2));
+    addObject(Ball::getDefault(grid->getOrigin() + btVector3(0, 5, 0), 0.2));
 }
 
 void Scene::drawObjects(double modelview[16]) {

@@ -181,11 +181,11 @@ void Application::start() {
 
         display(tracker->getFrame());
 
+        Scene::grid->update();
+
         scene->drawObjects(modelview);
         scene->simulateObjects();
         scene->remove(false);
-
-        Scene::grid->update();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
