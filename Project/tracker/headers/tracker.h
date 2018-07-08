@@ -37,6 +37,8 @@ private:
     Mat getRotationMatrix();
 
     Mat getQuaternion(Mat matrix);
+
+    Vec3d rotationMatrixToEulerAngles(Mat &R);
 };
 
 #endif //PROJECT_TRACKER_H

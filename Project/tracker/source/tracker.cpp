@@ -69,7 +69,6 @@ double *Tracker::findMarker() {
         memcpy(modelview, T, 16 * sizeof(double));
 
         eulerAngles = rotationMatrixToEulerAngles(R);
-        cout << eulerAngles << endl;
 
         if ((!isReference) && (!markerIds.empty())) {
             for (int i = 0; i < 3; i++) {
@@ -78,9 +77,8 @@ double *Tracker::findMarker() {
             isReference = true;
         }
 
-        Scene::grid->setRotation(
-                Vec3d(0, -(eulerAngles[1] - referenceAngles[1]), (eulerAngles[0] - referenceAngles[0])));
-        //Scene::grid->setOrigin(btVector3(V[0], V[1], -V[2]) * 20);
+        //Scene::grid->setRotation(Vec3d(0, -(eulerAngles[1] - referenceAngles[1]), (eulerAngles[0] - referenceAngles[0])));
+        Scene::grid->setOrigin(btVector3(V[0], V[1], -V[2]) * 20);
         Scene::grid->setMatrix(modelview);
 
         return modelview;
@@ -88,12 +86,12 @@ double *Tracker::findMarker() {
     } catch (const std::exception &e) { return nullptr; }
 }
 
-Vec3d rotationMatrixToEulerAngles(Mat &R) {
-    float sy = sqrt(R.at<double>(0, 0) * R.at<double>(0, 0) + R.at<double>(1, 0) * R.at<double>(1, 0));
+Vec3d Tracker::rotationMatrixToEulerAngles(Mat &R) {
+    double sy = sqrt(R.at<double>(0, 0) * R.at<double>(0, 0) + R.at<double>(1, 0) * R.at<double>(1, 0));
 
     bool singular = sy < 1e-6; // If
 
-    float x, y, z;
+    double x, y, z;
     if (!singular) {
         x = atan2(R.at<double>(2, 1), R.at<double>(2, 2));
         y = atan2(-R.at<double>(2, 0), sy);
@@ -104,8 +102,7 @@ Vec3d rotationMatrixToEulerAngles(Mat &R) {
         z = 0;
     }
 
-    cout << Vec3f(x, y, z) << endl;
-    return Vec3f(x, y, z);
+    return Vec3d(x, y, z);
 }
 
 Mat Tracker::getRotationMatrix() {

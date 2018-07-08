@@ -58,8 +58,7 @@ void Scene::drawObjects(double modelview[16]) {
         glMatrixMode(GL_MODELVIEW);
         //glLoadMatrixd(modelview);
 
-        glTranslatef(0, 0, -5);
-        glScalef(0.5, 0.5, 0.5);
+        glScalef(0.25, 0.25, 0.25);
 
         for (auto object : objects) object->draw();
 

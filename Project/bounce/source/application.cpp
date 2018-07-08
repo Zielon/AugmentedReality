@@ -8,8 +8,8 @@ using namespace std;
 using namespace cv;
 
 Scene *Application::scene = new Scene();
-int Application::WIDTH = 900;
-int Application::HEIGHT = 600;
+int Application::WIDTH = 1280;
+int Application::HEIGHT = 720;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -18,7 +18,6 @@ void Application::keyboard(GLFWwindow *window, int key, int code, int action, in
 //    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(0.5, 0.5, 0));
 //    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) Scene::grid->setOrigin(btVector3(-0.5, -0.5, 0));
 
-//
 //    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) Scene::grid->setRotation(0.025, 0.f, 1.f, 0.f);
 //    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) Scene::grid->setRotation(-0.025f, 0.f, 1.f, 0.f);
 
@@ -101,7 +100,7 @@ void Application::display(Mat &mat) {
 
     glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
     glRasterPos2i(0, mat.cols - 1);
-    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+    //glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
     glEnable(GL_DEPTH_TEST);
 
