@@ -109,7 +109,6 @@ void Application::display(Mat &mat) {
 
 void Application::initialize() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
-    glViewport(0, 0, WIDTH, HEIGHT);
 
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_BLEND);

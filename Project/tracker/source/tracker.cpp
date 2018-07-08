@@ -7,8 +7,6 @@
 using namespace cv;
 using namespace std;
 
-Vec3d rotationMatrixToEulerAngles(Mat &R);
-
 Tracker::Tracker() {
     this->camera = new Camera(1);
 }
