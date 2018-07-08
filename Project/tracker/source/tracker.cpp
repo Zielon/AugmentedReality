@@ -78,6 +78,7 @@ double *Tracker::findMarker() {
         //Scene::grid->setRotation(Vec3d(0, -(eulerAngles[1] - referenceAngles[1]), (eulerAngles[0] - referenceAngles[0])));
         Scene::grid->setOrigin(btVector3(V[0], V[1], -V[2]) * 20);
         Scene::grid->setMatrix(modelview);
+        Scene::grid->update();
 
         return modelview;
 

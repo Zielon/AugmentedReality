@@ -14,7 +14,6 @@ float Grid::gridThickness = 0.05f;
 
 void Grid::draw() {
     glPushMatrix();
-    getMotionState()->getWorldTransform(transform);
     transform.getOpenGLMatrix(matrix);
     glMultMatrixf(matrix);
     drawer.drawGrid((int) gridSize, gridThickness, drawer.getGridPoints());
@@ -60,13 +59,11 @@ void Grid::update() {
     getMotionState()->getWorldTransform(transform);
 
     transform.setIdentity();
-
     transform.setRotation(quaternion);
     transform.setOrigin(origin);
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
-    motionState->setWorldTransform(transform);
 }
 
 void Grid::setRotation(cv::Vec3d rotation) {
