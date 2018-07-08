@@ -44,9 +44,9 @@ Scene::Scene() {
 
 void Scene::defaultSetting() {
     addObject((SceneObject *) grid);
-    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.2));
-    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
-    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
+//    addObject(Ball::getDefault(btVector3(1, 5, 0), 0.2));
+//    addObject(Ball::getDefault(btVector3(0, 5, 0), 0.2));
+//    addObject(Ball::getDefault(btVector3(-1, 5, 0), 0.2));
 }
 
 void Scene::drawObjects(double modelview[16]) {
@@ -58,7 +58,7 @@ void Scene::drawObjects(double modelview[16]) {
         glMatrixMode(GL_MODELVIEW);
         //glLoadMatrixd(modelview);
 
-        glScalef(0.25, 0.25, 0.25);
+        glScalef(0.1, 0.1, 0.1);
 
         for (auto object : objects) object->draw();
 

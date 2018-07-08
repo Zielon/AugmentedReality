@@ -98,9 +98,9 @@ void Application::display(Mat &mat) {
     glPushMatrix();
     glLoadIdentity();
 
-    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
-    glRasterPos2i(0, mat.cols - 1);
-    //glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+//    glOrtho(0.0, mat.rows, 0.0, mat.cols, -1, 1);
+//    glRasterPos2i(0, mat.cols - 1);
+//    glDrawPixels(WIDTH, HEIGHT, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
 
     glEnable(GL_DEPTH_TEST);
 
