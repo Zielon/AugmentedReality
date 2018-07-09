@@ -8,8 +8,8 @@ using namespace std;
 using namespace cv;
 
 Scene *Application::scene = new Scene();
-int Application::WIDTH = 1280;
-int Application::HEIGHT = 720;
+int Application::WIDTH = 900;
+int Application::HEIGHT = 600;
 
 void Application::keyboard(GLFWwindow *window, int key, int code, int action, int mods) {
 
@@ -88,9 +88,44 @@ void Application::display(Mat &mat) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glMatrixMode(GL_PROJECTION);
+
+    glPushMatrix();
+    glLoadIdentity();
+
+    float ratio = width / (float) height;
+
+    int fov = 30;
+    float near = 0.01f, far = 100.f;
+    auto top = static_cast<float>(tan(fov * M_PI / 360.0f) * near);
+    float bottom = -top;
+    float left = ratio * bottom;
+    float right = ratio * top;
+
+    glFrustum(left, right, bottom, top, near, far);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    glTranslatef(0.0f, 0.0f, -3.0f);
+    glRotatef(10, 1.0, 0.0, 0.0);
+
+    glPopMatrix();
+
+//    if (mat.rows == 0 || mat.cols == 0) return;
+//
+//    unsigned char pixels[HEIGHT * WIDTH * 3];
+//
+//    memcpy(pixels, mat.data, sizeof(pixels));
+//
+//    int width, height;
+//    glfwGetFramebufferSize(window, &width, &height);
+//
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+//
 //    glDisable(GL_DEPTH_TEST);
 //
 //    glMatrixMode(GL_PROJECTION);

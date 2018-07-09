@@ -64,10 +64,11 @@ void Grid::update() {
 
     getMotionState()->setWorldTransform(transform);
     setWorldTransform(transform);
+    motionState->setWorldTransform(transform);
 }
 
 void Grid::setRotation(cv::Vec3d rotation) {
-    quaternion.setEulerZYX(rotation[0], rotation[1], rotation[2]);
+    quaternion.setEuler(rotation[0], rotation[1], rotation[2]);
 }
 
 void Grid::setMatrix(double matrix[16]) {

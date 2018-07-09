@@ -75,7 +75,8 @@ double *Tracker::findMarker() {
             isReference = true;
         }
 
-        //Scene::grid->setRotation(Vec3d(0, -(eulerAngles[1] - referenceAngles[1]), (eulerAngles[0] - referenceAngles[0])));
+        Scene::grid->setRotation(
+                Vec3d(0, (eulerAngles[1] - referenceAngles[1]), -(eulerAngles[0] - referenceAngles[0])));
         Scene::grid->setOrigin(btVector3(V[0], V[1], -V[2]) * 20);
         Scene::grid->setMatrix(modelview);
         Scene::grid->update();
@@ -85,23 +86,36 @@ double *Tracker::findMarker() {
     } catch (const std::exception &e) { return nullptr; }
 }
 
-Vec3d Tracker::rotationMatrixToEulerAngles(Mat &R) {
-    double sy = sqrt(R.at<double>(0, 0) * R.at<double>(0, 0) + R.at<double>(1, 0) * R.at<double>(1, 0));
+Vec3d Tracker::rotationMatrixToEulerAngles(Mat &rotationMatrix) {
 
-    bool singular = sy < 1e-6; // If
+    double m00 = rotationMatrix.at<double>(0, 0);
+    double m02 = rotationMatrix.at<double>(0, 2);
+    double m10 = rotationMatrix.at<double>(1, 0);
+    double m11 = rotationMatrix.at<double>(1, 1);
+    double m12 = rotationMatrix.at<double>(1, 2);
+    double m20 = rotationMatrix.at<double>(2, 0);
+    double m22 = rotationMatrix.at<double>(2, 2);
 
     double x, y, z;
-    if (!singular) {
-        x = atan2(R.at<double>(2, 1), R.at<double>(2, 2));
-        y = atan2(-R.at<double>(2, 0), sy);
-        z = atan2(R.at<double>(1, 0), R.at<double>(0, 0));
+
+    // Assuming the angles are in radians.
+    if (m10 > 0.998) { // singularity at north pole
+        x = 0;
+        y = CV_PI / 2;
+        z = atan2(m02, m22);
+    } else if (m10 < -0.998) { // singularity at south pole
+        x = 0;
+        y = -CV_PI / 2;
+        z = atan2(m02, m22);
     } else {
-        x = atan2(-R.at<double>(1, 2), R.at<double>(1, 1));
-        y = atan2(-R.at<double>(2, 0), sy);
-        z = 0;
+        x = atan2(-m12, m11);
+        y = asin(m10);
+        z = atan2(-m20, m00);
     }
 
-    return Vec3d(x, y, z);
+    cout << Vec3f(-x, y, z) << endl;
+
+    return Vec3f(-x, y, z);
 }
 
 Mat Tracker::getRotationMatrix() {
@@ -109,9 +123,7 @@ Mat Tracker::getRotationMatrix() {
     if (!rotationVectors.empty())
         Rodrigues(rotationVectors[0], rotationMatrix);
 
-    Mat matrix;
-    rotationMatrix.convertTo(matrix, CV_32FC1);
-    return matrix;
+    return rotationMatrix;
 }
 
 Camera *Tracker::getCamera() {
